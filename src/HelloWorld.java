@@ -72,41 +72,44 @@ public class HelloWorld {
 		glfwShowWindow(window);
 	}
 	private int loadShaders() {
-		int
-			vertexShaderID = glCreateShader(GL_VERTEX_SHADER),
-			fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+		// vertex shader
+		int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 		String vertexShaderCode =
 			"#version 310 es\n"+
-			"layout(location = 0) in vec2 position\n"+
+			"layout(location = 0) in vec2 position;\n"+
 			"void main() {\n"+
-			"\tgl_Position = vec4(position,0,1);\n"+
-			"}";
-		String fragmentShaderCode =
-			"#version 310 es\n"+
-			"out vec4 color\n"+
-			"void main() {\n"+
-			"\tcolor = vec4(1);\n"+
+    			"gl_Position = vec4(position, 0.0, 1.0);\n"+
 			"}";
 		glShaderSource(vertexShaderID,vertexShaderCode);
 		glCompileShader(vertexShaderID);
-		int status = glGetShaderi(vertexShaderID,GL_COMPILE_STATUS);
-		System.out.println("vertexShader:"+status);
-		System.out.println(glGetShaderInfoLog(vertexShaderID, glGetShaderi(vertexShaderID, GL_INFO_LOG_LENGTH)));
+		if(glGetShaderi(vertexShaderID,GL_COMPILE_STATUS) == GL_FALSE)
+			System.out.println("Vertex shader compilation failed: \n"+
+				glGetShaderInfoLog(vertexShaderID, glGetShaderi(vertexShaderID, GL_INFO_LOG_LENGTH)));
+		// fragment shader
+		int fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+		String fragmentShaderCode =
+			"#version 310 es\n"+
+			"precision mediump float;\n"+
+			"out vec4 fragColor;\n"+
+			"void main() {\n"+
+			    "fragColor = vec4(1,0,0,0);\n"+
+			"}";
 		glShaderSource(fragmentShaderID,fragmentShaderCode);
 		glCompileShader(fragmentShaderID);
-		status = glGetShaderi(fragmentShaderID,GL_COMPILE_STATUS);
-		System.out.println("fragmentShader:"+status);
+		if(glGetShaderi(fragmentShaderID,GL_COMPILE_STATUS) == GL_FALSE)
+			System.out.println("Vertex shader compilation failed: \n"+
+				glGetShaderInfoLog(fragmentShaderID, glGetShaderi(fragmentShaderID, GL_INFO_LOG_LENGTH)));
+		// create and link program (which I guess is an OpenGL context with these shaders)
 		int programID = glCreateProgram();
 		glAttachShader(programID,vertexShaderID);
 		glAttachShader(programID,fragmentShaderID);
 		glLinkProgram(programID);
-		status = glGetProgrami(programID,GL_LINK_STATUS);
-		System.out.println("program:"+status);
+		if(glGetProgrami(programID,GL_LINK_STATUS) == GL_FALSE)
+			System.out.println("Error linking program.");
 		glDetachShader(programID,vertexShaderID);
 		glDetachShader(programID,fragmentShaderID);
 		glDeleteShader(vertexShaderID);
 		glDeleteShader(fragmentShaderID);
-		//System.out.println(glGetError());
 		return programID;
 	}
 	private void loop() {
