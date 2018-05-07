@@ -128,22 +128,14 @@ public class HelloWorld {
 		glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER,g_vertex_buffer_data,GL_STATIC_DRAW);
 		glClearColor(0,.5f,.5f,0);
+		glUseProgram(programID);
 		while(!glfwWindowShouldClose(window)) {
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-			glUseProgram(programID);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glfwPollEvents();
-			/*glBegin(GL_TRIANGLES);
-				glVertex2f(0, 0);
-				glVertex2f(1, 1);
-				glVertex2f(0, 0.5f);
-			glEnd();*/
 			glEnableVertexAttribArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
 			glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-			glBufferData(GL_ARRAY_BUFFER,g_vertex_buffer_data,GL_STATIC_DRAW);
 			glDrawArrays(GL_TRIANGLES,0,3);
 			glDisableVertexAttribArray(0);
-			//System.out.println(glGetError());
 			glfwSwapBuffers(window);
 		}
 	}
