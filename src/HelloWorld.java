@@ -30,6 +30,7 @@ public class HelloWorld {
 		// Setup an error callback. The default implementation
 		// will print the error message in System.err.
 		GLFWErrorCallback.createPrint(System.err).set();
+
 		// Initialize GLFW. Most GLFW functions will not work before doing this.
 		if(!glfwInit())
 			throw new IllegalStateException("Unable to initialize GLFW");
@@ -39,12 +40,17 @@ public class HelloWorld {
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 		// Create the window
 		window = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);
+
 		if(window == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
 		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
 			if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
 				glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+		});
+		glfwSetWindowSizeCallback(window, (window, width, height) -> {
+			//Updates the matrices
+			glViewport(0, 0, width, height);
 		});
 		// Get the thread stack and push a new frame
 		try ( MemoryStack stack = stackPush() ) {
@@ -61,6 +67,7 @@ public class HelloWorld {
 				(vidmode.height() - pHeight.get(0)) / 2
 			);
 		} // the stack frame is popped automatically
+
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
 		GL.createCapabilities();
@@ -78,7 +85,7 @@ public class HelloWorld {
 			"#version 310 es\n"+
 			"layout(location = 0) in vec2 position;\n"+
 			"void main() {\n"+
-    			"gl_Position = vec4(position, 0.0, 1.0);\n"+
+				"gl_Position = vec4(position, 0.0, 1.0);\n"+
 			"}";
 		glShaderSource(vertexShaderID,vertexShaderCode);
 		glCompileShader(vertexShaderID);
@@ -92,7 +99,7 @@ public class HelloWorld {
 			"precision mediump float;\n"+
 			"out vec4 fragColor;\n"+
 			"void main() {\n"+
-			    "fragColor = vec4(1,0,0,0);\n"+
+				"fragColor = vec4(1,0,0,0);\n"+
 			"}";
 		glShaderSource(fragmentShaderID,fragmentShaderCode);
 		glCompileShader(fragmentShaderID);
@@ -129,6 +136,7 @@ public class HelloWorld {
 		glBufferData(GL_ARRAY_BUFFER,g_vertex_buffer_data,GL_STATIC_DRAW);
 		glClearColor(0,.5f,.5f,0);
 		glUseProgram(programID);
+		long prev = System.currentTimeMillis();
 		while(!glfwWindowShouldClose(window)) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glfwPollEvents();
@@ -137,6 +145,11 @@ public class HelloWorld {
 			glDrawArrays(GL_TRIANGLES,0,3);
 			glDisableVertexAttribArray(0);
 			glfwSwapBuffers(window);
+			g_vertex_buffer_data[0] += 0.01;
+			glBufferData(GL_ARRAY_BUFFER,g_vertex_buffer_data,GL_STATIC_DRAW);
+			long now = System.currentTimeMillis();
+			System.out.println("delta:"+(now-prev));
+			prev = now;
 		}
 	}
 	public static void main(String[] args) { new HelloWorld().run(); }
