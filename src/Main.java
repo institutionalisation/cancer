@@ -28,16 +28,18 @@ public class Main {
 			throw new IllegalStateException("Unable to initialize GLFW");
 		// Configure GLFW
 		glfwDefaultWindowHints(); // optional, the current window hints are already the default
-		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+		glfwWindowHint(GLFW_VISIBLE,GLFW_FALSE); // the window will stay hidden after creation
+		glfwWindowHint(GLFW_RESIZABLE,GLFW_TRUE); // the window will be resizable
 		// Create the window
 		window = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);
 		if(window == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
-		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
-		glfwSetKeyCallback(window, keyboard.listener);
-		glfwSetWindowSizeCallback(window, (window, width, height) -> {
-			glViewport(0, 0, width, height);
+		glfwSetKeyCallback(window,keyboard.listener);
+		keyboard.getImmediateKeys().put(GLFW_KEY_X,new Runnable() { public void run() {
+			glfwSetWindowShouldClose(window, true);
+		}});
+		glfwSetWindowSizeCallback(window, (window,width,height) -> {
+			glViewport(0,0,width,height);
 		});
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
@@ -92,28 +94,29 @@ public class Main {
 		};
 		int vertexBuffer = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER,g_vertex_buffer_data,GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER,g_vertex_buffer_data,GL_STREAM_DRAW);
 		glClearColor(0,.5f,.5f,0);
 		glUseProgram(getProgramID());
 		//long prev = System.currentTimeMillis();
 		for(;!glfwWindowShouldClose(window);) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glfwPollEvents();
+			glfwPollEvents(); // check for keypresses
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
 			glDrawArrays(GL_TRIANGLES,0,3);
-			glDisableVertexAttribArray(0);
+			//glDisableVertexAttribArray(0);
 			glfwSwapBuffers(window);
 			// move lower-left vertex with A and D keys
 			if(keyboard.keysPressed.contains(GLFW_KEY_A))	
 				g_vertex_buffer_data[0] -= 0.01;
 			if(keyboard.keysPressed.contains(GLFW_KEY_D))
 				g_vertex_buffer_data[0] += 0.01;
-			glBufferData(GL_ARRAY_BUFFER,g_vertex_buffer_data,GL_STATIC_DRAW);
-			//long now = System.currentTimeMillis();
-			//System.out.println("delta:"+(now-prev));
-			//prev = now;
+			glBufferSubData(GL_ARRAY_BUFFER,0,g_vertex_buffer_data);
+			long now = System.currentTimeMillis();
+			System.out.println("delta:"+(now-prev));
+			prev = now;
 		}
+		glBindBuffer(0,vertexBuffer);
 	}
 	public static void main(String[] args) throws Exception { new Main().run(); }
 }
