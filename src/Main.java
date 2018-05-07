@@ -8,14 +8,12 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
-
 public class Main {
 	// The window handle
-	private long window;
-	public Keyboard keyboard = new Keyboard();
-	public void run() {
+	public long window;
+	private Keyboard keyboard = new Keyboard();
+	public void run() throws Exception {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 		init();
 		loop();
@@ -41,21 +39,6 @@ public class Main {
 		glfwSetWindowSizeCallback(window, (window, width, height) -> {
 			glViewport(0, 0, width, height);
 		});
-		// Get the thread stack and push a new frame
-		try(MemoryStack stack = stackPush()) {
-			IntBuffer pWidth = stack.mallocInt(1); // int*
-			IntBuffer pHeight = stack.mallocInt(1); // int*
-			// Get the window size passed to glfwCreateWindow
-			glfwGetWindowSize(window, pWidth, pHeight);
-			// Get the resolution of the primary monitor
-			GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-			// Center the window
-			glfwSetWindowPos(
-				window,
-				(vidmode.width() - pWidth.get(0)) / 2,
-				(vidmode.height() - pHeight.get(0)) / 2
-			);
-		} // the stack frame is popped automatically
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
 		GL.createCapabilities();
@@ -64,22 +47,17 @@ public class Main {
 		// Make the window visible
 		glfwShowWindow(window);
 	}
-	private void deinit() {
+	private void deinit() throws Exception {
 		glfwFreeCallbacks(window);
 		glfwDestroyWindow(window);
 		glfwTerminate();
 		glfwSetErrorCallback(null).free();
 	}
 	// loads shaders
-	private int getProgramID() {
+	private int getProgramID() throws Exception {
 		// vertex shader
 		int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-		String vertexShaderCode =
-			"#version 310 es\n"+
-			"layout(location = 0) in vec2 position;\n"+
-			"void main() {\n"+
-				"gl_Position = vec4(position, 0.0, 1.0);\n"+
-			"}";
+		String vertexShaderCode = Util.readFile("shaders/vertex");
 		glShaderSource(vertexShaderID,vertexShaderCode);
 		glCompileShader(vertexShaderID);
 		if(glGetShaderi(vertexShaderID,GL_COMPILE_STATUS) == GL_FALSE)
@@ -87,13 +65,7 @@ public class Main {
 				glGetShaderInfoLog(vertexShaderID, glGetShaderi(vertexShaderID, GL_INFO_LOG_LENGTH)));
 		// fragment shader
 		int fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-		String fragmentShaderCode =
-			"#version 310 es\n"+
-			"precision mediump float;\n"+
-			"out vec4 fragColor;\n"+
-			"void main() {\n"+
-				"fragColor = vec4(1,0,0,0);\n"+
-			"}";
+		String fragmentShaderCode = Util.readFile("shaders/fragment");
 		glShaderSource(fragmentShaderID,fragmentShaderCode);
 		glCompileShader(fragmentShaderID);
 		if(glGetShaderi(fragmentShaderID,GL_COMPILE_STATUS) == GL_FALSE)
@@ -112,8 +84,7 @@ public class Main {
 		glDeleteShader(fragmentShaderID);
 		return programID;
 	}
-	private void loop() {
-		int programID = getProgramID();
+	private void loop() throws Exception {
 		float[] g_vertex_buffer_data = {
 			-1, -1, 0,
 			1, -1, 0,
@@ -123,8 +94,8 @@ public class Main {
 		glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER,g_vertex_buffer_data,GL_STATIC_DRAW);
 		glClearColor(0,.5f,.5f,0);
-		glUseProgram(programID);
-		long prev = System.currentTimeMillis();
+		glUseProgram(getProgramID());
+		//long prev = System.currentTimeMillis();
 		for(;!glfwWindowShouldClose(window);) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glfwPollEvents();
@@ -139,10 +110,10 @@ public class Main {
 			if(keyboard.keysPressed.contains(GLFW_KEY_D))
 				g_vertex_buffer_data[0] += 0.01;
 			glBufferData(GL_ARRAY_BUFFER,g_vertex_buffer_data,GL_STATIC_DRAW);
-			long now = System.currentTimeMillis();
-			System.out.println("delta:"+(now-prev));
-			prev = now;
+			//long now = System.currentTimeMillis();
+			//System.out.println("delta:"+(now-prev));
+			//prev = now;
 		}
 	}
-	public static void main(String[] args) { new Main().run(); }
+	public static void main(String[] args) throws Exception { new Main().run(); }
 }
