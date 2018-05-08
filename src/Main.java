@@ -57,7 +57,7 @@ public class Main {
 		glfwSetErrorCallback(null).free();
 	}
 	// loads shaders
-	private int getProgramID() throws Exception {
+	private int getProgramId() throws Exception {
 		// vertex shader
 		int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 		String vertexShaderCode = Util.readFile("shaders/vertex");
@@ -88,44 +88,79 @@ public class Main {
 		return programID;
 	}
 	private void loop() throws Exception {
-		float[] g_vertex_buffer_data = {
-			-1, -1, 0,
-			1, -1, 0,
-			0, 1, 0,
-		};
-		
+		// init
+		int programId = getProgramId();
+		glUseProgram(programId);
 
-		
-		glUseProgram(getProgramID());
-		long prev = System.currentTimeMillis(),now;
-		glClearColor(0,.5f,.5f,0);
-		
 		int vaoId = glGenVertexArrays();
 		glBindVertexArray(vaoId);
-
-		int vboId = glGenBuffers();
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER,vboId);
+		
+		float[] vertices = new float[]{
+	        -.5f, -.5f, 0,
+	        -.5f, .5f, 0,
+	        .5f, -.5f, 0,
+	        .5f, .5f, 0,
+	    };
+		FloatBuffer verticesBuffer = MemoryUtil.memAllocFloat(vertices.length);
+		verticesBuffer.put(vertices).flip();
+		int verticesId = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, verticesId);
+		glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STATIC_DRAW);
+		memFree(verticesBuffer);
 		glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-		glBufferData(GL_ARRAY_BUFFER,g_vertex_buffer_data,GL_STATIC_DRAW);
+
+		int[] indices = {0,1,2, 1,2,3};
+		int indicesId = glGenBuffers();
+		IntBuffer indicesBuffer = MemoryUtil.memAllocInt(indices.length);
+		indicesBuffer.put(indices).flip();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesId);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+		memFree(indicesBuffer);
+		
+		// Unbind the VBO
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		// Unbind the VAO
+		glBindVertexArray(0);
+
+
+		glClearColor(0,.5f,.5f,0);
+		int uniformLoc = glGetUniformLocation(programId,"color");
+		glUniform4f(uniformLoc,1,0,0,0);
+		/*
+		int indexBufferId = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER,indexBufferId);
+		glBufferData(GL_ARRAY_BUFFER,indices,GL_STATIC_DRAW);*/
 		
 		for(;!glfwWindowShouldClose(window);) {
-			long delta = (now=System.currentTimeMillis())-prev;
-			try { System.out.println(1000/delta); } catch(Exception e) {}
-			prev = now;
+			// clear from last frame
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glfwPollEvents(); // check for keypresses
-			glDrawArrays(GL_TRIANGLES,0,3);
+			// check for keypresses
+			glfwPollEvents();
+			// bind to the VAO
+		    glBindVertexArray(vaoId);
+		    glEnableVertexAttribArray(0);
+		    // draw
+			//glDrawArrays(GL_TRIANGLES,0,vertices.length);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			System.out.println(glGetError());
+			// Restore state
+		    glDisableVertexAttribArray(0);
+		    glBindVertexArray(0);
+			// done frame
 			glfwSwapBuffers(window);
-			// move lower-left vertex with A and D keys
-			if(keyboard.keysPressed.contains(GLFW_KEY_A))
-				g_vertex_buffer_data[0] -= 0.001*delta;
-			if(keyboard.keysPressed.contains(GLFW_KEY_D))
-				g_vertex_buffer_data[0] += 0.001*delta;
-			glBufferSubData(GL_ARRAY_BUFFER,0,g_vertex_buffer_data);
 		}
+
+		// cleanup
 		glDisableVertexAttribArray(0);
-		glBindBuffer(0,vboId);
+
+		// delete vertex buffer objects
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glDeleteBuffers(verticesId);
+		glDeleteBuffers(indicesId);
+
+		// delete vertex array object
+		glBindVertexArray(0);
+		glDeleteVertexArrays(vaoId);
 	}
 	public static void main(String[] args) throws Exception { new Main().run(); }
 }
