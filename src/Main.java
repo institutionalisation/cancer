@@ -8,6 +8,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.system.MemoryUtil.*;
 public class Main {
 	// The window handle
@@ -92,31 +93,39 @@ public class Main {
 			1, -1, 0,
 			0, 1, 0,
 		};
-		int vertexBuffer = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER,g_vertex_buffer_data,GL_STREAM_DRAW);
-		glClearColor(0,.5f,.5f,0);
+		
+
+		
 		glUseProgram(getProgramID());
-		//long prev = System.currentTimeMillis();
+		long prev = System.currentTimeMillis(),now;
+		glClearColor(0,.5f,.5f,0);
+		
+		int vaoId = glGenVertexArrays();
+		glBindVertexArray(vaoId);
+
+		int vboId = glGenBuffers();
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER,vboId);
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+		glBufferData(GL_ARRAY_BUFFER,g_vertex_buffer_data,GL_STATIC_DRAW);
+		
 		for(;!glfwWindowShouldClose(window);) {
+			long delta = (now=System.currentTimeMillis())-prev;
+			try { System.out.println(1000/delta); } catch(Exception e) {}
+			prev = now;
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glfwPollEvents(); // check for keypresses
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
 			glDrawArrays(GL_TRIANGLES,0,3);
-			//glDisableVertexAttribArray(0);
 			glfwSwapBuffers(window);
 			// move lower-left vertex with A and D keys
-			if(keyboard.keysPressed.contains(GLFW_KEY_A))	
-				g_vertex_buffer_data[0] -= 0.01;
+			if(keyboard.keysPressed.contains(GLFW_KEY_A))
+				g_vertex_buffer_data[0] -= 0.001*delta;
 			if(keyboard.keysPressed.contains(GLFW_KEY_D))
-				g_vertex_buffer_data[0] += 0.01;
+				g_vertex_buffer_data[0] += 0.001*delta;
 			glBufferSubData(GL_ARRAY_BUFFER,0,g_vertex_buffer_data);
-			long now = System.currentTimeMillis();
-			System.out.println("delta:"+(now-prev));
-			prev = now;
 		}
-		glBindBuffer(0,vertexBuffer);
+		glDisableVertexAttribArray(0);
+		glBindBuffer(0,vboId);
 	}
 	public static void main(String[] args) throws Exception { new Main().run(); }
 }

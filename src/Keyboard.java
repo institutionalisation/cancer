@@ -10,8 +10,6 @@ public class Keyboard {
 	Map<Integer,Runnable> immediateKeys = new TreeMap<Integer,Runnable>();
 	public GLFWKeyCallbackI listener = new GLFWKeyCallbackI() {
 		public void invoke(long window, int key, int scancode, int action, int mods) {
-			if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-				glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
 			switch(action) {
 				case GLFW_PRESS: {
 					if(immediateKeys.keySet().contains(key))
