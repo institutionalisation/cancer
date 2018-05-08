@@ -89,8 +89,12 @@ public class Main {
 	}
 	private void loop() throws Exception {
 		// init
-		int programId = getProgramId();
-		glUseProgram(programId);
+		//int programId = getProgramId();
+		//glUseProgram(programId);
+		Program program = new Program(
+			new Shader("vertex",GL_VERTEX_SHADER),
+			new Shader("fragment",GL_FRAGMENT_SHADER));
+		program.use();
 
 		int vaoId = glGenVertexArrays();
 		glBindVertexArray(vaoId);
@@ -124,7 +128,7 @@ public class Main {
 
 
 		glClearColor(0,.5f,.5f,0);
-		int uniformLoc = glGetUniformLocation(programId,"color");
+		int uniformLoc = glGetUniformLocation(program.id,"color");
 		glUniform4f(uniformLoc,1,0,0,0);
 		/*
 		int indexBufferId = glGenBuffers();
@@ -142,7 +146,6 @@ public class Main {
 		    // draw
 			//glDrawArrays(GL_TRIANGLES,0,vertices.length);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-			System.out.println(glGetError());
 			// Restore state
 		    glDisableVertexAttribArray(0);
 		    glBindVertexArray(0);
