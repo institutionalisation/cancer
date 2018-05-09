@@ -1,2 +1,2 @@
-compile: ./compile
+compile: ./compile\
 run: ./run Main
