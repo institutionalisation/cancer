@@ -10,10 +10,14 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.system.MemoryUtil.*;
+
+import org.joml.*;
+import java.lang.Math;
+
 public class Main {
-	// The window handle
-	public long window;
 	private Keyboard keyboard = new Keyboard();
+	public Window window;
+	
 	public void run() throws Exception {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 		init();
@@ -27,32 +31,16 @@ public class Main {
 		// Initialize GLFW. Most GLFW functions will not work before doing this.
 		if(!glfwInit())
 			throw new IllegalStateException("Unable to initialize GLFW");
-		// Configure GLFW
-		glfwDefaultWindowHints(); // optional, the current window hints are already the default
-		glfwWindowHint(GLFW_VISIBLE,GLFW_FALSE); // the window will stay hidden after creation
-		glfwWindowHint(GLFW_RESIZABLE,GLFW_TRUE); // the window will be resizable
-		// Create the window
-		window = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);
-		if(window == NULL)
-			throw new RuntimeException("Failed to create the GLFW window");
-		glfwSetKeyCallback(window,keyboard.listener);
-		keyboard.getImmediateKeys().put(GLFW_KEY_X,new Runnable() { public void run() {
-			glfwSetWindowShouldClose(window, true);
-		}});
-		glfwSetWindowSizeCallback(window, (window,width,height) -> {
-			glViewport(0,0,width,height);
-		});
+		window = new Window(300,300,"Window Title",keyboard);
 		// Make the OpenGL context current
-		glfwMakeContextCurrent(window);
+		glfwMakeContextCurrent(window.getId());
 		GL.createCapabilities();
 		// Enable v-sync
 		glfwSwapInterval(1);
-		// Make the window visible
-		glfwShowWindow(window);
+		window.show();
 	}
 	private void deinit() throws Exception {
-		glfwFreeCallbacks(window);
-		glfwDestroyWindow(window);
+		window.destroy();
 		glfwTerminate();
 		glfwSetErrorCallback(null).free();
 	}
@@ -89,8 +77,6 @@ public class Main {
 	}
 	private void loop() throws Exception {
 		// init
-		//int programId = getProgramId();
-		//glUseProgram(programId);
 		Program program = new Program(
 			new Shader("vertex",GL_VERTEX_SHADER),
 			new Shader("fragment",GL_FRAGMENT_SHADER));
@@ -100,18 +86,19 @@ public class Main {
 		glBindVertexArray(vaoId);
 		
 		float[] vertices = new float[]{
-	        -.5f, -.5f, 0,
-	        -.5f, .5f, 0,
-	        .5f, -.5f, 0,
-	        .5f, .5f, 0,
+	        -1f, -1f, -3f,
+	        -1f, 1f, -3f,
+	        1f, -1f, -3f,
+	        1f, 1f, -3f,
 	    };
 		FloatBuffer verticesBuffer = MemoryUtil.memAllocFloat(vertices.length);
 		verticesBuffer.put(vertices).flip();
 		int verticesId = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER,verticesId);
-		glBufferData(GL_ARRAY_BUFFER,verticesBuffer,GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW);
 		memFree(verticesBuffer);
 		glVertexAttribPointer(glGetAttribLocation(program.id,"position"), 3, GL_FLOAT, false, 0, 0);
+
 
 		int[] indices = {0,1,2, 1,2,3};
 		int indicesId = glGenBuffers();
@@ -120,7 +107,6 @@ public class Main {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indicesId);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,indicesBuffer,GL_STATIC_DRAW);
 		memFree(indicesBuffer);
-
 
 		float[] colors = new float[]{
 			1,0,0,
@@ -141,12 +127,45 @@ public class Main {
 		// unbind the VAO
 		glBindVertexArray(0);
 
+		float cameraX = 0, cameraY = 0;
+
+		final float FOV = (float) Math.toRadians(120f);
+	    final float Z_NEAR = 0;
+	    final float Z_FAR = 1;
+	    Matrix4f viewMatrix;
+	    System.out.println("width:"+window.getWidth());
+	    float aspectRatio = (float) window.getWidth() / window.getHeight();
+	    System.out.println("ar:"+aspectRatio);
+		viewMatrix = new Matrix4f().perspective(FOV,aspectRatio,Z_NEAR,Z_FAR);
 		glClearColor(0,.5f,.5f,0);
-		for(;!glfwWindowShouldClose(window);) {
+		for(;!glfwWindowShouldClose(window.getId());) {
 			// clear from last frame
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			// check for keypresses
 			glfwPollEvents();
+
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_W))
+				viewMatrix.translate(0,0,.01f);
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_S))
+				viewMatrix.translate(0,0,-.01f);
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_A))
+				viewMatrix.translate(.1f,0,0);
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_D))
+				viewMatrix.translate(-.1f,0,0);
+
+
+		    int uniformLoc = program.getUniformLocation("view");
+			FloatBuffer fb = MemoryUtil.memAllocFloat(16);
+			viewMatrix.get(fb);
+			for(int i = 0; i < 4; ++i) {
+				for(int j = 0; j < 4; ++j)
+					System.out.print(fb.get(i*4+j)+" ");
+				System.out.println();
+			}
+			glUniformMatrix4fv(uniformLoc,false,fb);
+			memFree(fb);
+
+
 			// bind to the VAO
 		    glBindVertexArray(vaoId);
 		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"position"));
@@ -157,7 +176,7 @@ public class Main {
 		    glDisableVertexAttribArray(0);
 		    glBindVertexArray(0);
 			// done frame
-			glfwSwapBuffers(window);
+			window.swapBuffers();
 		}
 
 		// cleanup

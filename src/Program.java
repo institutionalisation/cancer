@@ -15,7 +15,10 @@ public class Program {
 			glDeleteShader(shader.id);
 		}
 	}
-	void use() {
+	public void use() {
 		glUseProgram(id);
+	}
+	public int getUniformLocation(String name) {
+		return glGetUniformLocation(id,name);
 	}
 }

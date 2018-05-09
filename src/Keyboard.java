@@ -6,10 +6,10 @@ import java.util.TreeSet;
 import java.util.Map;
 import java.util.TreeMap;
 public class Keyboard {
-	Set<Integer> keysPressed = new TreeSet<Integer>();
-	Map<Integer,Runnable> immediateKeys = new TreeMap<Integer,Runnable>();
+	private Set<Integer> keysPressed = new TreeSet<Integer>();
+	private Map<Integer,Runnable> immediateKeys = new TreeMap<Integer,Runnable>();
 	public GLFWKeyCallbackI listener = new GLFWKeyCallbackI() {
-		public void invoke(long window, int key, int scancode, int action, int mods) {
+		public void invoke(long window,int key,int scancode,int action,int mods) {
 			switch(action) {
 				case GLFW_PRESS: {
 					if(immediateKeys.keySet().contains(key))
@@ -25,4 +25,5 @@ public class Keyboard {
 	};
 	public Map<Integer,Runnable> getImmediateKeys() {
 		return immediateKeys; }
+	public Set<Integer> getKeysPressed() { return keysPressed; }	
 }
