@@ -108,33 +108,40 @@ public class Main {
 		FloatBuffer verticesBuffer = MemoryUtil.memAllocFloat(vertices.length);
 		verticesBuffer.put(vertices).flip();
 		int verticesId = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, verticesId);
-		glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER,verticesId);
+		glBufferData(GL_ARRAY_BUFFER,verticesBuffer,GL_STATIC_DRAW);
 		memFree(verticesBuffer);
-		glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+		glVertexAttribPointer(glGetAttribLocation(program.id,"position"), 3, GL_FLOAT, false, 0, 0);
 
 		int[] indices = {0,1,2, 1,2,3};
 		int indicesId = glGenBuffers();
 		IntBuffer indicesBuffer = MemoryUtil.memAllocInt(indices.length);
 		indicesBuffer.put(indices).flip();
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesId);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indicesId);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER,indicesBuffer,GL_STATIC_DRAW);
 		memFree(indicesBuffer);
+
+
+		float[] colors = new float[]{
+			1,0,0,
+			0,1,0,
+			0,1,0,
+			0,0,1,
+		};
+		int colorsId = glGenBuffers();
+		FloatBuffer colorsBuffer = MemoryUtil.memAllocFloat(colors.length);
+		colorsBuffer.put(colors).flip();
+		glBindBuffer(GL_ARRAY_BUFFER,colorsId);
+		glBufferData(GL_ARRAY_BUFFER,colorsBuffer,GL_STATIC_DRAW);
+		memFree(colorsBuffer);
+		glVertexAttribPointer(glGetAttribLocation(program.id,"inColor"),3,GL_FLOAT,false,0,0);
 		
-		// Unbind the VBO
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		// Unbind the VAO
+		// unbind the VBO
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+		// unbind the VAO
 		glBindVertexArray(0);
 
-
 		glClearColor(0,.5f,.5f,0);
-		int uniformLoc = glGetUniformLocation(program.id,"color");
-		glUniform4f(uniformLoc,1,0,0,0);
-		/*
-		int indexBufferId = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER,indexBufferId);
-		glBufferData(GL_ARRAY_BUFFER,indices,GL_STATIC_DRAW);*/
-		
 		for(;!glfwWindowShouldClose(window);) {
 			// clear from last frame
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -142,9 +149,9 @@ public class Main {
 			glfwPollEvents();
 			// bind to the VAO
 		    glBindVertexArray(vaoId);
-		    glEnableVertexAttribArray(0);
+		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"position"));
+		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"inColor"));
 		    // draw
-			//glDrawArrays(GL_TRIANGLES,0,vertices.length);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			// Restore state
 		    glDisableVertexAttribArray(0);
@@ -155,12 +162,11 @@ public class Main {
 
 		// cleanup
 		glDisableVertexAttribArray(0);
-
 		// delete vertex buffer objects
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glDeleteBuffers(verticesId);
 		glDeleteBuffers(indicesId);
-
+		glDeleteBuffers(colorsId);
 		// delete vertex array object
 		glBindVertexArray(0);
 		glDeleteVertexArrays(vaoId);
