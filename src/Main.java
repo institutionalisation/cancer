@@ -55,26 +55,29 @@ public class Main {
 		glBindVertexArray(vaoId);
 		
 		float[] vertices = new float[]{
-	        -1f, -1f, -3f,
-	        -1f, 1f, -3f,
-	        1f, -1f, -3f,
-	        1f, 1f, -3f,
+	        0f, 0f, -1f,
+	        0f, 1f, -1f,
+	        1f, 0f, -1f,
+	        1f, 1f, -1f,
+	        0f, 1f, 0f,
+	        1f, 1f, 0f,
 	    };
+	    int[] indices = {0,1,2, 1,2,3, 1,4,5, 1,3,5};
 		int verticesId = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER,verticesId);
 		glBufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW);
 		glVertexAttribPointer(glGetAttribLocation(program.id,"position"), 3, GL_FLOAT, false, 0, 0);
-
-		int[] indices = {0,1,2, 1,2,3};
 		int indicesId = glGenBuffers();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indicesId);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,indices,GL_STATIC_DRAW);
 
 		float[] colors = new float[]{
 			1,0,0,
-			0,1,1,
 			0,1,0,
 			0,0,1,
+			1,0,1,
+			1,1,0,
+			0,1,1,
 		};
 		int colorsId = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER,colorsId);
@@ -127,7 +130,7 @@ public class Main {
 		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"position"));
 		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"inColor"));
 			// draw
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
 			// Restore state
 		    glDisableVertexAttribArray(0);
 		    glBindVertexArray(0);
