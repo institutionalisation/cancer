@@ -31,7 +31,7 @@ public class Main {
 		// Initialize GLFW. Most GLFW functions will not work before doing this.
 		if(!glfwInit())
 			throw new IllegalStateException("Unable to initialize GLFW");
-		window = new Window(300,300,"Window Title",keyboard);
+		window = new Window(500,500,"Window Title",keyboard);
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window.getId());
 		GL.createCapabilities();
@@ -99,7 +99,6 @@ public class Main {
 		memFree(verticesBuffer);
 		glVertexAttribPointer(glGetAttribLocation(program.id,"position"), 3, GL_FLOAT, false, 0, 0);
 
-
 		int[] indices = {0,1,2, 1,2,3};
 		int indicesId = glGenBuffers();
 		IntBuffer indicesBuffer = MemoryUtil.memAllocInt(indices.length);
@@ -110,7 +109,7 @@ public class Main {
 
 		float[] colors = new float[]{
 			1,0,0,
-			0,1,0,
+			0,1,1,
 			0,1,0,
 			0,0,1,
 		};
@@ -121,22 +120,26 @@ public class Main {
 		glBufferData(GL_ARRAY_BUFFER,colorsBuffer,GL_STATIC_DRAW);
 		memFree(colorsBuffer);
 		glVertexAttribPointer(glGetAttribLocation(program.id,"inColor"),3,GL_FLOAT,false,0,0);
-		
 		// unbind the VBO
 		glBindBuffer(GL_ARRAY_BUFFER,0);
 		// unbind the VAO
 		glBindVertexArray(0);
 
-		float cameraX = 0, cameraY = 0;
-
-		final float FOV = (float) Math.toRadians(120f);
-	    final float Z_NEAR = 0;
-	    final float Z_FAR = 1;
-	    Matrix4f viewMatrix;
-	    System.out.println("width:"+window.getWidth());
-	    float aspectRatio = (float) window.getWidth() / window.getHeight();
-	    System.out.println("ar:"+aspectRatio);
-		viewMatrix = new Matrix4f().perspective(FOV,aspectRatio,Z_NEAR,Z_FAR);
+		{
+			final float FOV = (float) Math.toRadians(100f);
+		    final float Z_NEAR = 0;
+		    final float Z_FAR = 100;
+		    Matrix4f perspectiveMatrix;
+		    System.out.println("width:"+window.getWidth());
+		    float aspectRatio = (float) window.getWidth() / window.getHeight();
+		    System.out.println("ar:"+aspectRatio);
+			perspectiveMatrix = new Matrix4f().perspective(FOV,aspectRatio,Z_NEAR,Z_FAR);
+			FloatBuffer fb = MemoryUtil.memAllocFloat(16);
+			perspectiveMatrix.get(fb);
+			glUniformMatrix4fv(program.getUniformLocation("perspective"),false,fb);
+			memFree(fb);
+		}
+		Matrix4f viewMatrix = new Matrix4f();
 		glClearColor(0,.5f,.5f,0);
 		for(;!glfwWindowShouldClose(window.getId());) {
 			// clear from last frame
@@ -144,33 +147,32 @@ public class Main {
 			// check for keypresses
 			glfwPollEvents();
 
-			if(keyboard.getKeysPressed().contains(GLFW_KEY_W))
-				viewMatrix.translate(0,0,.01f);
+
+		    if(keyboard.getKeysPressed().contains(GLFW_KEY_Q))
+		    	viewMatrix.rotateLocalY(-.1f);
+		    if(keyboard.getKeysPressed().contains(GLFW_KEY_E))
+		    	viewMatrix.rotateLocalY(.1f);
+		    if(keyboard.getKeysPressed().contains(GLFW_KEY_W))
+		    	viewMatrix.translateLocal(0,0,.1f);
 			if(keyboard.getKeysPressed().contains(GLFW_KEY_S))
-				viewMatrix.translate(0,0,-.01f);
+				viewMatrix.translateLocal(0,0,-.1f);
 			if(keyboard.getKeysPressed().contains(GLFW_KEY_A))
-				viewMatrix.translate(.1f,0,0);
+				viewMatrix.translateLocal(.1f,0,0);
 			if(keyboard.getKeysPressed().contains(GLFW_KEY_D))
-				viewMatrix.translate(-.1f,0,0);
-
-
-		    int uniformLoc = program.getUniformLocation("view");
-			FloatBuffer fb = MemoryUtil.memAllocFloat(16);
-			viewMatrix.get(fb);
-			for(int i = 0; i < 4; ++i) {
-				for(int j = 0; j < 4; ++j)
-					System.out.print(fb.get(i*4+j)+" ");
-				System.out.println();
+				viewMatrix.translateLocal(-.1f,0,0);
+			
+			{
+				FloatBuffer fb = MemoryUtil.memAllocFloat(16);
+				viewMatrix.get(fb);
+				glUniformMatrix4fv(program.getUniformLocation("view"),false,fb);
+				memFree(fb);
 			}
-			glUniformMatrix4fv(uniformLoc,false,fb);
-			memFree(fb);
-
 
 			// bind to the VAO
 		    glBindVertexArray(vaoId);
 		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"position"));
 		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"inColor"));
-		    // draw
+			// draw
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			// Restore state
 		    glDisableVertexAttribArray(0);
