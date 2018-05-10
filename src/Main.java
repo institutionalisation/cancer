@@ -16,6 +16,7 @@ import java.lang.Math;
 
 public class Main {
 	private Keyboard keyboard = new Keyboard();
+	private Mouse mouse;
 	public Window window;
 	
 	public void run() throws Exception {
@@ -32,6 +33,7 @@ public class Main {
 		if(!glfwInit())
 			throw new IllegalStateException("Unable to initialize GLFW");
 		window = new Window(500,500,"Window Title",keyboard);
+		mouse = new Mouse(window);
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window.getId());
 		GL.createCapabilities();
@@ -89,7 +91,7 @@ public class Main {
 		glBindVertexArray(0);
 
 		{
-			final float FOV = (float) Math.toRadians(100f);
+			final float FOV = (float) Math.toRadians(60f);
 		    final float Z_NEAR = 0;
 		    final float Z_FAR = 100;
 		    Matrix4f perspectiveMatrix;
@@ -97,33 +99,68 @@ public class Main {
 		    float aspectRatio = (float) window.getWidth() / window.getHeight();
 		    System.out.println("ar:"+aspectRatio);
 			perspectiveMatrix = new Matrix4f().perspective(FOV,aspectRatio,Z_NEAR,Z_FAR);
-			FloatBuffer fb = MemoryUtil.memAllocFloat(16);
-			perspectiveMatrix.get(fb);
-			glUniformMatrix4fv(program.getUniformLocation("perspective"),false,fb);
-			memFree(fb);
+			glUniformMatrix4fv(program.getUniformLocation("perspective"),false,
+				perspectiveMatrix.get(new float[16]));
 		}
-		Matrix4f viewMatrix = new Matrix4f();
 		glClearColor(0,.5f,.5f,0);
+		Vector3f loc = new Vector3f(0,0,5f);
+		//float cursor.y=0,cursor.x=0;
+		glfwSetCursorPos(window.getId(),window.getWidth()/2,window.getHeight()/2);
 		for(;!glfwWindowShouldClose(window.getId());) {
-			// clear from last frame
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			// check for keypresses
 			glfwPollEvents();
 
-
-		    if(keyboard.getKeysPressed().contains(GLFW_KEY_Q))
-		    	viewMatrix.rotateLocalY(-.1f);
-		    if(keyboard.getKeysPressed().contains(GLFW_KEY_E))
-		    	viewMatrix.rotateLocalY(.1f);
-		    if(keyboard.getKeysPressed().contains(GLFW_KEY_W))
-		    	viewMatrix.translateLocal(0,0,.1f);
-			if(keyboard.getKeysPressed().contains(GLFW_KEY_S))
-				viewMatrix.translateLocal(0,0,-.1f);
-			if(keyboard.getKeysPressed().contains(GLFW_KEY_A))
-				viewMatrix.translateLocal(.1f,0,0);
-			if(keyboard.getKeysPressed().contains(GLFW_KEY_D))
-				viewMatrix.translateLocal(-.1f,0,0);
+			Vector2f cursor = mouse.getPos().mul(.001f);
 			
+			System.out.println("loc:"+loc);
+		    /*if(keyboard.getKeysPressed().contains(GLFW_KEY_Q))
+		    	cursor.x += cursor.x;
+		    if(keyboard.getKeysPressed().contains(GLFW_KEY_E))
+		    	cursor.x -= cursor.x;
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_T))
+		    	cursor.y += .1f;
+		    if(keyboard.getKeysPressed().contains(GLFW_KEY_G))
+		    	cursor.y -= .1f;*/
+		    float ax = cursor.x+3.14f,
+		    	ay = cursor.y;
+		    Vector3f dir = new Vector3f(
+			    (float)Math.cos(ay) * (float)Math.sin(ax),
+			    (float)Math.sin(ay),
+			    (float)Math.cos(ay) * (float)Math.cos(ax)
+			);
+			Vector3f forward = new Vector3f(
+				(float)Math.sin(ax),
+			    0,
+			    (float)Math.cos(ax)
+			);
+			Vector3f right = new Vector3f(
+			    (float)Math.sin(ax - (float)Math.PI/2),
+			    0,
+			    (float)Math.cos(ax - (float)Math.PI/2)
+			);
+			//dir = new Vector3f(0,0,0).sub(dir);
+			System.out.println("dir:"+dir);
+			System.out.println("right:"+right);
+		    if(keyboard.getKeysPressed().contains(GLFW_KEY_W))
+		    	loc.add(forward.mul(.1f));
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_S))
+				loc.sub(forward.mul(.1f));
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_A))
+				loc.sub(right.mul(.1f));
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_D))
+				loc.add(right.mul(.1f));
+			
+			System.out.println("up:"+right.cross(dir,new Vector3f()));
+			System.out.println("add:"+loc.add(dir,new Vector3f()));
+			Matrix4f viewMatrix = new Matrix4f().lookAt(loc,loc.add(dir,new Vector3f()),right.cross(dir,new Vector3f()));
+			System.out.println("view:"+viewMatrix);
+			/*viewMatrix = new Matrix4f(new float[]{
+				1,0,0,0,
+				0,1,0,0,
+				0,0,1,0,
+				0,0,0,1,
+			});*/
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,viewMatrix.get(new float[16]));
 			// bind to the VAO
 		    glBindVertexArray(vaoId);
