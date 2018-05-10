@@ -44,37 +44,6 @@ public class Main {
 		glfwTerminate();
 		glfwSetErrorCallback(null).free();
 	}
-	// loads shaders
-	private int getProgramId() throws Exception {
-		// vertex shader
-		int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-		String vertexShaderCode = Util.readFile("shaders/vertex");
-		glShaderSource(vertexShaderID,vertexShaderCode);
-		glCompileShader(vertexShaderID);
-		if(glGetShaderi(vertexShaderID,GL_COMPILE_STATUS) == GL_FALSE)
-			System.out.println("Vertex shader compilation failed: \n"+
-				glGetShaderInfoLog(vertexShaderID, glGetShaderi(vertexShaderID, GL_INFO_LOG_LENGTH)));
-		// fragment shader
-		int fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-		String fragmentShaderCode = Util.readFile("shaders/fragment");
-		glShaderSource(fragmentShaderID,fragmentShaderCode);
-		glCompileShader(fragmentShaderID);
-		if(glGetShaderi(fragmentShaderID,GL_COMPILE_STATUS) == GL_FALSE)
-			System.out.println("Vertex shader compilation failed: \n"+
-				glGetShaderInfoLog(fragmentShaderID, glGetShaderi(fragmentShaderID, GL_INFO_LOG_LENGTH)));
-		// create and link program (which I still don't understand, but ok)
-		int programID = glCreateProgram();
-		glAttachShader(programID,vertexShaderID);
-		glAttachShader(programID,fragmentShaderID);
-		glLinkProgram(programID);
-		if(glGetProgrami(programID,GL_LINK_STATUS) == GL_FALSE)
-			System.out.println("Error linking program.");
-		glDetachShader(programID,vertexShaderID);
-		glDetachShader(programID,fragmentShaderID);
-		glDeleteShader(vertexShaderID);
-		glDeleteShader(fragmentShaderID);
-		return programID;
-	}
 	private void loop() throws Exception {
 		// init
 		Program program = new Program(
@@ -91,21 +60,15 @@ public class Main {
 	        1f, -1f, -3f,
 	        1f, 1f, -3f,
 	    };
-		FloatBuffer verticesBuffer = MemoryUtil.memAllocFloat(vertices.length);
-		verticesBuffer.put(vertices).flip();
 		int verticesId = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER,verticesId);
 		glBufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW);
-		memFree(verticesBuffer);
 		glVertexAttribPointer(glGetAttribLocation(program.id,"position"), 3, GL_FLOAT, false, 0, 0);
 
 		int[] indices = {0,1,2, 1,2,3};
 		int indicesId = glGenBuffers();
-		IntBuffer indicesBuffer = MemoryUtil.memAllocInt(indices.length);
-		indicesBuffer.put(indices).flip();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indicesId);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,indicesBuffer,GL_STATIC_DRAW);
-		memFree(indicesBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER,indices,GL_STATIC_DRAW);
 
 		float[] colors = new float[]{
 			1,0,0,
@@ -114,11 +77,8 @@ public class Main {
 			0,0,1,
 		};
 		int colorsId = glGenBuffers();
-		FloatBuffer colorsBuffer = MemoryUtil.memAllocFloat(colors.length);
-		colorsBuffer.put(colors).flip();
 		glBindBuffer(GL_ARRAY_BUFFER,colorsId);
-		glBufferData(GL_ARRAY_BUFFER,colorsBuffer,GL_STATIC_DRAW);
-		memFree(colorsBuffer);
+		glBufferData(GL_ARRAY_BUFFER,colors,GL_STATIC_DRAW);
 		glVertexAttribPointer(glGetAttribLocation(program.id,"inColor"),3,GL_FLOAT,false,0,0);
 		// unbind the VBO
 		glBindBuffer(GL_ARRAY_BUFFER,0);
@@ -161,13 +121,7 @@ public class Main {
 			if(keyboard.getKeysPressed().contains(GLFW_KEY_D))
 				viewMatrix.translateLocal(-.1f,0,0);
 			
-			{
-				FloatBuffer fb = MemoryUtil.memAllocFloat(16);
-				viewMatrix.get(fb);
-				glUniformMatrix4fv(program.getUniformLocation("view"),false,fb);
-				memFree(fb);
-			}
-
+			glUniformMatrix4fv(program.getUniformLocation("view"),false,viewMatrix.get(new float[16]));
 			// bind to the VAO
 		    glBindVertexArray(vaoId);
 		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"position"));
