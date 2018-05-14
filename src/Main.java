@@ -77,6 +77,7 @@ public class Main {
 			3,7,1,5,
 			7,6,5,4
 		};
+
 		int indicesId = glGenBuffers();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indicesId);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,indices,GL_STATIC_DRAW);
@@ -102,7 +103,7 @@ public class Main {
 
 		{
 			final float FOV = (float) Math.toRadians(100f);
-		    final float Z_NEAR = 0;
+		    final float Z_NEAR = .5f;
 		    final float Z_FAR = 100;
 		    Matrix4f perspectiveMatrix;
 		    System.out.println("width:"+window.getWidth());
@@ -116,6 +117,8 @@ public class Main {
 		}
 		Matrix4f viewMatrix = new Matrix4f();
 		glClearColor(0,.5f,.5f,0);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
 		for(;!glfwWindowShouldClose(window.getId());) {
 			// clear from last frame
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -146,7 +149,7 @@ public class Main {
 		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"position"));
 		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"inColor"));
 			// draw
-			glDrawElements(GL_TRIANGLE_STRIP, indices.length, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLE_STRIP,indices.length,GL_UNSIGNED_INT, 0);
 			// Restore state
 		    glDisableVertexAttribArray(0);
 		    glBindVertexArray(0);
@@ -154,7 +157,7 @@ public class Main {
 			window.swapBuffers();
 		}
 
-		// cleanup
+		// disable VAO
 		glDisableVertexAttribArray(0);
 		// delete vertex buffer objects
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
