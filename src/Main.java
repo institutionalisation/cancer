@@ -55,20 +55,29 @@ public class Main {
 
 		int vaoId = glGenVertexArrays();
 		glBindVertexArray(vaoId);
+		//glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
 		
 		float[] vertices = new float[]{
-	        0f, 0f, -1f,
-	        0f, 1f, -1f,
-	        1f, 0f, -1f,
-	        1f, 1f, -1f,
-	        0f, 1f, 0f,
-	        1f, 1f, 0f,
+	        0, 0, 0,
+	        0, 0, 1,
+	        0, 1, 0,
+	        0, 1, 1,
+	        1, 0, 0,
+	        1, 0, 1,
+	        1, 1, 0,
+	        1, 1, 1,
 	    };
-	    int[] indices = {0,1,2, 1,2,3, 1,4,5, 1,3,5};
-		int verticesId = glGenBuffers();
+	    int verticesId = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER,verticesId);
 		glBufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW);
 		glVertexAttribPointer(glGetAttribLocation(program.id,"position"), 3, GL_FLOAT, false, 0, 0);
+		int[] indices =
+		{
+			0,2,4,6,
+			2,3,0,1,
+			3,7,1,5,
+			7,6,5,4
+		};
 		int indicesId = glGenBuffers();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indicesId);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,indices,GL_STATIC_DRAW);
@@ -77,9 +86,10 @@ public class Main {
 			1,0,0,
 			0,1,0,
 			0,0,1,
-			1,0,1,
-			1,1,0,
+			1,0,0,
 			0,1,1,
+			0,1,0,
+			0,0,1,
 		};
 		int colorsId = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER,colorsId);
@@ -91,8 +101,8 @@ public class Main {
 		glBindVertexArray(0);
 
 		{
-			final float FOV = (float) Math.toRadians(60f);
-		    final float Z_NEAR = 0;
+			final float FOV = (float) Math.toRadians(100f);
+		    final float Z_NEAR = .5f;
 		    final float Z_FAR = 100;
 		    Matrix4f perspectiveMatrix;
 		    System.out.println("width:"+window.getWidth());
@@ -104,8 +114,9 @@ public class Main {
 		}
 		glClearColor(0,.5f,.5f,0);
 		Vector3f loc = new Vector3f(0,0,5f);
-		//float cursor.y=0,cursor.x=0;
-		glfwSetCursorPos(window.getId(),window.getWidth()/2,window.getHeight()/2);
+
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
 		for(;!glfwWindowShouldClose(window.getId());) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			// check for keypresses
@@ -150,6 +161,10 @@ public class Main {
 				loc.sub(right.mul(.1f));
 			if(keyboard.getKeysPressed().contains(GLFW_KEY_D))
 				loc.add(right.mul(.1f));
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE))
+				loc.add(new Vector3f(0,.1f,0));
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_LEFT_SHIFT))
+				loc.sub(new Vector3f(0,.1f,0));
 			
 			System.out.println("up:"+right.cross(dir,new Vector3f()));
 			System.out.println("add:"+loc.add(dir,new Vector3f()));
@@ -167,7 +182,9 @@ public class Main {
 		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"position"));
 		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"inColor"));
 			// draw
-			glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
+
+			glDrawElements(GL_TRIANGLE_STRIP,indices.length,GL_UNSIGNED_INT, 0);
+
 			// Restore state
 		    glDisableVertexAttribArray(0);
 		    glBindVertexArray(0);
@@ -175,7 +192,7 @@ public class Main {
 			window.swapBuffers();
 		}
 
-		// cleanup
+		// disable VAO
 		glDisableVertexAttribArray(0);
 		// delete vertex buffer objects
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
