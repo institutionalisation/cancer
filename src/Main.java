@@ -53,24 +53,39 @@ public class Main {
 
 		int vaoId = glGenVertexArrays();
 		glBindVertexArray(vaoId);
+		//glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
 		
 		float[] vertices = new float[]{
-	        -1f, -1f, -3f,
-	        -1f, 1f, -3f,
-	        1f, -1f, -3f,
-	        1f, 1f, -3f,
+	        0, 0, 0,
+	        0, 0, 1,
+	        0, 1, 0,
+	        0, 1, 1,
+	        1, 0, 0,
+	        1, 0, 1,
+	        1, 1, 0,
+	        1, 1, 1,
 	    };
 		int verticesId = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER,verticesId);
 		glBufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW);
 		glVertexAttribPointer(glGetAttribLocation(program.id,"position"), 3, GL_FLOAT, false, 0, 0);
 
-		int[] indices = {0,1,2, 1,2,3};
+		int[] indices =
+		{
+			0,2,4,6,
+			2,3,0,1,
+			3,7,1,5,
+			7,6,5,4
+		};
 		int indicesId = glGenBuffers();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indicesId);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,indices,GL_STATIC_DRAW);
 
 		float[] colors = new float[]{
+			1,0,0,
+			0,1,1,
+			0,1,0,
+			0,0,1,
 			1,0,0,
 			0,1,1,
 			0,1,0,
@@ -120,6 +135,10 @@ public class Main {
 				viewMatrix.translateLocal(.1f,0,0);
 			if(keyboard.getKeysPressed().contains(GLFW_KEY_D))
 				viewMatrix.translateLocal(-.1f,0,0);
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE))
+				viewMatrix.translateLocal(0,-.1f,0);
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_LEFT_SHIFT))
+				viewMatrix.translateLocal(0,.1f,0);
 			
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,viewMatrix.get(new float[16]));
 			// bind to the VAO
@@ -127,7 +146,7 @@ public class Main {
 		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"position"));
 		    glEnableVertexAttribArray(glGetAttribLocation(program.id,"inColor"));
 			// draw
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLE_STRIP, indices.length, GL_UNSIGNED_INT, 0);
 			// Restore state
 		    glDisableVertexAttribArray(0);
 		    glBindVertexArray(0);
