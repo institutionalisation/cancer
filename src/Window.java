@@ -36,17 +36,14 @@ public class Window {
 			window.height = h;
 		});
 	}
-	void show() {
-		glfwShowWindow(id);
-	}
+	void makeContextCurrent() { glfwMakeContextCurrent(id); }
+	void show() { glfwShowWindow(id); }
+	void swapBuffers() { glfwSwapBuffers(id); }
+	long getId() { return id; }
+	int getWidth() { return width; }
+	int getHeight() { return height; }
 	void destroy() {
 		glfwFreeCallbacks(id);
 		glfwDestroyWindow(id);
 	}
-	void swapBuffers() {
-		glfwSwapBuffers(id);
-	}
-	long getId() { return id; }
-	int getWidth() { return width; }
-	int getHeight() { return height; }
 }
