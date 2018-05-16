@@ -1,7 +1,7 @@
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 public class Program {
-	public int id;
+	private int id;
 	public Program(Shader... shaders) {
 		id = glCreateProgram();
 		for(Shader shader : shaders)
@@ -16,9 +16,9 @@ public class Program {
 		}
 	}
 	public void use() {
-		glUseProgram(id);
-	}
+		glUseProgram(id); }
 	public int getUniformLocation(String name) {
-		return glGetUniformLocation(id,name);
-	}
+		return glGetUniformLocation(id,name); }
+	public int getId() {
+		return id; }
 }

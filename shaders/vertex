@@ -1,12 +1,12 @@
 #version 130
 in vec3 position;
-in vec3 inColor;
-out vec3 color;
+//in vec3 inColor;
+//out vec3 color;
 
-//uniform mat4 view;
+uniform mat4 view;
 uniform mat4 perspective;
 
 void main() {
-	gl_Position =  perspective * view * vec4(position.xy,-position.z,1);
-	color = inColor;
+	gl_Position =  perspective * view * vec4(position.xy,position.z,1);
+	//color = inColor;
 }
