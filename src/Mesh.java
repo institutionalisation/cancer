@@ -26,7 +26,7 @@ public class Mesh {
 			System.out.println("vertices:"+orig.capacity());
 			ByteBuffer vertices = memByteBuffer(orig.address(),orig.capacity()*AIVector3D.SIZEOF);
 			FloatBuffer floatBuffer = memFloatBuffer(orig.address(),orig.capacity()*3);
-			for(;floatBuffer.hasRemaining();)
+			for(int i = 0;floatBuffer.hasRemaining()&&i<10;++i)
 				System.out.print(floatBuffer.get()+" ");
 			System.out.println();
 			glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
@@ -40,12 +40,15 @@ public class Mesh {
 		{
 			AIFace.Buffer orig = mesh.mFaces();
 			IntBuffer indexBufferData = memAllocInt(indexCount);
+			int i = 0;
 			for(AIFace x : orig) {
 				indexBufferData.put(x.mIndices());
 				IntBuffer y = x.mIndices();
-				// for(;y.hasRemaining();)
-				// 	System.out.print(y.get()+" ");
-				// System.out.println();
+				if(i < 10) {
+					for(;y.hasRemaining();)
+						System.out.println(y.get());
+				}
+				++i;
 			}
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indexBuffer);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER,indexBufferData,GL_STATIC_DRAW);

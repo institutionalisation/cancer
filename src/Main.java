@@ -123,13 +123,9 @@ public class Main {
 		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
 		Model a = new Model(aiImportFile("models/teapot.obj",aiProcess_JoinIdenticalVertices|aiProcess_Triangulate),program);
 		Mesh b = a.meshes[0];
-		glBindBuffer(GL_ARRAY_BUFFER,b.vertexBuffer);
-		System.out.println("aa:"+glGetError());
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,b.indexBuffer);
 		glClearColor(0,.5f,.5f,0);
 		Vector3f loc = new Vector3f(0,0,0);
 		long prevTime = System.currentTimeMillis();
-		System.out.println("bb:"+glGetError());
 		for(;!glfwWindowShouldClose(window.getId());) {
 			System.out.println("loc:"+loc);
 			glfwPollEvents();
@@ -178,7 +174,7 @@ public class Main {
 			
 			glBindVertexArray(vaoId);
 			glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"position"));
-			glDrawElements(GL_TRIANGLES,indices.length,GL_UNSIGNED_INT,0);
+			//glDrawElements(GL_TRIANGLES,indices.length,GL_UNSIGNED_INT,0);
 			
 			System.out.println("error:"+glGetError());
 			glDisableVertexAttribArray(0);
