@@ -5,12 +5,12 @@ import static org.lwjgl.assimp.Assimp.*;
 public class Model {
 	private AIScene scene;
 	public Mesh[] meshes;
-	public Model(AIScene scene) {
+	public Model(AIScene scene,Program program) {
 		this.scene = scene;
 		PointerBuffer meshBuffer = scene.mMeshes();
 		meshes = new Mesh[scene.mNumMeshes()];
 		for(int i = 0; i < meshes.length; ++i)
-			meshes[i] = new Mesh(AIMesh.create(meshBuffer.get(i)));
+			meshes[i] = new Mesh(AIMesh.create(meshBuffer.get(i)),program);
 	}
 	public void free() {
 		aiReleaseImport(scene);

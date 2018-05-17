@@ -74,13 +74,58 @@ public class Main {
 		glfwSetErrorCallback(null).free();
 	}
 	private void loop() throws Exception {
-		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
-		Model a = new Model(aiImportFile("models/teapot.obj",0));
-		Mesh b = a.meshes[0];
-		glBindBuffer(GL_ARRAY_BUFFER,b.vertexArrayBuffer);
-		System.out.println("aa:"+glGetError());
+		// init
+		Program program = new Program(
+			new Shader("vertex",GL_VERTEX_SHADER),
+			new Shader("fragment",GL_FRAGMENT_SHADER));
+		program.use();
+		int vaoId = glGenVertexArrays();
+		glBindVertexArray(vaoId);
+		float[] vertices = new float[]{
+	        0,0,0,
+	        0,0,1,
+	        0,1,0,
+	        0,1,1,
+	        1,0,0,
+	        1,0,1,
+	        1,1,0,
+	        1,1,1,
+	    };
+	    int verticesId = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER,verticesId);
+		glBufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW);
 		glVertexAttribPointer(glGetAttribLocation(program.getId(),"position"),3,GL_FLOAT,false,0,0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,b.elementArrayBuffer);
+		int[] indices = {
+			0,1,2,
+			1,2,3,
+			4,5,6,
+			5,6,7,
+			0,1,4,
+			1,4,5,
+			2,3,6,
+			3,6,7,
+			0,2,4,
+			2,4,6,
+			1,3,5,
+			3,5,7,
+		};
+		int indicesId = glGenBuffers();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indicesId);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER,indices,GL_STATIC_DRAW);
+		// unbind the VBO
+		//glBindBuffer(GL_ARRAY_BUFFER,0);
+		// unbind the VAO
+		//glBindVertexArray(0);
+
+
+
+
+		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
+		Model a = new Model(aiImportFile("models/teapot.obj",aiProcess_JoinIdenticalVertices|aiProcess_Triangulate),program);
+		Mesh b = a.meshes[0];
+		glBindBuffer(GL_ARRAY_BUFFER,b.vertexBuffer);
+		System.out.println("aa:"+glGetError());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,b.indexBuffer);
 		glClearColor(0,.5f,.5f,0);
 		Vector3f loc = new Vector3f(0,0,0);
 		long prevTime = System.currentTimeMillis();
@@ -125,12 +170,19 @@ public class Main {
 				loc.sub(new Vector3f(0,.005f,0).mul(delta));
 			Matrix4f viewMatrix = new Matrix4f().lookAt(loc,loc.add(dir,new Vector3f()),right.cross(dir,new Vector3f()));
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,viewMatrix.get(new float[16]));
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glBindBuffer(GL_ARRAY_BUFFER,b.vertexArrayBuffer);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,b.elementArrayBuffer);
-			glDrawElements(GL_TRIANGLES,b.elementCount,GL_UNSIGNED_INT,0);
-			glBindBuffer(GL_ARRAY_BUFFER,0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+			
+			glBindVertexArray(b.vertexArrayObject);
+			glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"position"));
+			glDrawElements(GL_TRIANGLES,b.indexCount,GL_UNSIGNED_INT,0);
+			
+			glBindVertexArray(vaoId);
+			glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"position"));
+			glDrawElements(GL_TRIANGLES,indices.length,GL_UNSIGNED_INT,0);
+			
+			System.out.println("error:"+glGetError());
+			glDisableVertexAttribArray(0);
+			glBindVertexArray(0);
 			window.swapBuffers();
 		}
 	}
