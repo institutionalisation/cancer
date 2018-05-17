@@ -79,47 +79,8 @@ public class Main {
 			new Shader("vertex",GL_VERTEX_SHADER),
 			new Shader("fragment",GL_FRAGMENT_SHADER));
 		program.use();
-		int vaoId = glGenVertexArrays();
-		glBindVertexArray(vaoId);
-		float[] vertices = new float[]{
-	        0,0,0,
-	        0,0,1,
-	        0,1,0,
-	        0,1,1,
-	        1,0,0,
-	        1,0,1,
-	        1,1,0,
-	        1,1,1,
-	    };
-	    int verticesId = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER,verticesId);
-		glBufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW);
-		glVertexAttribPointer(glGetAttribLocation(program.getId(),"position"),3,GL_FLOAT,false,0,0);
-		int[] indices = {
-			0,1,2,
-			1,2,3,
-			4,5,6,
-			5,6,7,
-			0,1,4,
-			1,4,5,
-			2,3,6,
-			3,6,7,
-			0,2,4,
-			2,4,6,
-			1,3,5,
-			3,5,7,
-		};
-		int indicesId = glGenBuffers();
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indicesId);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER,indices,GL_STATIC_DRAW);
-		// unbind the VBO
-		//glBindBuffer(GL_ARRAY_BUFFER,0);
-		// unbind the VAO
-		//glBindVertexArray(0);
-
-
-
-
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
 		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
 		Model a = new Model(aiImportFile("models/teapot.obj",aiProcess_JoinIdenticalVertices|aiProcess_Triangulate),program);
 		Mesh b = a.meshes[0];
@@ -168,13 +129,7 @@ public class Main {
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,viewMatrix.get(new float[16]));
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 			
-			glBindVertexArray(b.vertexArrayObject);
-			glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"position"));
-			glDrawElements(GL_TRIANGLES,b.indexCount,GL_UNSIGNED_INT,0);
-			
-			glBindVertexArray(vaoId);
-			glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"position"));
-			//glDrawElements(GL_TRIANGLES,indices.length,GL_UNSIGNED_INT,0);
+			b.render();
 			
 			System.out.println("error:"+glGetError());
 			glDisableVertexAttribArray(0);

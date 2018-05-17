@@ -1,12 +1,15 @@
 #version 130
 in vec3 position;
+out vec4 fragPos;
 //in vec3 inColor;
 //out vec3 color;
 
+//uniform float scale;
 uniform mat4 view;
 uniform mat4 perspective;
 
 void main() {
-	gl_Position =  perspective * view * vec4(position.xy,position.z,1);
+	gl_Position = perspective * view * vec4(position.x,position.y,position.z,1);
 	//color = inColor;
+	fragPos = gl_Position;
 }

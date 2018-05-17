@@ -3,7 +3,9 @@ precision mediump float;
 
 //in vec3 color;
 out vec4 fragColor;
+in vec4 fragPos;
 
 void main() {
-	fragColor = vec4(1,1,1,0);
+	float brightness = 1-fragPos.z*0.1;
+	fragColor = vec4(brightness,brightness,brightness,0);
 }

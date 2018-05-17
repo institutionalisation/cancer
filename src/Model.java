@@ -13,6 +13,5 @@ public class Model {
 			meshes[i] = new Mesh(AIMesh.create(meshBuffer.get(i)),program);
 	}
 	public void free() {
-		aiReleaseImport(scene);
-	}
+		aiReleaseImport(scene); }
 }
