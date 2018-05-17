@@ -26,11 +26,27 @@ public class Mesh {
 			System.out.println("vertices:"+orig.capacity());
 			ByteBuffer vertices = memByteBuffer(orig.address(),orig.capacity()*AIVector3D.SIZEOF);
 			FloatBuffer floatBuffer = memFloatBuffer(orig.address(),orig.capacity()*3);
+/*
 			for(int i = 0;floatBuffer.hasRemaining()&&i<10;++i)
 				System.out.print(floatBuffer.get()+" ");
 			System.out.println();
+*/
+			floatBuffer.clear();
+/*
+			for(int i = 0;floatBuffer.hasRemaining()&&i<10;++i)
+				System.out.print(floatBuffer.get()+" ");
+			System.out.println();
+*/
+			int num = 0;
+			while(floatBuffer.hasRemaining())
+			{
+				floatBuffer.get();
+				num++;
+			}
+			System.out.println("num" + num);
+			floatBuffer.clear();
 			glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
-			glBufferData(GL_ARRAY_BUFFER,floatBuffer,GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW);
 			glVertexAttribPointer(glGetAttribLocation(program.getId(),"position"),3,GL_FLOAT,false,0,0);
 			//glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"position"));
 		}
@@ -50,6 +66,7 @@ public class Mesh {
 				}
 				++i;
 			}
+			indexBufferData.clear();
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indexBuffer);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER,indexBufferData,GL_STATIC_DRAW);
 		}
