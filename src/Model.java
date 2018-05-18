@@ -9,8 +9,10 @@ public class Model {
 		this.scene = scene;
 		PointerBuffer meshBuffer = scene.mMeshes();
 		meshes = new Mesh[scene.mNumMeshes()];
+		Texture body = new Texture("models/car/Body.jpg");
 		for(int i = 0; i < meshes.length; ++i)
-			meshes[i] = new Mesh(AIMesh.create(meshBuffer.get(i)),program);
+			meshes[i] = new Mesh(AIMesh.create(meshBuffer.get(i)),program,body);
+		System.out.println("textures:"+(scene.mTextures()==null));
 	}
 	public void free() {
 		aiReleaseImport(scene); }

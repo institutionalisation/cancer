@@ -8,49 +8,77 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 import java.nio.*;
 import static org.lwjgl.system.MemoryUtil.*;
+import org.lwjgl.*;
 public class Mesh {
 	float scale;
 	public int
 		vertexBuffer,
 		indexBuffer,
+		UVBuffer,
 		indexCount,
 		vertexArrayObject;
+	Texture texture;
 	Program program;
-	public Mesh(AIMesh mesh,Program program,float scale) {
+	public Mesh(AIMesh mesh,Program program,Texture texture,float scale) {
 		this.program = program;
 		this.scale = scale;
+		this.texture = texture;
 		vertexArrayObject = glGenVertexArrays();
 		glBindVertexArray(vertexArrayObject);
 		System.out.println("cc:"+glGetError());
-		vertexBuffer = glGenBuffers();
 		{
 			AIVector3D.Buffer orig = mesh.mVertices();
 			System.out.println("vertices:"+orig.capacity());
 			ByteBuffer vertices = memByteBuffer(orig.address(),orig.capacity()*AIVector3D.SIZEOF);
 			vertices.clear();
+			vertexBuffer = glGenBuffers();
 			glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
 			glBufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW);
 		}
 		glVertexAttribPointer(glGetAttribLocation(program.getId(),"position"),3,GL_FLOAT,false,0,0);
 		indexCount = mesh.mNumFaces()*3;
 		System.out.println("elements:"+indexCount);
-		indexBuffer = glGenBuffers();
 		{		
 			AIFace.Buffer orig = mesh.mFaces();
 			IntBuffer indexBufferData = memAllocInt(indexCount);
 			for(AIFace x : orig)
 				indexBufferData.put(x.mIndices());
 			indexBufferData.clear();
+			indexBuffer = glGenBuffers();
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indexBuffer);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER,indexBufferData,GL_STATIC_DRAW);
 		}
+		System.out.println("texCoords:"+mesh.mTextureCoords()!=null);
+		PointerBuffer texCoordsBuffer = mesh.mTextureCoords();
+		FloatBuffer UVBufferData = null;
+		for(;texCoordsBuffer.hasRemaining();) {
+			long pointer = texCoordsBuffer.get();
+			//System.out.println("pointer:"+pointer);
+			if(pointer != NULL) {
+				AIVector3D.Buffer x = AIVector3D.create(pointer,mesh.mNumVertices());
+				UVBufferData = memAllocFloat(mesh.mNumVertices()*2);
+				for(;x.hasRemaining();) {
+					AIVector3D y = x.get();
+					UVBufferData.put(y.x()).put(y.y());
+					//System.out.println(y.x()+" "+y.y()+" "+y.z());
+				}
+				UVBufferData.clear();
+			}
+		}
+		UVBuffer = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER,UVBuffer);
+		glBufferData(GL_ARRAY_BUFFER,UVBufferData,GL_STATIC_DRAW);
+		glVertexAttribPointer(glGetAttribLocation(program.getId(),"vertexUV"),2,GL_FLOAT,false,0,0);
 	}
-	public Mesh(AIMesh mesh,Program program) {
-		this(mesh,program,1f); }
+	public Mesh(AIMesh mesh,Program program,Texture texture) {
+		this(mesh,program,texture,.001f); }
 	public void render() {
+		glBindTexture(GL_TEXTURE_2D,texture.id);
 		glBindVertexArray(vertexArrayObject);
 		glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"position"));
-		//glUniform1f(program.getUniformLocation("scale"),scale);
+		glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"vertexUV"));
+		glUniform1f(program.getUniformLocation("scale"),scale);
+		glUniform1i(glGetUniformLocation(program.getId(),"myTextureSampler"),0);
 		glDrawElements(GL_TRIANGLES,indexCount,GL_UNSIGNED_INT,0);
 	}
 }

@@ -30,7 +30,7 @@ public class Main {
 		// Initialize GLFW. Most GLFW functions will not work before doing this.
 		if(!glfwInit())
 			throw new IllegalStateException("Unable to initialize GLFW");
-		window = new Window(500,500,"Window Title",keyboard);
+		window = new Window(500,500,"Alternate Perspective",keyboard);
 		mouse = new Mouse(window);
 		new Runnable() { final Runnable capture = this;
 			public void run() {
@@ -82,8 +82,8 @@ public class Main {
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
-		Model a = new Model(aiImportFile("models/teapot.obj",aiProcess_JoinIdenticalVertices|aiProcess_Triangulate),program);
-		Mesh b = a.meshes[0];
+		Model a = new Model(aiImportFile("models/car/turbosonic.3DS",aiProcess_JoinIdenticalVertices|aiProcess_Triangulate),program);
+		//Mesh b = a.meshes[0];
 		glClearColor(0,.5f,.5f,0);
 		Vector3f loc = new Vector3f(0,0,0);
 		long prevTime = System.currentTimeMillis();
@@ -129,7 +129,8 @@ public class Main {
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,viewMatrix.get(new float[16]));
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 			
-			b.render();
+			for(Mesh x : a.meshes)
+				x.render();
 			
 			System.out.println("error:"+glGetError());
 			glDisableVertexAttribArray(0);

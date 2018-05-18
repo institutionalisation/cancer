@@ -1,4 +1,16 @@
 #version 130
+// interpolated values from the vertex shaders
+in vec2 UV;
+// ouput data
+out vec3 color;
+// values that stay constant for the whole mesh.
+uniform sampler2D myTextureSampler;
+void main() {
+    // output color = color of the texture at the specified UV
+    color = texture( myTextureSampler, vec2(UV.x,-UV.y) ).rgb;
+}
+
+/*#version 130
 precision mediump float;
 
 //in vec3 color;
@@ -8,4 +20,4 @@ in vec4 fragPos;
 void main() {
 	float brightness = 1-fragPos.z*0.1;
 	fragColor = vec4(brightness,brightness,brightness,0);
-}
+}*/

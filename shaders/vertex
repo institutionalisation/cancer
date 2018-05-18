@@ -1,15 +1,32 @@
 #version 130
+// input vertex data, different for all executions of this shader.
+in vec3 position;
+in vec2 vertexUV;
+// output data ; will be interpolated for each fragment.
+out vec2 UV;
+// values that stay constant for the whole mesh.
+uniform float scale;
+uniform mat4 view;
+uniform mat4 perspective;
+void main() {
+    // output position of the vertex, in clip space : MVP * position
+    gl_Position = perspective * view * vec4(scale*position,1);
+    // UV of the vertex. No special space for this one.
+    UV = vertexUV;
+}
+
+/*#version 130
 in vec3 position;
 out vec4 fragPos;
 //in vec3 inColor;
 //out vec3 color;
 
-//uniform float scale;
+uniform float scale;
 uniform mat4 view;
 uniform mat4 perspective;
 
 void main() {
-	gl_Position = perspective * view * vec4(position.x,position.y,position.z,1);
+	gl_Position = perspective * view * vec4(scale*position.xyz,1);
 	//color = inColor;
 	fragPos = gl_Position;
-}
+}*/
