@@ -74,11 +74,6 @@ public class Main {
 		glfwSetErrorCallback(null).free();
 	}
 	private void loop() throws Exception {
-		// init
-		Program program = new Program(
-			new Shader("vertex",GL_VERTEX_SHADER),
-			new Shader("fragment",GL_FRAGMENT_SHADER));
-		program.use();
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
