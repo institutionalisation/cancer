@@ -32,6 +32,10 @@ public class Mesh {
 			AIVector3D.Buffer orig = mesh.mVertices();
 			System.out.println("vertices:"+orig.capacity());
 			ByteBuffer vertices = memByteBuffer(orig.address(),orig.capacity()*AIVector3D.SIZEOF);
+			FloatBuffer ints = memFloatBuffer(orig.address(),orig.capacity()*AIVector3D.SIZEOF/4);
+			for(;ints.hasRemaining();) {
+				System.out.println(ints.get()+" "+ints.get()+" "+ints.get());
+			}
 			vertices.clear();
 			vertexBuffer = glGenBuffers();
 			glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
@@ -46,8 +50,8 @@ public class Mesh {
 			for(AIFace x : orig) {
 				indexBufferData.put(x.mIndices());
 				IntBuffer indices = x.mIndices();
-				for(;indices.hasRemaining();)
-					System.out.println(indices.get());
+				//for(;indices.hasRemaining();)
+					//System.out.println(indices.get());
 			}
 			indexBufferData.clear();
 			indexBuffer = glGenBuffers();
@@ -67,7 +71,7 @@ public class Mesh {
 					for(;x.hasRemaining();) {
 						AIVector3D y = x.get();
 						UVBufferData.put(y.x()).put(y.y());
-						System.out.println(y.x()+" "+y.y()+" "+y.z());
+						//System.out.println(y.x()+" "+y.y()+" "+y.z());
 					}
 					UVBufferData.clear();
 				}
@@ -79,15 +83,16 @@ public class Mesh {
 		}
 	}
 	public Mesh(AIMesh mesh,Program program,Texture[] textures) {
-		this(mesh,program,textures,.001f); }
+		this(mesh,program,textures,1f); }
 	public void render() {
-		glBindTexture(GL_TEXTURE_2D,texture.id);
+		if(texture != null)
+			glBindTexture(GL_TEXTURE_2D,texture.id);
 		glBindVertexArray(vertexArrayObject);
 		glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"position"));
 		glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"vertexUV"));
 		glUniform1f(program.getUniformLocation("scale"),scale);
 		glUniform1i(glGetUniformLocation(program.getId(),"myTextureSampler"),0);
-		glDrawElements(GL_TRIANGLES,indexCount+10,GL_UNSIGNED_INT,0);
+		glDrawElements(GL_TRIANGLES,indexCount,GL_UNSIGNED_INT,0);
 		System.out.println("render error:"+glGetError());
 	}
 }
