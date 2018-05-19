@@ -13,29 +13,24 @@ public class Model {
 		scene = aiImportFile("models/"+name+"/a.obj",aiProcess_JoinIdenticalVertices|aiProcess_Triangulate);
 		PointerBuffer meshBuffer = scene.mMeshes();
 		meshes = new Mesh[scene.mNumMeshes()];
-		System.out.println("num materials:"+scene.mNumMaterials());
+		//System.out.println("num materials:"+scene.mNumMaterials());
 		PointerBuffer materials = scene.mMaterials();
 		Texture[] textures = new Texture[scene.mNumMaterials()];
 		for(int i = 0; materials.hasRemaining(); ++i) {
 			AIMaterial material = AIMaterial.create(materials.get());
-			System.out.println("properties:"+material.mNumProperties());
+			//System.out.println("properties:"+material.mNumProperties());
 			PointerBuffer properties = material.mProperties();
 			for(;properties.hasRemaining();) {
 				AIMaterialProperty property = AIMaterialProperty.create(properties.get());
 				String propertyName = property.mKey().dataString();
 				System.out.println(propertyName);
 				if(propertyName.equals("$tex.file")) {
-					System.out.println("hecc");
 					String textureFileName = StandardCharsets.UTF_8.decode(property.mData()).toString();
-					System.out.println(textureFileName);
 					textureFileName = textureFileName.trim();
-					System.out.println("models/"+name+"/"+textureFileName);
+					//System.out.println("models/"+name+"/"+textureFileName);
 					textures[i] = new Texture("models/"+name+"/"+textureFileName);
 				}
 			}
-			PointerBuffer textureProperty = memAllocPointer(1);
-			aiGetMaterialProperty(material,"$tex.file",textureProperty);
-			System.out.println(textureProperty.get());
 		}
 		for(int i = 0; i < meshes.length; ++i) {
 			AIMesh mesh = AIMesh.create(meshBuffer.get(i));
