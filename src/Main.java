@@ -77,8 +77,7 @@ public class Main {
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
-		Model a = new Model(aiImportFile("models/car/turbosonic.3DS",aiProcess_JoinIdenticalVertices|aiProcess_Triangulate),program);
-		//Mesh b = a.meshes[0];
+		Model a = new Model("cube",program);
 		glClearColor(0,.5f,.5f,0);
 		Vector3f loc = new Vector3f(0,0,0);
 		long prevTime = System.currentTimeMillis();

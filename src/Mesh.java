@@ -19,10 +19,12 @@ public class Mesh {
 		vertexArrayObject;
 	Texture texture;
 	Program program;
-	public Mesh(AIMesh mesh,Program program,Texture texture,float scale) {
+	public Mesh(AIMesh mesh,Program program,Texture[] textures,float scale) {
+		//for(;;) if(1==0) break;
 		this.program = program;
 		this.scale = scale;
-		this.texture = texture;
+		System.out.println("mat index:"+mesh.mMaterialIndex());
+		this.texture = textures[mesh.mMaterialIndex()];
 		vertexArrayObject = glGenVertexArrays();
 		glBindVertexArray(vertexArrayObject);
 		System.out.println("cc:"+glGetError());
@@ -41,14 +43,18 @@ public class Mesh {
 		{		
 			AIFace.Buffer orig = mesh.mFaces();
 			IntBuffer indexBufferData = memAllocInt(indexCount);
-			for(AIFace x : orig)
+			for(AIFace x : orig) {
 				indexBufferData.put(x.mIndices());
+				IntBuffer indices = x.mIndices();
+				for(;indices.hasRemaining();)
+					System.out.println(indices.get());
+			}
 			indexBufferData.clear();
 			indexBuffer = glGenBuffers();
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indexBuffer);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER,indexBufferData,GL_STATIC_DRAW);
 		}
-		System.out.println("texCoords:"+mesh.mTextureCoords()!=null);
+		System.out.println("texCoords:"+(mesh.mTextureCoords()!=null));
 		PointerBuffer texCoordsBuffer = mesh.mTextureCoords();
 		FloatBuffer UVBufferData = null;
 		for(;texCoordsBuffer.hasRemaining();) {
@@ -60,7 +66,7 @@ public class Mesh {
 				for(;x.hasRemaining();) {
 					AIVector3D y = x.get();
 					UVBufferData.put(y.x()).put(y.y());
-					//System.out.println(y.x()+" "+y.y()+" "+y.z());
+					System.out.println(y.x()+" "+y.y()+" "+y.z());
 				}
 				UVBufferData.clear();
 			}
@@ -70,8 +76,8 @@ public class Mesh {
 		glBufferData(GL_ARRAY_BUFFER,UVBufferData,GL_STATIC_DRAW);
 		glVertexAttribPointer(glGetAttribLocation(program.getId(),"vertexUV"),2,GL_FLOAT,false,0,0);
 	}
-	public Mesh(AIMesh mesh,Program program,Texture texture) {
-		this(mesh,program,texture,.001f); }
+	public Mesh(AIMesh mesh,Program program,Texture[] textures) {
+		this(mesh,program,textures,.001f); }
 	public void render() {
 		glBindTexture(GL_TEXTURE_2D,texture.id);
 		glBindVertexArray(vertexArrayObject);
@@ -79,6 +85,7 @@ public class Mesh {
 		glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"vertexUV"));
 		glUniform1f(program.getUniformLocation("scale"),scale);
 		glUniform1i(glGetUniformLocation(program.getId(),"myTextureSampler"),0);
-		glDrawElements(GL_TRIANGLES,indexCount,GL_UNSIGNED_INT,0);
+		glDrawElements(GL_TRIANGLES,indexCount+10,GL_UNSIGNED_INT,0);
+		System.out.println("render error:"+glGetError());
 	}
 }
