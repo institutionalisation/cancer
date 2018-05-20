@@ -77,7 +77,7 @@ public class Main {
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
-		Model a = new Model("cube",program);
+		Model a = new Model("maze0",program);
 		glClearColor(0,.5f,.5f,0);
 		Vector3f loc = new Vector3f(0,0,0);
 		long prevTime = System.currentTimeMillis();
