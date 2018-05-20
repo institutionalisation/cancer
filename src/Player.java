@@ -19,7 +19,7 @@ public class Player {
 	final float moveSpeed = .005f;
 	final static Matrix4f IDENTITY = new Matrix4f();
 	final static Vector3f UP = new Vector3f(0,1,0);
-	final static float RADIUS = .1f; // bounding cylinder radius
+	final static float RADIUS = .5f; // bounding cylinder radius
 	Vector3f scaledUp = new Vector3f();
 	public void handleInput(int delta) {
 		Vector2f cursorPos = mouse.getCameraCursor();
@@ -58,7 +58,6 @@ public class Player {
 		if(keyboard.getKeysPressed().contains(GLFW_KEY_LEFT_SHIFT))
 			loc.sub(UP.mul(distance,scaledUp));
 		System.out.println("view:"+viewMatrix);
-
 		// collide
 		for(Mesh meshWrapper : colliders) {
 			AIMesh mesh = meshWrapper.getAIMesh();
@@ -86,29 +85,20 @@ public class Player {
 				} else
 				if(vertices[1].distance(vertices[2]) < .01f) {
 					a = vertices[0]; b = vertices[1];
-				} else {
-					System.out.println("hecc");
+				} else
 					return;
-				}
-
 				// get area of triangle
 				float AB = a.distance(b);
 				float AP = a.distance(locXZ);
 				float BP = b.distance(locXZ);
-				if(AB < AP || AB < BP) {
-					//System.out.println("aa:"+AB+" "+AP+" "+BP);
+				if(AB < AP || AB < BP)
 					continue;
-				}
 				float S = (AB+AP+BP)/2;
 				float A = (float)Math.sqrt(S*(S-AB)*(S-AP)*(S-BP));
-
 				float h = 2*A/AB;
 				if(h<RADIUS) {
-					System.out.println("height:"+h);
-					System.out.println("area:"+A);
-					System.out.println("oh nose!");
 					Vector2f wall = a.sub(b,new Vector2f());
-					Vector3f normal = new Vector3f(-wall.y(),0,wall.x()).normalize().mul(.1f);
+					Vector3f normal = new Vector3f(-wall.y(),0,wall.x()).normalize().mul(RADIUS-h);
 					// but which way does the normal face?
 					// oh boy
 					// get the winding direction of the triangle via the sign of the following determinant XD
@@ -119,7 +109,6 @@ public class Player {
 					).determinant();
 					System.out.println(det);
 					loc.add(normal.mul(0<det?-1:1));
-					//System.exit(0);
 				}
 			}
 		}
