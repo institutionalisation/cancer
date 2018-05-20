@@ -5,6 +5,7 @@ import java.lang.Math;
 public class Mouse {
 	private Window window;
 	private boolean captured = false;
+	private final float SENSITIVITY = 3;
 	public Mouse(Window window) {
 		this.window = window;
 	}
@@ -19,10 +20,12 @@ public class Mouse {
 			y = new double[1];
 		glfwGetCursorPos(window.getId(),x,y);
 		newPos = new Vector2f((float)x[0],(float)y[0]).mul(.001f);
+		System.out.println("newPos:"+newPos);
 		Vector2f delta = newPos.sub(lastPos,new Vector2f());
 		lastPos.set(newPos);
-		boundedPos.add(delta);
+		boundedPos.add(delta.mul(SENSITIVITY));
 		boundedPos.y = (float)Math.max(-Math.PI/2,(float)Math.min(Math.PI/2,boundedPos.y));
+		System.out.println("bounded:"+boundedPos);
 		return boundedPos;
 	}
 	void capture(boolean state) {
