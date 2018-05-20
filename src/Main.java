@@ -81,7 +81,7 @@ public class Main {
 		System.out.println("mesh count:"+maze.meshes.length);
 		glClearColor(0,.5f,.5f,0);
 		long prevTime = System.currentTimeMillis();
-		Player player = new Player(keyboard,mouse);
+		Player player = new Player(keyboard,mouse,maze.meshes);
 		for(;!glfwWindowShouldClose(window.getId());) {
 			glfwPollEvents();
 			long nowTime = System.currentTimeMillis();
@@ -90,8 +90,6 @@ public class Main {
 			player.handleInput(delta);
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,player.getView());
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-			for(Mesh x : maze.meshes)
-				player.collide(x);
 			for(Mesh x : maze.meshes)
 				x.render();
 			System.out.println("error:"+glGetError());
