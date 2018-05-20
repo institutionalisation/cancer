@@ -54,7 +54,7 @@ public class Main {
 			public void invoke(long windowId,int width,int height) {
 				System.out.println("resize");
 				final float FOV = (float) Math.toRadians(100f);
-				final float Z_NEAR = .5f;
+				final float Z_NEAR = .1f;
 				final float Z_FAR = 100;
 				Matrix4f perspectiveMatrix;
 				System.out.println("w:"+width+",h:"+height);

@@ -87,34 +87,32 @@ public class Player {
 					a = vertices[0]; b = vertices[1];
 				} else
 					return;
-				// get area of triangle
+				// sidelengths of triangle. vertices are a,b,loc
 				float AB = a.distance(b);
 				float AP = a.distance(locXZ);
 				float BP = b.distance(locXZ);
+				// if not in front of wall, can't collide with it
 				if(AB < AP || AB < BP)
 					continue;
+				// use heron's formula to find height (distance to wall)
 				float S = (AB+AP+BP)/2;
 				float A = (float)Math.sqrt(S*(S-AB)*(S-AP)*(S-BP));
 				float h = 2*A/AB;
+				// if in wall, move to just outside wall
 				if(h<RADIUS) {
 					Vector2f wall = a.sub(b,new Vector2f());
 					Vector3f normal = new Vector3f(-wall.y(),0,wall.x()).normalize().mul(RADIUS-h);
 					// but which way does the normal face?
 					// oh boy
 					// get the winding direction of the triangle via the sign of the following determinant XD
-					float det = new Matrix3f(
+					loc.add(normal.mul(-Math.signum(new Matrix3f(
 						1,a.x(),a.y(),
 						1,b.x(),b.y(),
 						1,locXZ.x(),locXZ.y()
-					).determinant();
-					System.out.println(det);
-					loc.add(normal.mul(0<det?-1:1));
+					).determinant())));
 				}
 			}
 		}
-	}
-	public void collide(Mesh meshWrapper) {
-		
 	}
 	public FloatBuffer getView() {
 		return viewMatrix.get(viewMatrixBuffer);
