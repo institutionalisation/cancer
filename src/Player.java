@@ -3,6 +3,7 @@ import java.lang.Math;
 import static org.lwjgl.system.MemoryUtil.*;
 import java.nio.*;
 import static org.lwjgl.glfw.GLFW.*;
+import org.lwjgl.assimp.*;
 public class Player {
 	private Keyboard keyboard;
 	private Mouse mouse;
@@ -16,6 +17,7 @@ public class Player {
 	final float moveSpeed = .005f;
 	final static Matrix4f IDENTITY = new Matrix4f();
 	final static Vector3f UP = new Vector3f(0,1,0);
+	final static float RADIUS = .1f; // bounding cylinder radius
 	Vector3f scaledUp = new Vector3f();
 	public void handleInput(int delta) {
 		Vector2f cursorPos = mouse.getCameraCursor();
@@ -54,6 +56,57 @@ public class Player {
 		if(keyboard.getKeysPressed().contains(GLFW_KEY_LEFT_SHIFT))
 			loc.sub(UP.mul(distance,scaledUp));
 		System.out.println("view:"+viewMatrix);
+	}
+	public void collide(Mesh meshWrapper) {
+		AIMesh mesh = meshWrapper.getAIMesh();
+		AIFace.Buffer faces = mesh.mFaces();
+		AIVector3D.Buffer vertexBuffer = mesh.mVertices();
+		//System.out.println("vertexBuffer:"+vertexBuffer);
+		for(;faces.hasRemaining();) {
+			AIFace face = faces.get();
+			IntBuffer indices = face.mIndices();
+			Vector2f[] vertices = new Vector2f[3];
+			for(int i = 0; i < vertices.length; ++i) {
+				int index = indices.get();
+				//System.out.println("index:"+index);
+				AIVector3D vertex = vertexBuffer.get(index);
+				//System.out.println("vertex:"+vertex);
+				vertices[i] = new Vector2f(vertex.x(),vertex.z());
+			}
+			Vector2f locXZ = new Vector2f(loc.x(),loc.z());
+			Vector2f a=null, b=null;
+			if(vertices[0].distance(vertices[1]) < .01f) {
+				a = vertices[0]; b = vertices[2];
+			} else
+			if(vertices[0].distance(vertices[2]) < .01f) {
+				a = vertices[0]; b = vertices[1];
+			} else
+			if(vertices[1].distance(vertices[2]) < .01f) {
+				a = vertices[0]; b = vertices[1];
+			} else {
+				System.out.println("hecc");
+				return;
+			}
+
+			// get area of triangle
+			float AB = a.distance(b);
+			float AP = a.distance(locXZ);
+			float BP = b.distance(locXZ);
+			if(AB < AP || AB < BP) {
+				System.out.println("aa:"+AB+" "+AP+" "+BP);
+				continue;
+			}
+			float S = (AB+AP+BP)/2;
+			float A = (float)Math.sqrt(S*(S-AB)*(S-AP)*(S-BP));
+
+			float h = 2*A/AB;
+			if(h<RADIUS) {
+				System.out.println("height:"+h);
+				System.out.println("area:"+A);
+				System.out.println("oh nose!");
+				System.exit(0);
+			}
+		}
 	}
 	public FloatBuffer getView() {
 		return viewMatrix.get(viewMatrixBuffer);

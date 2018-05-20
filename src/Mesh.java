@@ -10,17 +10,18 @@ import java.nio.*;
 import static org.lwjgl.system.MemoryUtil.*;
 import org.lwjgl.*;
 public class Mesh {
-	float scale;
-	public int
+	private float scale;
+	private AIMesh mesh;
+	private int
 		vertexBuffer,
 		indexBuffer,
 		UVBuffer,
 		indexCount,
 		vertexArrayObject;
-	Texture texture;
-	Program program;
+	private Texture texture;
+	private Program program;
 	public Mesh(AIMesh mesh,Program program,Texture[] textures,float scale) {
-		//for(;;) if(1==0) break;
+		this.mesh = mesh;
 		this.program = program;
 		this.scale = scale;
 		System.out.println("mat index:"+mesh.mMaterialIndex());
@@ -95,4 +96,6 @@ public class Mesh {
 		glDrawElements(GL_TRIANGLES,indexCount,GL_UNSIGNED_INT,0);
 		System.out.println("render error:"+glGetError());
 	}
+	public AIMesh getAIMesh() {
+		return mesh; }
 }
