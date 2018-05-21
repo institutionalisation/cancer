@@ -32,15 +32,18 @@ public class Mesh {
 		{
 			AIVector3D.Buffer orig = mesh.mVertices();
 			System.out.println("vertices:"+orig.capacity());
-			ByteBuffer vertices = memByteBuffer(orig.address(),orig.capacity()*AIVector3D.SIZEOF);
-			FloatBuffer ints = memFloatBuffer(orig.address(),orig.capacity()*AIVector3D.SIZEOF/4);
-			for(;ints.hasRemaining();) {
-				System.out.println(ints.get()+" "+ints.get()+" "+ints.get());
+			FloatBuffer floats = memFloatBuffer(orig.address(),orig.capacity()*AIVector3D.SIZEOF/4);
+			// flip y and z values (because blender and collada and hecc)
+			for(int i = 0; i < floats.capacity(); i+=3) {
+				floats.put(i,-floats.get(i));
+				float tmp = floats.get(i+1);
+				floats.put(i+1,floats.get(i+2));
+				floats.put(i+2,tmp);
+				//System.out.println(floats.get()+" "+floats.get()+" "+floats.get());
 			}
-			vertices.clear();
 			vertexBuffer = glGenBuffers();
 			glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
-			glBufferData(GL_ARRAY_BUFFER,vertices,GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER,floats,GL_STATIC_DRAW);
 			glVertexAttribPointer(glGetAttribLocation(program.getId(),"position"),3,GL_FLOAT,false,0,0);
 		}
 		{

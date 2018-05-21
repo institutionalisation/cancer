@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.79.4 commit date:2018-05-09, commit time:13:52, hash:0385b33f0b3</authoring_tool>
+    </contributor>
+    <created>2018-05-21T00:47:19</created>
+    <modified>2018-05-21T00:47:19</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_images>
+    <image id="Stone-2394_jpg" name="Stone-2394_jpg">
+      <init_from>Stone-2394.jpg</init_from>
+    </image>
+    <image id="Stone-0205_jpg" name="Stone-0205_jpg">
+      <init_from>Stone-0205.jpg</init_from>
+    </image>
+  </library_images>
+  <library_effects>
+    <effect id="Stone-2394_jpg-effect">
+      <profile_COMMON>
+        <newparam sid="Stone-2394_jpg-surface">
+          <surface type="2D">
+            <init_from>Stone-2394_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="Stone-2394_jpg-sampler">
+          <sampler2D>
+            <source>Stone-2394_jpg-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <phong>
+            <diffuse>
+              <texture texture="Stone-2394_jpg-sampler" texcoord="Stone-2394_jpg"/>
+            </diffuse>
+            <specular>
+              <color sid="specular">0 0 0 1</color>
+            </specular>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Stone-0205_jpg-effect">
+      <profile_COMMON>
+        <newparam sid="Stone-0205_jpg-surface">
+          <surface type="2D">
+            <init_from>Stone-0205_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="Stone-0205_jpg-sampler">
+          <sampler2D>
+            <source>Stone-0205_jpg-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <phong>
+            <diffuse>
+              <texture texture="Stone-0205_jpg-sampler" texcoord="Stone-0205_jpg"/>
+            </diffuse>
+            <specular>
+              <color sid="specular">0 0 0 1</color>
+            </specular>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_materials>
+    <material id="Stone-2394_jpg-material" name="Stone-2394_jpg">
+      <instance_effect url="#Stone-2394_jpg-effect"/>
+    </material>
+    <material id="Stone-0205_jpg-material" name="Stone-0205_jpg">
+      <instance_effect url="#Stone-0205_jpg-effect"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="Plane-mesh" name="Plane">
+      <mesh>
+        <source id="Plane-mesh-positions">
+          <float_array id="Plane-mesh-positions-array" count="171">-8.680001 -8.680001 0 8.680001 -8.680001 0 -8.680001 8.680001 0 8.680001 8.680001 0 8.103604 8.103604 0 -8.670001 8.670001 0 -8.670001 -8.670001 0 8.670001 -8.670001 0 8.670001 8.670001 0 -8.670001 8.670001 4.37246 -8.670001 -8.670001 4.37246 8.670001 -8.670001 4.37246 8.670001 8.670001 4.37246 -8.103604 8.103604 4.37246 -8.103604 -8.103604 4.37246 8.103604 -8.103604 4.37246 8.103604 8.103604 4.37246 4.824955 -0.7831054 0 4.155018 -0.9805355 0 0.9112949 3.58246 0 0.7110338 -3.860126 0 -4.356384 -3.807438 0 0.9533367 5.967265 0 -8.103604 8.103604 0 -8.103604 -8.103604 0 4.630159 -8.103604 0 8.103604 -8.103604 0 3.932711 -8.103604 0 1.630987 3.54926 0 0.9894056 2.735863 0 -3.475618 -3.777325 0 -3.68435 3.766369 0 1.683896 5.96783 0 4.630159 -8.103604 3.927778 1.523189 2.719543 0 -2.930449 3.025477 0 8.103604 3.25067 0 8.103604 2.518351 0 -0.1065049 -3.925859 0 -4.356384 -3.807438 4.37246 -3.475618 -3.777325 4.37246 8.103604 2.518351 4.37246 1.523189 2.719543 4.37246 0.7110338 -3.860126 4.37246 0.9112949 3.58246 4.37246 -3.68435 3.766369 4.37246 -2.930449 3.025477 4.37246 0.9894056 2.735863 4.37246 1.630987 3.54926 4.37246 1.683896 5.96783 4.37246 0.9533367 5.967265 4.37246 8.103604 3.25067 4.37246 -0.1065049 -3.925859 4.37246 3.932711 -8.103604 4.37246 4.630159 -8.103604 4.37246 4.824955 -0.7831054 4.37246 4.155018 -0.9805355 4.37246</float_array>
+          <technique_common>
+            <accessor source="#Plane-mesh-positions-array" count="57" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Plane-mesh-normals">
+          <float_array id="Plane-mesh-normals-array" count="75">0 0 1 1 0 0 0 1 0 -1 0 0 0 -1 0 0.9999974 0 0.002288401 0.9997609 -0.02187114 0 -0.03056013 -0.999533 0 0.08014482 -0.9967833 0 -7.73451e-4 0.9999997 0 0.9924679 -0.1225043 0 0.04608219 0.9989377 0 -0.9998447 0.01762628 0 0.03998601 0.9992003 0 -0.9960865 0.08838403 0 0.9968044 -0.07988274 0 -0.07368314 -0.9972817 0 0.03417038 -0.9994161 0 -0.9867371 0.1623267 0 -1.69095e-7 0 1 0.2826799 -0.9592143 0 0 -0.9999974 0.002288639 0.9995134 -0.03119432 0 -0.9996463 0.02660024 0 0 0 1</float_array>
+          <technique_common>
+            <accessor source="#Plane-mesh-normals-array" count="25" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Plane-mesh-map-0">
+          <float_array id="Plane-mesh-map-0-array" count="352">0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.8173064 1.163974 -4.104938 1.163974 -4.104938 -0.1639737 0.8173064 -0.1639737 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5.212097 1.163974 0.2898514 1.163974 0.2898514 -0.1639737 5.212097 -0.1639737 -0.00922048 0.5 -0.0097965 0.5 0.9902035 0.5 0.9896274 0.5 0.9896274 0.7518698 -0.00922048 0.7518698 -0.6714865 1.701154 0.9908573 1.63463 1.006065 2.497266 1.270324 2.49747 1.251185 1.622621 3.592471 1.514615 3.592471 3.270025 -2.270025 3.270025 -2.270025 -2.592471 2.083768 -2.592471 2.164182 -0.01590329 2.406512 0.05551141 2.336051 -2.592471 3.592471 -2.592471 3.592471 1.249719 1.212193 1.322495 0.9184187 -1.057514 0.6226973 -1.081291 1.019112 1.328398 -0.3987843 1.433158 -0.5959837 -1.027562 -0.9145758 -1.038455 1.556581 -0.1639737 5.212097 -0.1639737 5.212097 1.163974 1.556581 1.163974 -2.721752 1.163974 -3.456289 1.163974 -3.456289 -0.1639737 -2.721752 -0.1639737 2.288371 1.163974 0.2898514 1.163974 0.2898514 -0.1639737 2.288371 -0.1639737 2.78332 1.163974 2.535028 1.163974 2.535028 -0.1639737 2.78332 -0.1639737 2.239562 1.163974 2.461439 1.163974 2.461439 -0.1639737 2.239562 -0.1639737 -0.4714678 1.163974 -2.469761 1.163974 -2.469761 -0.1639737 -0.4714678 -0.1639737 0.2898514 1.163974 2.255631 1.163974 2.255631 -0.1639737 0.2898514 -0.1639737 -3.456117 1.163974 -2.731836 1.163974 -2.731836 -0.1639737 -3.456117 -0.1639737 2.474207 1.163974 3.869937 1.163974 3.869937 -0.1639737 2.474207 -0.1639737 -2.787689 1.163974 -0.4874697 1.163974 -0.4874697 -0.1639737 -2.787689 -0.1639737 -0.4966154 1.163974 -2.562676 1.163974 -2.562676 -0.1639737 -0.4966154 -0.1639737 3.640972 1.163974 2.450484 1.163974 2.450484 -0.1639737 3.640972 -0.1639737 4.074039 1.163974 3.806544 1.163974 3.806544 -0.1639737 4.074039 -0.1639737 -2.474718 1.163974 -0.4515044 1.163974 -0.4515044 -0.1639737 -2.474718 -0.1639737 -2.474904 -2.797348 3.797348 -2.797348 3.797348 3.474903 3.592471 3.270025 3.592471 1.514615 1.251185 1.622621 1.270324 2.49747 1.006065 2.497266 0.9908573 1.63463 -0.6714865 1.701154 -0.9145758 -1.038455 -0.5959837 -1.027562 -0.3987843 1.433158 1.019112 1.328398 0.6226973 -1.081291 0.9184187 -1.057514 1.212193 1.322495 3.592471 1.249719 3.592471 -2.592471 2.336051 -2.592471 2.406512 0.05551141 2.164182 -0.01590329 2.083768 -2.592471 -2.270025 -2.592471 0.2898514 1.163974 0.2898514 -0.1639737 1.344761 -0.1639737 1.344761 1.163974 1.489065 1.163974 1.2856 1.163974 1.2856 -0.1639737 1.489065 -0.1639737 0 0 0 0 0 0 0 0 0 0 0 0 0.8173064 1.163974 -1.346021 1.163974 -1.346021 -0.1639737 0.8173064 -0.1639737 -1.405981 1.163974 0.8173064 1.163974 0.8173064 -0.1639737 -1.405981 -0.1639737 -4.104938 1.163974 -4.104938 -0.1639737 -2.631068 -0.1639737 -2.631068 1.163974 0.8173064 1.163974 0.8173064 -0.1639737 -2.408657 -0.1639737 -2.408657 1.163974 -2.474904 -2.797348 -2.270025 -2.592471 -2.270025 3.270025 3.592471 3.270025 3.797348 3.474903 -2.474904 3.474903</float_array>
+          <technique_common>
+            <accessor source="#Plane-mesh-map-0-array" count="176" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Plane-mesh-vertices">
+          <input semantic="POSITION" source="#Plane-mesh-positions"/>
+        </vertices>
+        <polylist material="Stone-2394_jpg-material" count="22">
+          <input semantic="VERTEX" source="#Plane-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Plane-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#Plane-mesh-map-0" offset="2" set="0"/>
+          <vcount>4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 </vcount>
+          <p>24 1 16 23 1 17 13 1 18 14 1 19 23 4 28 4 4 29 16 4 30 13 4 31 53 4 60 14 4 61 24 4 62 27 4 63 28 6 64 32 6 65 49 6 66 48 6 67 34 7 68 37 7 69 41 7 70 42 7 71 38 8 72 20 8 73 43 8 74 52 8 75 32 9 76 22 9 77 50 9 78 49 9 79 20 10 80 34 10 81 42 10 82 43 10 83 36 11 84 28 11 85 48 11 86 51 11 87 22 12 88 19 12 89 44 12 90 50 12 91 19 13 92 31 13 93 45 13 94 44 13 95 31 14 96 21 14 97 39 14 98 45 14 99 30 15 100 35 15 101 46 15 102 40 15 103 35 16 104 29 16 105 47 16 106 46 16 107 21 17 108 30 17 109 40 17 110 39 17 111 29 18 112 38 18 113 52 18 114 47 18 115 26 4 140 15 4 141 54 4 142 25 4 143 18 20 144 17 20 145 55 20 146 56 20 147 27 22 154 18 22 155 56 22 156 53 22 157 17 23 158 25 23 159 54 23 160 55 23 161 4 1 162 16 1 163 51 1 164 36 1 165 26 3 166 15 3 167 41 3 168 37 3 169</p>
+        </polylist>
+        <polylist material="Stone-0205_jpg-material" count="3">
+          <input semantic="VERTEX" source="#Plane-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Plane-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#Plane-mesh-map-0" offset="2" set="0"/>
+          <vcount>22 24 6 </vcount>
+          <p>31 0 38 19 0 39 22 0 40 32 0 41 28 0 42 36 0 43 4 0 44 23 0 45 24 0 46 27 0 47 18 0 48 17 0 49 25 0 50 26 0 51 37 0 52 34 0 53 20 0 54 38 0 55 29 0 56 35 0 57 30 0 58 21 0 59 10 19 116 11 19 117 12 19 118 16 19 119 51 19 120 48 19 121 49 19 122 50 19 123 44 19 124 45 19 125 39 19 126 40 19 127 46 19 128 47 19 129 52 19 130 43 19 131 42 19 132 41 19 133 15 19 134 54 19 135 55 19 136 56 19 137 53 19 138 14 19 139 10 24 170 14 24 171 13 24 172 16 24 173 12 24 174 9 24 175</p>
+        </polylist>
+        <polylist count="8">
+          <input semantic="VERTEX" source="#Plane-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Plane-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#Plane-mesh-map-0" offset="2" set="0"/>
+          <vcount>4 4 4 4 4 4 6 6 </vcount>
+          <p>6 0 0 5 0 1 2 0 2 0 0 3 7 0 4 6 0 5 0 0 6 1 0 7 8 0 8 7 0 9 1 0 10 3 0 11 5 0 12 8 0 13 3 0 14 2 0 15 8 2 20 5 2 21 9 2 22 12 2 23 5 3 24 6 3 25 10 3 26 9 3 27 7 5 32 1 5 33 3 5 34 8 5 35 12 5 36 11 5 37 6 21 148 0 21 149 1 21 150 7 21 151 11 21 152 10 21 153</p>
+        </polylist>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="Plane" name="Plane" type="NODE">
+        <matrix sid="transform">1 0 0 0 0 -1 8.74228e-8 0 0 -8.74228e-8 -1 0 0 0 0 1</matrix>
+        <instance_geometry url="#Plane-mesh" name="Plane">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="Stone-2394_jpg-material" target="#Stone-2394_jpg-material">
+                <bind_vertex_input semantic="UVMap" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+              <instance_material symbol="Stone-0205_jpg-material" target="#Stone-0205_jpg-material">
+                <bind_vertex_input semantic="UVMap" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>

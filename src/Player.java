@@ -19,7 +19,9 @@ public class Player {
 	final float moveSpeed = .005f;
 	final static Matrix4f IDENTITY = new Matrix4f();
 	final static Vector3f UP = new Vector3f(0,1,0);
-	final static float RADIUS = .5f; // bounding cylinder radius
+	final static float
+		RADIUS = 1f, // bounding cylinder radius
+		STEP_MAX_HEIGHT = .2f; // max height to step over
 	Vector3f scaledUp = new Vector3f();
 	public void handleInput(int delta) {
 		Vector2f cursorPos = mouse.getCameraCursor();
@@ -45,18 +47,12 @@ public class Player {
 		// kind of magic, but it works
 		IDENTITY.lookAt(loc,loc.add(dir,new Vector3f()),right.cross(dir,new Vector3f()),viewMatrix);
 		float distance = moveSpeed*delta;
-		if(keyboard.getKeysPressed().contains(GLFW_KEY_W))
-			loc.add(forward.mul(distance));
-		if(keyboard.getKeysPressed().contains(GLFW_KEY_S))
-			loc.sub(forward.mul(distance));
-		if(keyboard.getKeysPressed().contains(GLFW_KEY_A))
-			loc.sub(right.mul(distance));
-		if(keyboard.getKeysPressed().contains(GLFW_KEY_D))
-			loc.add(right.mul(distance));
-		if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE))
-			loc.add(UP.mul(distance,scaledUp));
-		if(keyboard.getKeysPressed().contains(GLFW_KEY_LEFT_SHIFT))
-			loc.sub(UP.mul(distance,scaledUp));
+		keyRun(GLFW_KEY_W,forward.mul(distance,new Vector3f()));
+		keyRun(GLFW_KEY_S,forward.mul(-distance,new Vector3f()));
+		keyRun(GLFW_KEY_D,right.mul(distance,new Vector3f()));
+		keyRun(GLFW_KEY_A,right.mul(-distance,new Vector3f()));
+		keyRun(GLFW_KEY_SPACE,UP.mul(distance,scaledUp));
+		keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,scaledUp));
 		System.out.println("view:"+viewMatrix);
 		// collide
 		for(Mesh meshWrapper : colliders) {
@@ -67,16 +63,26 @@ public class Player {
 			for(;faces.hasRemaining();) {
 				AIFace face = faces.get();
 				IntBuffer indices = face.mIndices();
+				float
+					lowest=Float.MAX_VALUE,
+					highest=Float.MIN_VALUE;
+				for(;indices.hasRemaining();) {
+					float y = vertexBuffer.get(indices.get()).y();
+					lowest = Math.min(lowest,y);
+					highest = Math.max(highest,y);
+				}
+				indices.clear();
+				if(highest+RADIUS<loc.y() || loc.y()<lowest-RADIUS)
+					continue;
 				Vector2f[] vertices = new Vector2f[3];
 				for(int i = 0; i < vertices.length; ++i) {
 					int index = indices.get();
-					//System.out.println("index:"+index);
 					AIVector3D vertex = vertexBuffer.get(index);
-					//System.out.println("vertex:"+vertex);
 					vertices[i] = new Vector2f(vertex.x(),vertex.z());
 				}
 				Vector2f locXZ = new Vector2f(loc.x(),loc.z());
 				Vector2f a=null, b=null;
+				// find which vertices are overlapping, ignore one of them
 				if(vertices[0].distance(vertices[1]) < .01f) {
 					a = vertices[0]; b = vertices[2];
 				} else
@@ -100,12 +106,18 @@ public class Player {
 				float h = 2*A/AB;
 				// if in wall, move to just outside wall
 				if(h<RADIUS) {
+					// but if the wall is small, then step over it
+					if(highest-loc.y()<STEP_MAX_HEIGHT) {
+						loc.y = highest+RADIUS;
+						continue;
+					}
 					Vector2f wall = a.sub(b,new Vector2f());
-					Vector3f normal = new Vector3f(-wall.y(),0,wall.x()).normalize().mul(RADIUS-h);
+					Vector3f normal = new Vector3f(wall.y(),0,-wall.x()).normalize().mul(RADIUS-h);
 					// but which way does the normal face?
 					// oh boy
+					// https://en.wikipedia.org/wiki/Curve_orientation
 					// get the winding direction of the triangle via the sign of the following determinant XD
-					loc.add(normal.mul(-Math.signum(new Matrix3f(
+					loc.add(normal.mul(Math.signum(new Matrix3f(
 						1,a.x(),a.y(),
 						1,b.x(),b.y(),
 						1,locXZ.x(),locXZ.y()
@@ -113,6 +125,10 @@ public class Player {
 				}
 			}
 		}
+	}
+	public void keyRun(int key,Vector3f direction) {
+		if(keyboard.getKeysPressed().contains(key))
+			loc.add(direction);
 	}
 	public FloatBuffer getView() {
 		return viewMatrix.get(viewMatrixBuffer);
