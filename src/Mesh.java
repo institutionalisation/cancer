@@ -97,7 +97,7 @@ public class Mesh {
 		glUniform1f(program.getUniformLocation("scale"),scale);
 		glUniform1i(glGetUniformLocation(program.getId(),"myTextureSampler"),0);
 		glDrawElements(GL_TRIANGLES,indexCount,GL_UNSIGNED_INT,0);
-		System.out.println("render error:"+glGetError());
+		//System.out.println("render error:"+glGetError());
 	}
 	public AIMesh getAIMesh() {
 		return mesh; }
