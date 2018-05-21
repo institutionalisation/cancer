@@ -20,7 +20,7 @@ public class Player {
 	final static Matrix4f IDENTITY = new Matrix4f();
 	final static Vector3f UP = new Vector3f(0,1,0);
 	final static float
-		RADIUS = 1f, // bounding cylinder radius
+		RADIUS = .5f, // bounding cylinder radius
 		STEP_MAX_HEIGHT = .2f; // max height to step over
 	Vector3f scaledUp = new Vector3f();
 	public void handleInput(int delta) {
@@ -97,9 +97,20 @@ public class Player {
 				float AB = a.distance(b);
 				float AP = a.distance(locXZ);
 				float BP = b.distance(locXZ);
-				// if not in front of wall, can't collide with it
-				if(AB < AP || AB < BP)
+				// not in front of wall, don't bounce off wall
+				if(AB < AP || AB < BP) {
+					// did we just hit one vertex?
+					for(Vector2f vertex : vertices) {
+						float dist = vertex.distance(locXZ);
+						if(dist < RADIUS) {
+							Vector2f bounce = vertex.sub(locXZ,new Vector2f()).normalize().mul(dist-RADIUS);
+							loc.x += bounce.x;
+							loc.z += bounce.y;
+							break;
+						}
+					}
 					continue;
+				}
 				// use heron's formula to find height (distance to wall)
 				float S = (AB+AP+BP)/2;
 				float A = (float)Math.sqrt(S*(S-AB)*(S-AP)*(S-BP));
