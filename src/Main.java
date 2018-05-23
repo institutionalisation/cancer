@@ -87,6 +87,7 @@ public class Main {
 			int delta = (int)(nowTime-prevTime);
 			prevTime = nowTime;
 			player.handleInput(delta);
+			System.out.println("Main player.loc"+player.loc);
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,player.getView());
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 			maze.render();

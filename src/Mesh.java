@@ -35,16 +35,18 @@ public class Mesh {
 			System.out.println("vertices:"+orig.capacity());
 			FloatBuffer floats = memFloatBuffer(orig.address(),orig.capacity()*AIVector3D.SIZEOF/4);
 			// flip y and z values (because blender and collada and hecc)
-			// for(int i = 0; i < floats.capacity(); i+=3) {
-			// 	floats.put(i,-floats.get(i));
-			// 	float tmp = floats.get(i+1);
-			// 	floats.put(i+1,floats.get(i+2));
-			// 	floats.put(i+2,tmp);
-			// 	if(i<30) {
-			// 		System.out.println("vertex:"+floats.get(i)+" "+floats.get(i+1)+" "+floats.get(i+2));
-			// 	}
-			// 	//System.out.println(floats.get()+" "+floats.get()+" "+floats.get());
-			// }
+			for(int i = 0; i < floats.capacity(); i+=3) {
+				//floats.put(i+1,-floats.get(i+1));
+				//floats.put(i,-floats.get(i));
+				// floats.put(i,-floats.get(i));
+				// float tmp = floats.get(i+1);
+				// floats.put(i+1,floats.get(i+2));
+				// floats.put(i+2,tmp);
+				if(i<30) {
+					System.out.println("vertex:"+floats.get(i)+" "+floats.get(i+1)+" "+floats.get(i+2));
+				}
+				//System.out.println(floats.get()+" "+floats.get()+" "+floats.get());
+			}
 			vertexBuffer = glGenBuffers();
 			glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
 			glBufferData(GL_ARRAY_BUFFER,floats,GL_STATIC_DRAW);
