@@ -78,7 +78,6 @@ public class Main {
 		glDepthFunc(GL_LEQUAL);
 		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
 		Model maze = new Model("maze0",program);
-		System.out.println("mesh count:"+maze.meshes.length);
 		glClearColor(0,.5f,.5f,0);
 		long prevTime = System.currentTimeMillis();
 		Player player = new Player(keyboard,mouse,maze.meshes);
@@ -90,8 +89,7 @@ public class Main {
 			player.handleInput(delta);
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,player.getView());
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-			for(Mesh x : maze.meshes)
-				x.render();
+			maze.render();
 			System.out.println("error:"+glGetError());
 			glDisableVertexAttribArray(0);
 			glBindVertexArray(0);

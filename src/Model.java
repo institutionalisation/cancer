@@ -4,21 +4,22 @@ import org.lwjgl.assimp.*;
 import static org.lwjgl.assimp.Assimp.*;
 import static org.lwjgl.system.MemoryUtil.*;
 import java.nio.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import org.joml.*;
 public class Model {
 	private AIScene scene;
 	public Mesh[] meshes;
+	public Texture[] textures;
+	public ModelNode rootNode;
+	public Program program;
 	public Model(String name,Program program) {
+		this.program = program;
 		scene = aiImportFile("models/"+name+"/a.dae",aiProcess_JoinIdenticalVertices|aiProcess_Triangulate);
 		PointerBuffer meshBuffer = scene.mMeshes();
-		meshes = new Mesh[scene.mNumMeshes()];
-		//System.out.println("num materials:"+scene.mNumMaterials());
 		PointerBuffer materials = scene.mMaterials();
-		Texture[] textures = new Texture[scene.mNumMaterials()];
+		textures = new Texture[scene.mNumMaterials()];
 		for(int i = 0; materials.hasRemaining(); ++i) {
 			AIMaterial material = AIMaterial.create(materials.get());
-			//System.out.println("properties:"+material.mNumProperties());
 			PointerBuffer properties = material.mProperties();
 			for(;properties.hasRemaining();) {
 				AIMaterialProperty property = AIMaterialProperty.create(properties.get());
@@ -27,15 +28,22 @@ public class Model {
 				if(propertyName.equals("$tex.file")) {
 					String textureFileName = StandardCharsets.UTF_8.decode(property.mData()).toString();
 					textureFileName = textureFileName.trim();
-					//System.out.println("models/"+name+"/"+textureFileName);
 					textures[i] = new Texture("models/"+name+"/"+textureFileName);
 				}
 			}
 		}
-		for(int i = 0; i < meshes.length; ++i) {
+		meshes = new Mesh[scene.mNumMeshes()];
+		System.out.println("model mesh count:"+scene.mNumMeshes());
+		if(meshBuffer != null)
+		for(int i = 0;i<meshes.length;++i) {
 			AIMesh mesh = AIMesh.create(meshBuffer.get(i));
-			meshes[i] = new Mesh(mesh,program,textures);
+			meshes[i] = new Mesh(this,mesh);
 		}
+		rootNode = new ModelNode(this,scene.mRootNode());
+	}
+	public void render() {
+		System.out.println("model render");
+		rootNode.render(new Matrix4f()); // identity matrix
 	}
 	public void free() {
 		aiReleaseImport(scene); }

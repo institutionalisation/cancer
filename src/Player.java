@@ -57,12 +57,13 @@ public class Player {
 		keyRun(GLFW_KEY_S,forward.mul(-distance,new Vector3f()));
 		keyRun(GLFW_KEY_D,right.mul(distance,new Vector3f()));
 		keyRun(GLFW_KEY_A,right.mul(-distance,new Vector3f()));
-		if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE) && dy==0)
-			dy = INITIAL_DY;
-		loc.y += dy*delta;
-		dy -= GRAVITY;
-		System.out.println("dy:"+dy);
-		//keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,scaledUp));
+		// if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE) && dy==0)
+		// 	dy = INITIAL_DY;
+		// loc.y += dy*delta;
+		// dy -= GRAVITY;
+		// System.out.println("dy:"+dy);
+		keyRun(GLFW_KEY_SPACE,UP.mul(distance,scaledUp));
+		keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,scaledUp));
 		//System.out.println("view:"+viewMatrix);
 		// collide
 		for(Mesh meshWrapper : colliders) {
