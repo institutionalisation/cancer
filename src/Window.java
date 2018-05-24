@@ -14,7 +14,9 @@ import static org.lwjgl.system.MemoryUtil.*;
 public class Window {
 	private final Window window = this;
 	private long id;
-	private int width,height;
+	public int
+		width,height,
+		x,y;
 	public Window(int width,int height,String title,Keyboard keyboard) {
 		this.width = width;
 		this.height = height;
@@ -30,18 +32,11 @@ public class Window {
 		keyboard.getImmediateKeys().put(GLFW_KEY_X,new Runnable() { public void run() {
 			glfwSetWindowShouldClose(id,true);
 		}});
-		glfwSetWindowSizeCallback(id, (windowId,w,h) -> {
-			glViewport(0,0,w,h);
-			window.width = w;
-			window.height = h;
-		});
 	}
 	void makeContextCurrent() { glfwMakeContextCurrent(id); }
 	void show() { glfwShowWindow(id); }
 	void swapBuffers() { glfwSwapBuffers(id); }
 	long getId() { return id; }
-	int getWidth() { return width; }
-	int getHeight() { return height; }
 	void destroy() {
 		glfwFreeCallbacks(id);
 		glfwDestroyWindow(id);

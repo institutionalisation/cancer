@@ -1,3 +1,4 @@
-public interface Level extends Runnable {
+public interface Level {
 	public String getName();
+	public void run() throws Exception;
 }

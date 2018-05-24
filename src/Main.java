@@ -6,7 +6,7 @@ public class Main {
 		new JFrame(){final JFrame frame = this;{
 			setTitle("Menu");
 			setBackground(new Color(50,100,150));
-			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 			setLayout(new FlowLayout());
 			add(new JLabel("<html><style>body{font-size:20px;}</style><body>Menu</body></html>"));
 			for(Level level : new Level[]{new Level0(),new Level1(),new Level2()})
@@ -15,11 +15,22 @@ public class Main {
 					addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							frame.setVisible(false);
-							level.run();
+							try {
+								level.run();
+							} catch(Exception a) {
+								a.printStackTrace(); }
 							frame.setVisible(true);
 						}
 					});
 				}});
+			add(new JButton(){{
+				setText("Quit");
+				addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						frame.dispatchEvent(new WindowEvent(frame,WindowEvent.WINDOW_CLOSING));
+					}
+				});
+			}});
 			setVisible(true);
 		}};
 	}
