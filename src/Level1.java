@@ -1,6 +1,6 @@
 public class Level1 implements Level {
 	public String getName() {
-		return "Level2";
+		return "Level1";
 	}
 	public void run() {
 		System.out.println("hecc");

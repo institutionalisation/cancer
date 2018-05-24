@@ -4,6 +4,7 @@ import java.awt.event.*;
 public class Main {
 	private void run() {
 		new JFrame(){final JFrame frame = this;{
+			setSize(200,200);
 			setTitle("Menu");
 			setBackground(new Color(50,100,150));
 			setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

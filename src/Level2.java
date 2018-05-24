@@ -56,6 +56,17 @@ public class Level2 implements Level {
 			new Shader("fragment",GL_FRAGMENT_SHADER));
 		program.use();
 		jFrame = new JFrame(){{
+			setResizable(false);
+			setUndecorated(true);
+			Color color = UIManager.getColor("activeCaptionBorder");
+			getRootPane().setBorder(BorderFactory.createLineBorder(color, 4));
+			setLayout(new FlowLayout());
+			add(new JPanel(){{
+				setSize(100,100);
+				setBackground(Color.ORANGE);
+			}});
+			getContentPane().add(new JButton("test button"));
+			setBackground(Color.BLUE);
 			setVisible(true);
 		}};
 		GLFWWindowPosCallback positionCallback = new GLFWWindowPosCallback() {
