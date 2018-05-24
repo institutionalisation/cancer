@@ -2,6 +2,7 @@ import org.joml.*;
 import org.lwjgl.assimp.*;
 import org.lwjgl.*;
 import java.nio.*;
+import java.util.*;
 public class ModelNode {
 	public String name;
 	public Matrix4f transform;
@@ -40,9 +41,19 @@ public class ModelNode {
 		);
 		System.out.println("transform:"+transform);
 	}
-	private AIVectorKey[] positionKeys;
-	private AIQuatKey[] rotationKeys;
-	private AIVectorKey[] scalingKeys;
+	private AIVectorKey.Buffer positionKeys;
+	private AIQuatKey.Buffer rotationKeys;
+	private AIVectorKey.Buffer scalingKeys;
+	public void setAnimation(Map<ModelNode,AINodeAnim> animation) {
+		if(animation.keySet().contains(this)) {
+			AINodeAnim thisChannel = animation.get(this);
+			positionKeys = thisChannel.mPositionKeys();
+			rotationKeys = thisChannel.mRotationKeys();
+			scalingKeys = thisChannel.mScalingKeys();
+		}
+		for(ModelNode x : children)
+			x.setAnimation(animation);
+	}
 	public void interpolate(Matrix4f transform) {
 		//System.out.println("model node interpolate input trans:\n"+transform);
 		// figure out my local transform
@@ -50,7 +61,6 @@ public class ModelNode {
 		System.out.println("model.currentNodeAnimationMap.keySet():"+model.currentNodeAnimationMap.keySet());
 		if(model.currentNodeAnimationMap.keySet().contains(this))
 			System.out.println("I should be animating");
-
 		transform.mul(myTransform,myTransform);
 		this.transform = myTransform;
 		System.out.println("ModelNode interpolate this trans:\n"+this.transform);
