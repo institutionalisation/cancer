@@ -18,25 +18,43 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 public class Level2 extends LevelBase {
+	JLabel dialog = new JLabel();
+	private void dialog(String text) {
+		dialog.setText(
+			"<html><style>body{font-size:20px;}</style><body>"+
+			text+
+			"</body></html>");
+	}
 	public String getName() { return "Level 2"; }
 	public void logic() throws Exception {
-		JFrame jFrame = new JFrame(){{
-			add(new JButton("hi!"));
+		JFrame bottomFrame = new JFrame(){{
+			add(BorderLayout.NORTH,dialog);
 			setVisible(true);
 		}};
-		Window.BoundCallback callback = new Window.BoundCallback() {
-			public void invoke(Window window,Dimension b) {
-				System.out.println("set bounds");
-				jFrame.setBounds(window.x,window.y+window.height,window.width,window.height/3);
+		JFrame rightFrame = new JFrame(){{
+			add(BorderLayout.NORTH,new JButton("test"));
+			setVisible(true);
+		}};
+		Window.BoundCallback bottomFrameAdjust = new Window.BoundCallback() {
+			public void invoke(Window w,Dimension b) {
+				bottomFrame.setBounds(w.x,w.y+w.height,w.width,w.height/3);
 			}
 		};
-		window.print();
-		window.resizeCallbacks.add(callback);
-		window.positionCallbacks.add(callback);
+		Window.BoundCallback rightFrameAdjust = new Window.BoundCallback() {
+			public void invoke(Window w,Dimension b) {
+				rightFrame.setBounds(w.x+w.width,w.y,w.width/3,w.height*4/3);
+			}
+		};
+		for(Window.BoundCallback x : new Window.BoundCallback[]{bottomFrameAdjust,rightFrameAdjust}) {
+			window.resizeCallbacks.add(x);
+			window.positionCallbacks.add(x);
+		}
+		Thread.sleep(1000);
+		dialog("hecc!");
 		for(;running;) {
 			System.out.println("hecc");
 			Thread.sleep(500); // do stuff
 		}
-		jFrame.dispatchEvent(new WindowEvent(jFrame,WindowEvent.WINDOW_CLOSING));
+		bottomFrame.dispatchEvent(new WindowEvent(bottomFrame,WindowEvent.WINDOW_CLOSING));
 	}
 }

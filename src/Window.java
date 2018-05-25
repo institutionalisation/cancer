@@ -70,7 +70,4 @@ public class Window {
 		glfwFreeCallbacks(id);
 		glfwDestroyWindow(id);
 	}
-	public void print() {
-		System.out.println("test");
-	}
 }
