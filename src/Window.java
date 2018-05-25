@@ -22,8 +22,9 @@ public class Window {
 		x,y;
 	public interface BoundCallback {
 		public void invoke(Window a,Dimension b); }
-	public List<BoundCallback> resizeCallbacks = new ArrayList<>();
-	public List<BoundCallback> positionCallbacks = new ArrayList<>();
+	public List<BoundCallback>
+		resizeCallbacks = new ArrayList<>(),
+		positionCallbacks = new ArrayList<>();
 	public Window(int width,int height,String title,Keyboard keyboard) {
 		this.width = width;
 		this.height = height;
@@ -35,10 +36,11 @@ public class Window {
 		id = glfwCreateWindow(width,height,title,NULL,NULL);
 		if(id == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
-		glfwSetWindowSizeCallback(id,new GLFWWindowSizeCallback() { 
+		glfwSetWindowSizeCallback(id,new GLFWWindowSizeCallback() {
 			public void invoke(long windowId,int width,int height) {
 				window.width = width;
 				window.height = height;
+				System.out.println("resizeCallbacks.size()"+resizeCallbacks.size());
 				for(BoundCallback x : resizeCallbacks) {
 					System.out.println("callback resize");
 					x.invoke(window,new Dimension(width,height));
@@ -49,6 +51,7 @@ public class Window {
 			public void invoke(long windowId,int x,int y) {
 				window.x = x;
 				window.y = y;
+				System.out.println("positionCallbacks.size():"+positionCallbacks.size());
 				for(BoundCallback xx : positionCallbacks)
 					xx.invoke(window,new Dimension(x,y));
 			}
@@ -66,5 +69,8 @@ public class Window {
 	public void destroy() {
 		glfwFreeCallbacks(id);
 		glfwDestroyWindow(id);
+	}
+	public void print() {
+		System.out.println("test");
 	}
 }

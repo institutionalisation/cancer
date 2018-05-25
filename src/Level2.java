@@ -17,23 +17,22 @@ import java.lang.Math;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-public class Level2 extends LevelBase implements Level {
+public class Level2 extends LevelBase {
 	public String getName() { return "Level 2"; }
-	public void run() throws Exception {
-		new Thread() {
-			public void run() {
-				try {
-					init();
-					renderLoop();
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}.start();
+	public void logic() throws Exception {
 		JFrame jFrame = new JFrame(){{
 			add(new JButton("hi!"));
 			setVisible(true);
 		}};
+		Window.BoundCallback callback = new Window.BoundCallback() {
+			public void invoke(Window window,Dimension b) {
+				System.out.println("set bounds");
+				jFrame.setBounds(window.x,window.y+window.height,window.width,window.height/3);
+			}
+		};
+		window.print();
+		window.resizeCallbacks.add(callback);
+		window.positionCallbacks.add(callback);
 		for(;running;) {
 			System.out.println("hecc");
 			Thread.sleep(500); // do stuff

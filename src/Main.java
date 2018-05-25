@@ -20,7 +20,9 @@ public class Main {
 								try {
 									level.run();
 								} catch(Exception a) {
+									System.out.println("Exception was thrown:"+a);
 									a.printStackTrace(); }
+								System.out.println("exited somehow");
 								frame.setVisible(true);
 							}}.start();
 						}

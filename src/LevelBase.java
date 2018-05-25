@@ -17,12 +17,24 @@ import java.lang.Math;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-public class LevelBase {
+public abstract class LevelBase implements Level {
 	public Keyboard keyboard = new Keyboard();
 	public Mouse mouse;
 	public Window window;
 	public Program program;
 	public boolean running = true;
+	abstract void logic() throws Exception;
+	public void run() throws Exception {
+		init();
+		new Thread() { public void run() {
+			try { logic(); }
+				catch(Exception e) {
+					System.out.println("exception in logic:");
+					e.printStackTrace();
+				}
+		}}.start();
+		renderLoop();
+	}
 	public void init() {
 		GLFWErrorCallback.createPrint(System.err).set();
 		// initialize GLFW. most GLFW functions will not work before doing this.
@@ -50,14 +62,6 @@ public class LevelBase {
 			new Shader("vertex",GL_VERTEX_SHADER),
 			new Shader("fragment",GL_FRAGMENT_SHADER));
 		program.use();
-		GLFWWindowPosCallback positionCallback = new GLFWWindowPosCallback() {
-			public void invoke(long w,int x,int y) {
-				window.x = x;
-				window.y = y;
-			}
-		};
-		glfwSetWindowPosCallback(window.getId(),positionCallback);
-		glfwSetWindowPos(window.getId(),300,300);
 		window.resizeCallbacks.add(new Window.BoundCallback() {
 			public void invoke(Window a,Dimension size) {
 				int
@@ -69,7 +73,7 @@ public class LevelBase {
 				final float Z_FAR = 100;
 				Matrix4f perspectiveMatrix;
 				System.out.println("w:"+width+",h:"+height);
-				float aspectRatio = 1f*width/width;
+				float aspectRatio = 1f*width/height;
 				perspectiveMatrix = new Matrix4f().perspective(FOV,aspectRatio,Z_NEAR,Z_FAR);
 				glUniformMatrix4fv(program.getUniformLocation("perspective"),false,
 					perspectiveMatrix.get(new float[16]));
