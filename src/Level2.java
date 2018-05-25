@@ -27,24 +27,20 @@ public class Level2 extends LevelBase {
 	}
 	public String getName() { return "Level 2"; }
 	public void logic() throws Exception {
-		JFrame bottomFrame = new JFrame(){{
+		JFrame dialogFrame = new JFrame(){{
 			add(BorderLayout.NORTH,dialog);
 			setVisible(true);
 		}};
-		JFrame rightFrame = new JFrame(){{
-			add(BorderLayout.NORTH,new JButton("test"));
+		MeterFrame meterFrame = new MeterFrame(){{
+			//add(BorderLayout.NORTH,new JButton("test"));
 			setVisible(true);
 		}};
 		Window.BoundCallback bottomFrameAdjust = new Window.BoundCallback() {
 			public void invoke(Window w,Dimension b) {
-				bottomFrame.setBounds(w.x,w.y+w.height,w.width,w.height/3);
-			}
-		};
+				dialogFrame.setBounds(w.x,w.y+w.height,w.width,w.height/3); } };
 		Window.BoundCallback rightFrameAdjust = new Window.BoundCallback() {
 			public void invoke(Window w,Dimension b) {
-				rightFrame.setBounds(w.x+w.width,w.y,w.width/3,w.height*4/3);
-			}
-		};
+				meterFrame.setBounds(w.x+w.width,w.y,w.width/3,w.height*4/3); } };
 		for(Window.BoundCallback x : new Window.BoundCallback[]{bottomFrameAdjust,rightFrameAdjust}) {
 			window.resizeCallbacks.add(x);
 			window.positionCallbacks.add(x);
@@ -52,9 +48,10 @@ public class Level2 extends LevelBase {
 		Thread.sleep(1000);
 		dialog("hecc!");
 		for(;running;) {
-			System.out.println("hecc");
-			Thread.sleep(500); // do stuff
+			for(JFrame x : new JFrame[]{dialogFrame,meterFrame})
+				x.repaint();
 		}
-		bottomFrame.dispatchEvent(new WindowEvent(bottomFrame,WindowEvent.WINDOW_CLOSING));
+		for(JFrame x : new JFrame[]{dialogFrame,meterFrame})
+			x.dispatchEvent(new WindowEvent(x,WindowEvent.WINDOW_CLOSING));
 	}
 }
