@@ -10,6 +10,9 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.system.MemoryUtil.*;
+import java.util.*;
+import java.awt.*;
+import java.util.List;
 
 public class Window {
 	private final Window window = this;
@@ -17,6 +20,10 @@ public class Window {
 	public int
 		width,height,
 		x,y;
+	public interface BoundCallback {
+		public void invoke(Window a,Dimension b); }
+	public List<BoundCallback> resizeCallbacks = new ArrayList<>();
+	public List<BoundCallback> positionCallbacks = new ArrayList<>();
 	public Window(int width,int height,String title,Keyboard keyboard) {
 		this.width = width;
 		this.height = height;
@@ -28,16 +35,35 @@ public class Window {
 		id = glfwCreateWindow(width,height,title,NULL,NULL);
 		if(id == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
+		glfwSetWindowSizeCallback(id,new GLFWWindowSizeCallback() { 
+			public void invoke(long windowId,int width,int height) {
+				window.width = width;
+				window.height = height;
+				for(BoundCallback x : resizeCallbacks) {
+					System.out.println("callback resize");
+					x.invoke(window,new Dimension(width,height));
+				}
+			}
+		});
+		glfwSetWindowPosCallback(id,new GLFWWindowPosCallback() {
+			public void invoke(long windowId,int x,int y) {
+				window.x = x;
+				window.y = y;
+				for(BoundCallback xx : positionCallbacks)
+					xx.invoke(window,new Dimension(x,y));
+			}
+		});
 		glfwSetKeyCallback(id,keyboard.listener);
 		keyboard.getImmediateKeys().put(GLFW_KEY_X,new Runnable() { public void run() {
 			glfwSetWindowShouldClose(id,true);
 		}});
 	}
-	void makeContextCurrent() { glfwMakeContextCurrent(id); }
-	void show() { glfwShowWindow(id); }
-	void swapBuffers() { glfwSwapBuffers(id); }
-	long getId() { return id; }
-	void destroy() {
+	public boolean shouldClose() { return glfwWindowShouldClose(id); }
+	public void makeContextCurrent() { glfwMakeContextCurrent(id); }
+	public void show() { glfwShowWindow(id); }
+	public void swapBuffers() { glfwSwapBuffers(id); }
+	public long getId() { return id; }
+	public void destroy() {
 		glfwFreeCallbacks(id);
 		glfwDestroyWindow(id);
 	}

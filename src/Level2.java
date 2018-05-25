@@ -17,117 +17,27 @@ import java.lang.Math;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-public class Level2 implements Level {
+public class Level2 extends LevelBase implements Level {
 	public String getName() { return "Level 2"; }
-	private Keyboard keyboard = new Keyboard();
-	private Mouse mouse;
-	public Window window;
-	public Program program;
-	public JFrame jFrame;
 	public void run() throws Exception {
-		System.out.println("LWJGL version:"+Version.getVersion());
-		init();
-		loop();
-		deinit();
-	}
-	private void init() throws Exception {
-		GLFWErrorCallback.createPrint(System.err).set();
-		// initialize GLFW. most GLFW functions will not work before doing this.
-		if(!glfwInit())
-			throw new IllegalStateException("Unable to initialize GLFW");
-		window = new Window(500,500,"Alternate Perspective",keyboard);
-		mouse = new Mouse(window);
-		new Runnable() { final Runnable capture = this;
+		new Thread() {
 			public void run() {
-				mouse.capture(true);
-				keyboard.getImmediateKeys().put(GLFW_KEY_ESCAPE, new Runnable() { public void run() {
-					mouse.capture(false);
-					keyboard.getImmediateKeys().put(GLFW_KEY_ESCAPE,capture);
-				}});
+				try {
+					init();
+					renderLoop();
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
-		}.run();
-		window.makeContextCurrent();
-		GL.createCapabilities();
-		// Enable v-sync
-		glfwSwapInterval(1);
-		window.show();
-		program = new Program(
-			new Shader("vertex",GL_VERTEX_SHADER),
-			new Shader("fragment",GL_FRAGMENT_SHADER));
-		program.use();
-		jFrame = new JFrame(){{
-			setResizable(false);
-			setUndecorated(true);
-			Color color = UIManager.getColor("activeCaptionBorder");
-			getRootPane().setBorder(BorderFactory.createLineBorder(color, 4));
-			setLayout(new FlowLayout());
-			add(new JPanel(){{
-				setSize(100,100);
-				setBackground(Color.ORANGE);
-			}});
-			getContentPane().add(new JButton("test button"));
-			setBackground(Color.BLUE);
+		}.start();
+		JFrame jFrame = new JFrame(){{
+			add(new JButton("hi!"));
 			setVisible(true);
 		}};
-		GLFWWindowPosCallback positionCallback = new GLFWWindowPosCallback() {
-			public void invoke(long w,int x,int y) {
-				window.x = x;
-				window.y = y;
-				jFrame.setBounds(window.x,window.y+window.height,window.width,window.height/3);
-			}
-		};
-		glfwSetWindowPosCallback(window.getId(),positionCallback);
-		glfwSetWindowPos(window.getId(),300,300);
-		GLFWWindowSizeCallback sizeCallback = new GLFWWindowSizeCallback() { 
-			public void invoke(long windowId,int width,int height) {
-				window.width = width;
-				window.height = height;
-				System.out.println("resize");
-				final float FOV = (float) Math.toRadians(100f);
-				final float Z_NEAR = .1f;
-				final float Z_FAR = 100;
-				Matrix4f perspectiveMatrix;
-				System.out.println("w:"+width+",h:"+height);
-				float aspectRatio = 1f*width/height;
-				perspectiveMatrix = new Matrix4f().perspective(FOV,aspectRatio,Z_NEAR,Z_FAR);
-				glUniformMatrix4fv(program.getUniformLocation("perspective"),false,
-					perspectiveMatrix.get(new float[16]));
-				glViewport(0,0,width,height);
-				jFrame.setBounds(window.x,window.y+window.height,window.width,window.height/3);
-			}
-		};
-		sizeCallback.invoke(0,300,300);
-		glfwSetWindowSizeCallback(window.getId(),sizeCallback);
-	}
-	private void deinit() throws Exception {
-		jFrame.dispatchEvent(new WindowEvent(jFrame,WindowEvent.WINDOW_CLOSING));
-		window.destroy();
-		glfwTerminate();
-		glfwSetErrorCallback(null).free();
-	}
-	private void loop() throws Exception {
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LEQUAL);
-		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
-		Model maze = new Model("maze0",program);
-		System.out.println("mesh count:"+maze.meshes.length);
-		glClearColor(0,.5f,.5f,0);
-		long prevTime = System.currentTimeMillis();
-		Player player = new Player(keyboard,mouse,maze.meshes);
-		for(;!glfwWindowShouldClose(window.getId());) {
-			glfwPollEvents();
-			long nowTime = System.currentTimeMillis();
-			int delta = (int)(nowTime-prevTime);
-			prevTime = nowTime;
-			player.handleInput(delta);
-			glUniformMatrix4fv(program.getUniformLocation("view"),false,player.getView());
-			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-			for(Mesh x : maze.meshes)
-				x.render();
-			System.out.println("error:"+glGetError());
-			glDisableVertexAttribArray(0);
-			glBindVertexArray(0);
-			window.swapBuffers();
+		for(;running;) {
+			System.out.println("hecc");
+			Thread.sleep(500); // do stuff
 		}
+		jFrame.dispatchEvent(new WindowEvent(jFrame,WindowEvent.WINDOW_CLOSING));
 	}
 }

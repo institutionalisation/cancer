@@ -61,7 +61,7 @@ public class Player {
 			dy = INITIAL_DY;
 		loc.y += dy*delta;
 		dy -= GRAVITY;
-		System.out.println("dy:"+dy);
+		//System.out.println("dy:"+dy);
 		//keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,scaledUp));
 		//System.out.println("view:"+viewMatrix);
 		// collide
@@ -97,7 +97,7 @@ public class Player {
 					highest-lowest < .01f &&
 					new Triangle2f(vertices[0],vertices[1],vertices[2]).contains(locXZ)
 				) {
-					System.out.println("floor");
+					//System.out.println("floor");
 					dy = 0;
 					loc.y = highest + FOOT_OFFSET;
 					continue;
@@ -124,7 +124,7 @@ public class Player {
 					for(Vector2f vertex : vertices) {
 						float dist = vertex.distance(locXZ);
 						if(dist < RADIUS) {
-							System.out.println("vertex");
+							//System.out.println("vertex");
 							Vector2f bounce = vertex.sub(locXZ,new Vector2f()).normalize().mul(dist-RADIUS);
 							loc.x += bounce.x;
 							loc.z += bounce.y;
@@ -139,10 +139,10 @@ public class Player {
 				final float h = 2*A/AB;
 				// if in wall, move to just outside wall
 				if(h<RADIUS) {
-					System.out.println("bounce:"+j);
+					//System.out.println("bounce:"+j);
 					// if the wall is small enough, step over it
 					if(highest<loc.y-STEP_MAX_HEIGHT+.1f) {
-						System.out.println("step");
+						//System.out.println("step");
 						loc.y = highest+FOOT_OFFSET;
 						dy = 0;
 						continue;

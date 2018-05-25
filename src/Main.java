@@ -15,12 +15,14 @@ public class Main {
 					setText(level.getName());
 					addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							frame.setVisible(false);
-							try {
-								level.run();
-							} catch(Exception a) {
-								a.printStackTrace(); }
-							frame.setVisible(true);
+							new Thread(){ public void run() {
+								frame.setVisible(false);
+								try {
+									level.run();
+								} catch(Exception a) {
+									a.printStackTrace(); }
+								frame.setVisible(true);
+							}}.start();
 						}
 					});
 				}});
