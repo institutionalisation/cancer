@@ -79,9 +79,9 @@ public class Model {
 			}
 		}
 	}
-	public void render() {
-		System.out.println("model render");
-		rootNode.interpolate(new Matrix4f()); // identity matrix
+	public void render(Matrix4f transform) {
+		//System.out.println("model render");
+		rootNode.interpolate(transform); // identity matrix
 		// all nodes should now have local-to-global transform matrices
 		for(Mesh x : meshes)
 			x.render();

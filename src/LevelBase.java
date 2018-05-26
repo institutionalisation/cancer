@@ -85,12 +85,12 @@ public abstract class LevelBase {
 		});
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
-		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
-		// Model maze = new Model("maze0","dae",program);
-		// for(Mesh x : maze.meshes)
-		// 	player.colliders.add(x);
-		// maze.rootNode.defaultTransform.scale(1,-1,-1);
-		//renderedModels.add(maze);
+		//https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
+		Model maze = new Model("maze0","dae",program);
+		for(Mesh x : maze.meshes)
+			player.colliders.add(x);
+		maze.rootNode.defaultTransform.rotateLocalX((float)Math.toRadians(180));
+		renderedModels.add(maze);
 		glClearColor(0,.5f,.5f,0);
 		long prevTime = System.currentTimeMillis();
 		for(;!glfwWindowShouldClose(window.getId());) {
@@ -102,9 +102,9 @@ public abstract class LevelBase {
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,player.getView());
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 			for(Model x : renderedModels) {
-				x.rootNode.interpolate(new Matrix4f());
-				x.render();
+				x.render(new Matrix4f());//.rotateX((float)Math.toRadians(90)));
 			}
+			out.println("player.loc"+player.loc);
 			//System.out.println("error:"+glGetError());
 			glDisableVertexAttribArray(0);
 			glBindVertexArray(0);

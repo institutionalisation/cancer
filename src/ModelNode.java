@@ -58,11 +58,9 @@ public class ModelNode {
 			x.updateAnimation();
 	}
 	public void interpolate(Matrix4f transform) {
-		//System.out.println("model node interpolate input trans:\n"+transform);
-		// figure out my local transform
 		absoluteTransform.set(defaultTransform);
-		if(model.currentNodeAnimationMap.keySet().contains(this))
-			System.out.println("I should be animating");
+		// if(model.currentNodeAnimationMap.keySet().contains(this))
+		// 	System.out.println("I should be animating");
 		transform.mul(absoluteTransform,absoluteTransform);
 		for(ModelNode x : children)
 			x.interpolate(absoluteTransform);

@@ -56,12 +56,15 @@ public class Level2 extends LevelBase {
 				x.repaint();
 			}
 	}
+	// private Model bed;
 	private Model bed;
 	public void inContext() {
 		out.println("inContext thread name"+Thread.currentThread().getName());
 		out.println("inContext error:"+glGetError());
-		bed = new Model("bed","obj",program);
-		bed.rootNode.defaultTransform.translate(new Vector3f(0,1,0));
+		bed = new Model("bed","dae",program);
+		bed.rootNode.defaultTransform
+			.rotateLocalY((float)Math.toRadians(180))
+			.translateLocal(new Vector3f( 6.561E+0f,0,3.323E+0f));
 		renderedModels.add(bed);
 	}
 	public void onReady() {

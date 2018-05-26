@@ -9,7 +9,7 @@ import static util.Util.*;
 public class Player {
 	private Keyboard keyboard;
 	private Mouse mouse;
-	public Vector3f loc = new Vector3f(0,2,0);
+	public Vector3f loc = new Vector3f(0,0,0);
 	private Matrix4f viewMatrix = new Matrix4f();
 	private FloatBuffer viewMatrixBuffer = memAllocFloat(16);
 	public List<Mesh> colliders = new ArrayList<>();
@@ -30,7 +30,6 @@ public class Player {
 		GRAVITY = .4f/1000f;
 	float dy = 0;
 	boolean grounded = true;
-	Vector3f scaledUp = new Vector3f();
 	public void handleInput(int delta) {
 		Vector2f cursorPos = mouse.getCameraCursor();
 		float
@@ -63,13 +62,12 @@ public class Player {
 		// 	dy = INITIAL_DY;
 		// loc.y += dy*delta;
 		// dy -= GRAVITY;
-		// System.out.println("dy:"+dy);
-		keyRun(GLFW_KEY_SPACE,UP.mul(distance,scaledUp));
-		keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,scaledUp));
+		//System.out.println("dy:"+dy);
+		keyRun(GLFW_KEY_SPACE,UP.mul(distance,new Vector3f()));
+		keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,new Vector3f()));
 		//System.out.println("view:"+viewMatrix);
 		// collide
 		for(Mesh meshWrapper : colliders) {
-			System.out.println("collider");
 			AIMesh mesh = meshWrapper.getAIMesh();
 			AIFace.Buffer faces = mesh.mFaces();
 			AIVector3D.Buffer vertexBuffer = mesh.mVertices();

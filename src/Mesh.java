@@ -99,7 +99,8 @@ public class Mesh {
 
 	public void render() {
 		model.meshParentMap.get(this).absoluteTransform.get(transformBuffer);
-		//System.out.println("mesh render transform:"+model.meshParentMap.get(this).transform);
+		//System.out.println("mesh render transform:"+model.meshParentMap.get(this).absoluteTransform);
+		//System.out.println("parent:"+model.meshParentMap.get(this).name);
 		if(texture != null)
 			glBindTexture(GL_TEXTURE_2D,texture.id);
 		//System.out.println("mesh render texture:"+texture);
@@ -114,7 +115,7 @@ public class Mesh {
 		//System.out.println("mesh render transform:"+transform);
 		// System.out.println("mesh render indexCount:"+indexCount);
 		glDrawElements(GL_TRIANGLES,indexCount,GL_UNSIGNED_INT,0);
-		System.out.println("render error:"+glGetError());
+		//System.out.println("render error:"+glGetError());
 		//glBindTexture(GL_TEXTURE_2D,0);
 	}
 	public AIMesh getAIMesh() {
