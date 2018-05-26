@@ -44,15 +44,15 @@ public class ModelNode {
 	private AIVectorKey.Buffer positionKeys;
 	private AIQuatKey.Buffer rotationKeys;
 	private AIVectorKey.Buffer scalingKeys;
-	public void setAnimation(Map<ModelNode,AINodeAnim> animation) {
-		if(animation.keySet().contains(this)) {
-			AINodeAnim thisChannel = animation.get(this);
+	public void updateAnimation() {
+		if(model.currentNodeAnimationMap.keySet().contains(this)) {
+			AINodeAnim thisChannel = model.currentNodeAnimationMap.get(this);
 			positionKeys = thisChannel.mPositionKeys();
 			rotationKeys = thisChannel.mRotationKeys();
 			scalingKeys = thisChannel.mScalingKeys();
 		}
 		for(ModelNode x : children)
-			x.setAnimation(animation);
+			x.updateAnimation();
 	}
 	public void interpolate(Matrix4f transform) {
 		//System.out.println("model node interpolate input trans:\n"+transform);

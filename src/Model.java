@@ -73,6 +73,7 @@ public class Model {
 				System.out.println("there is only one animation, autoplay");
 				animationStartTime = System.currentTimeMillis();
 				currentNodeAnimationMap = nodeAnimationMap;
+				rootNode.updateAnimation();
 			}
 		}
 	}
@@ -85,7 +86,8 @@ public class Model {
 	}
 	public void animate(String animationName) {
 		animationStartTime = System.currentTimeMillis();
-		rootNode.setAnimation(animationNameNodeAnimationMap.get(animationName));
+		currentNodeAnimationMap = animationNameNodeAnimationMap.get(animationName);
+		rootNode.updateAnimation();
 		System.out.println("currentNodeAnimationMap:"+currentNodeAnimationMap);
 	}
 	public void free() {
