@@ -6,7 +6,7 @@ import java.util.List;
 import java.io.*;
 public class Main {
 	private void run() {
-		System.out.println("working directory: "+System.getProperty("user.dir"));
+		//System.out.println("working directory: "+System.getProperty("user.dir"));
 		new JFrame(){final JFrame frame = this;{
 			setSize(200,200);
 			setTitle("Menu");

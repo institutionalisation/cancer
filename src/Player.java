@@ -4,14 +4,16 @@ import static org.lwjgl.system.MemoryUtil.*;
 import java.nio.*;
 import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.assimp.*;
+import java.util.*;
+import static util.Util.*;
 public class Player {
 	private Keyboard keyboard;
 	private Mouse mouse;
-	private Vector3f loc = new Vector3f(0,0,0);
+	public Vector3f loc = new Vector3f(0,0,0);
 	private Matrix4f viewMatrix = new Matrix4f();
 	private FloatBuffer viewMatrixBuffer = memAllocFloat(16);
-	private Mesh[] colliders;
-	public Player(Keyboard keyboard,Mouse mouse,Mesh[]colliders) {
+	public List<Mesh> colliders = new ArrayList<>();
+	public Player(Keyboard keyboard,Mouse mouse) {
 		this.keyboard = keyboard;
 		this.mouse = mouse;
 		this.colliders = colliders;

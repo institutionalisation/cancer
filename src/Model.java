@@ -23,7 +23,7 @@ public class Model {
 			for(;properties.hasRemaining();) {
 				AIMaterialProperty property = AIMaterialProperty.create(properties.get());
 				String propertyName = property.mKey().dataString();
-				System.out.println(propertyName);
+				//System.out.println(propertyName);
 				if(propertyName.equals("$tex.file")) {
 					String textureFileName = StandardCharsets.UTF_8.decode(property.mData()).toString();
 					textureFileName = textureFileName.trim();

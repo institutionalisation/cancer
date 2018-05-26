@@ -18,11 +18,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import static util.Util.*;
-public abstract class LevelBase implements Level {
+public abstract class LevelBase {
 	public Keyboard keyboard = new Keyboard();
 	public Mouse mouse;
 	public Window window;
 	public Program program;
+	public Player player;
 	abstract void logic();
 	abstract void close();
 	public void run() { exPrint(()->{
@@ -81,15 +82,15 @@ public abstract class LevelBase implements Level {
 				glViewport(0,0,width,height);
 			}
 		});
+		player = new Player(keyboard,mouse);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
 		Model maze = new Model("maze0",program);
-		System.out.println("mesh count:"+maze.meshes.length);
+		for(Mesh x : maze.meshes)
+			player.colliders.add(x);
 		glClearColor(0,.5f,.5f,0);
 		long prevTime = System.currentTimeMillis();
-		Player player = new Player(keyboard,mouse,maze.meshes);
-		System.out.println("aa");
 		for(;!glfwWindowShouldClose(window.getId());) {
 			glfwPollEvents();
 			long nowTime = System.currentTimeMillis();
