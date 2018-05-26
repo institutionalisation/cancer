@@ -9,8 +9,8 @@ import java.nio.charset.StandardCharsets;
 public class Model {
 	private AIScene scene;
 	public Mesh[] meshes;
-	public Model(String name,Program program) {
-		scene = aiImportFile("models/"+name+"/a.dae",aiProcess_JoinIdenticalVertices|aiProcess_Triangulate);
+	public Model(String name,String extension,Program program) {
+		scene = aiImportFile("models/"+name+"/a."+extension,aiProcess_JoinIdenticalVertices|aiProcess_Triangulate);
 		PointerBuffer meshBuffer = scene.mMeshes();
 		meshes = new Mesh[scene.mNumMeshes()];
 		//System.out.println("num materials:"+scene.mNumMaterials());

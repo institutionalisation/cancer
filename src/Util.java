@@ -15,6 +15,6 @@ public class Util {
 		try {
 			r.run(); }
 		catch(Exception e) {
-			out.println(e.getStackTrace()); }
+			e.printStackTrace(); }
 	}
 }

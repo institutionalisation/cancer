@@ -18,23 +18,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import static util.Util.*;
+import java.util.*;
+import java.util.List;
 public abstract class LevelBase {
 	public Keyboard keyboard = new Keyboard();
 	public Mouse mouse;
 	public Window window;
 	public Program program;
 	public Player player;
-	abstract void logic();
-	abstract void close();
-	public void run() { exPrint(()->{
+	public abstract void close();
+	public List<Mesh> renderedMeshes = new ArrayList<Mesh>();
+	// inContext needs to have the GL context
+	// ready is put to a new thread
+	public void render(Runnable inContext,Runnable ready) { exPrint(()->{
 		init();
-		new Thread() { public void run() {
-			try { logic(); }
-				catch(Exception e) {
-					System.out.println("exception in logic:");
-					e.printStackTrace();
-				}
-		}}.start();
+		inContext.run();
+		new Thread(ready).start();
 		renderLoop();
 	});}
 	public void init() {
@@ -53,6 +52,7 @@ public abstract class LevelBase {
 				}});
 			}
 		}.run();
+		player = new Player(keyboard,mouse);
 	}
 	public void renderLoop() { exPrint(()->{
 		window.makeContextCurrent();
@@ -82,13 +82,14 @@ public abstract class LevelBase {
 				glViewport(0,0,width,height);
 			}
 		});
-		player = new Player(keyboard,mouse);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
-		Model maze = new Model("maze0",program);
-		for(Mesh x : maze.meshes)
+		Model maze = new Model("maze0","dae",program);
+		for(Mesh x : maze.meshes) {
+			//renderedMeshes.add(x);
 			player.colliders.add(x);
+		}
 		glClearColor(0,.5f,.5f,0);
 		long prevTime = System.currentTimeMillis();
 		for(;!glfwWindowShouldClose(window.getId());) {
@@ -99,7 +100,7 @@ public abstract class LevelBase {
 			player.handleInput(delta);
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,player.getView());
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-			for(Mesh x : maze.meshes)
+			for(Mesh x : renderedMeshes)
 				x.render();
 			//System.out.println("error:"+glGetError());
 			glDisableVertexAttribArray(0);
