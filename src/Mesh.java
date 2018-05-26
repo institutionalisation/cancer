@@ -9,8 +9,9 @@ import static org.lwjgl.opengl.GL30.*;
 import java.nio.*;
 import static org.lwjgl.system.MemoryUtil.*;
 import org.lwjgl.*;
+import org.joml.*;
 public class Mesh {
-	private float scale;
+	private float scale = 1;
 	private AIMesh mesh;
 	private int
 		vertexBuffer,
@@ -20,12 +21,14 @@ public class Mesh {
 		vertexArrayObject;
 	private Texture texture;
 	private Program program;
-	public Mesh(AIMesh mesh,Program program,Texture[] textures,float scale) {
+	private Model model;
+	public Mesh(Model model,AIMesh mesh) {
+		this.model = model;
+		System.out.println("mesh init mesh:"+mesh);
 		this.mesh = mesh;
-		this.program = program;
-		this.scale = scale;
+		this.program = model.program;
 		System.out.println("mat index:"+mesh.mMaterialIndex());
-		this.texture = textures[mesh.mMaterialIndex()];
+		this.texture = model.textures[mesh.mMaterialIndex()];
 		vertexArrayObject = glGenVertexArrays();
 		glBindVertexArray(vertexArrayObject);
 		System.out.println("cc:"+glGetError());
@@ -35,10 +38,14 @@ public class Mesh {
 			FloatBuffer floats = memFloatBuffer(orig.address(),orig.capacity()*AIVector3D.SIZEOF/4);
 			// flip y and z values (because blender and collada and hecc)
 			for(int i = 0; i < floats.capacity(); i+=3) {
-				floats.put(i,-floats.get(i));
-				float tmp = floats.get(i+1);
-				floats.put(i+1,floats.get(i+2));
-				floats.put(i+2,tmp);
+				//floats.put(i+1,-floats.get(i+1));
+				//floats.put(i,-floats.get(i));
+				// floats.put(i,-floats.get(i));
+				// float tmp = floats.get(i+1);
+				// floats.put(i+1,floats.get(i+2));
+				// floats.put(i+2,tmp);
+				if(i<30)
+					System.out.println("vertex:"+floats.get(i)+" "+floats.get(i+1)+" "+floats.get(i+2));
 				//System.out.println(floats.get()+" "+floats.get()+" "+floats.get());
 			}
 			vertexBuffer = glGenBuffers();
@@ -66,38 +73,47 @@ public class Mesh {
 			System.out.println("texCoords:"+(mesh.mTextureCoords()!=null));
 			PointerBuffer texCoordsBuffer = mesh.mTextureCoords();
 			FloatBuffer UVBufferData = null;
-			for(;texCoordsBuffer.hasRemaining();) {
-				long pointer = texCoordsBuffer.get();
-				//System.out.println("pointer:"+pointer);
-				if(pointer != NULL) {
-					AIVector3D.Buffer x = AIVector3D.create(pointer,mesh.mNumVertices());
-					UVBufferData = memAllocFloat(mesh.mNumVertices()*2);
-					for(;x.hasRemaining();) {
-						AIVector3D y = x.get();
-						UVBufferData.put(y.x()).put(y.y());
-						//System.out.println(y.x()+" "+y.y()+" "+y.z());
-					}
-					UVBufferData.clear();
+			
+			long pointer = texCoordsBuffer.get();
+			//System.out.println("pointer:"+pointer);
+			if(pointer != NULL) {
+				AIVector3D.Buffer x = AIVector3D.create(pointer,mesh.mNumVertices());
+				UVBufferData = memAllocFloat(mesh.mNumVertices()*2);
+				for(;x.hasRemaining();) {
+					AIVector3D y = x.get();
+					UVBufferData.put(y.x()).put(y.y());
+					//System.out.println(y.x()+" "+y.y()+" "+y.z());
 				}
+				UVBufferData.clear();
+				UVBuffer = glGenBuffers();
+				glBindBuffer(GL_ARRAY_BUFFER,UVBuffer);
+				glBufferData(GL_ARRAY_BUFFER,UVBufferData,GL_STATIC_DRAW);
+				glVertexAttribPointer(glGetAttribLocation(program.getId(),"vertexUV"),2,GL_FLOAT,false,0,0);
 			}
-			UVBuffer = glGenBuffers();
-			glBindBuffer(GL_ARRAY_BUFFER,UVBuffer);
-			glBufferData(GL_ARRAY_BUFFER,UVBufferData,GL_STATIC_DRAW);
-			glVertexAttribPointer(glGetAttribLocation(program.getId(),"vertexUV"),2,GL_FLOAT,false,0,0);
 		}
+		System.out.println("loaded mesh");
 	}
-	public Mesh(AIMesh mesh,Program program,Texture[] textures) {
-		this(mesh,program,textures,1f); }
+
+	private FloatBuffer transformBuffer = memAllocFloat(16);
+
 	public void render() {
+		model.meshParentMap.get(this).transform.get(transformBuffer);
+		System.out.println("mesh render transform:"+model.meshParentMap.get(this).transform);
 		if(texture != null)
 			glBindTexture(GL_TEXTURE_2D,texture.id);
+		//System.out.println("mesh render texture:"+texture);
 		glBindVertexArray(vertexArrayObject);
 		glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"position"));
 		glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"vertexUV"));
 		glUniform1f(program.getUniformLocation("scale"),scale);
 		glUniform1i(glGetUniformLocation(program.getId(),"myTextureSampler"),0);
+
+		// pass the transformation matrix to the shader
+		glUniformMatrix4fv(program.getUniformLocation("transform"),false,transformBuffer);
+		//System.out.println("mesh render transform:"+transform);
+		// System.out.println("mesh render indexCount:"+indexCount);
 		glDrawElements(GL_TRIANGLES,indexCount,GL_UNSIGNED_INT,0);
-		//System.out.println("render error:"+glGetError());
+		System.out.println("render error:"+glGetError());
 	}
 	public AIMesh getAIMesh() {
 		return mesh; }
