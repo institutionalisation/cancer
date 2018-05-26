@@ -17,14 +17,15 @@ import java.lang.Math;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import static util.Util.*;
 public abstract class LevelBase implements Level {
 	public Keyboard keyboard = new Keyboard();
 	public Mouse mouse;
 	public Window window;
 	public Program program;
-	public boolean running = true;
-	abstract void logic() throws Exception;
-	public void run() throws Exception {
+	abstract void logic();
+	abstract void close();
+	public void run() { exPrint(()->{
 		init();
 		new Thread() { public void run() {
 			try { logic(); }
@@ -34,7 +35,7 @@ public abstract class LevelBase implements Level {
 				}
 		}}.start();
 		renderLoop();
-	}
+	});}
 	public void init() {
 		GLFWErrorCallback.createPrint(System.err).set();
 		// initialize GLFW. most GLFW functions will not work before doing this.
@@ -52,7 +53,7 @@ public abstract class LevelBase implements Level {
 			}
 		}.run();
 	}
-	public void renderLoop() throws Exception {
+	public void renderLoop() { exPrint(()->{
 		window.makeContextCurrent();
 		GL.createCapabilities();
 		// Enable v-sync
@@ -89,7 +90,7 @@ public abstract class LevelBase implements Level {
 		long prevTime = System.currentTimeMillis();
 		Player player = new Player(keyboard,mouse,maze.meshes);
 		System.out.println("aa");
-		for(;running=!glfwWindowShouldClose(window.getId());) {
+		for(;!glfwWindowShouldClose(window.getId());) {
 			glfwPollEvents();
 			long nowTime = System.currentTimeMillis();
 			int delta = (int)(nowTime-prevTime);
@@ -107,5 +108,6 @@ public abstract class LevelBase implements Level {
 		window.destroy();
 		glfwTerminate();
 		glfwSetErrorCallback(null).free();
-	}
+		close();
+	});}
 }
