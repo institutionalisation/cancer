@@ -63,23 +63,24 @@ public class Level2 extends LevelBase {
 		out.println("inContext error:"+glGetError());
 		bed = new Model("bed","dae",program);
 		bed.rootNode.defaultTransform
-			.rotateLocalY((float)Math.toRadians(180))
-			.translateLocal(new Vector3f( 6.561E+0f,0,3.323E+0f));
-		renderedModels.add(bed);
+			//.rotateLocalY((float)Math.toRadians(180))
+			.translateLocal(new Vector3f(0,0,0 /* -2 */));
+		// for(Mesh x : bed.meshes)
+		// 	player.colliders.add(x);
 	}
 	public void onReady() {
 		initFrames(()->{exPrint(()->{
 			dialog("hecc!");
 			List<RefillPoint> refillPoints = new ArrayList<RefillPoint>(){{
-				add(new RefillPoint("Happiness",new Vector3f(0,0,0)));
+				add(new RefillPoint("Happiness",new Vector3f(0,5,10/*6.561E+0f,0,7.323E+0f*/),bed));
 			}};
+			renderedModels.add(bed);
 			// check proximity to refill points
 			new Thread() { public void run() { exPrint(()->{
-				out.println("die");
 				for(;;) {
 					Thread.sleep(50);
 					for(RefillPoint x : refillPoints)
-						if(player.loc.distance(x.loc) < 5)
+						if(player.loc.distance(x.loc) < 3)
 							meterFrame.meters.get(x.name)
 								.lastRefill = System.currentTimeMillis();
 				}

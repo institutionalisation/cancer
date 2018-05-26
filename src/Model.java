@@ -40,6 +40,7 @@ public class Model {
 		System.out.println("model material count:"+scene.mNumMaterials());
 		for(int i = 0; i < textures.length; ++i)
 			System.out.println("textures["+i+"]:"+textures[i]);
+		
 		meshes = new Mesh[scene.mNumMeshes()];
 		PointerBuffer meshBuffer = scene.mMeshes();
 		System.out.println("model mesh count:"+meshes.length);

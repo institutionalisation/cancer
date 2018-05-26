@@ -1,6 +1,6 @@
 # Blender v2.78 (sub 0) OBJ File: 'bed.blend'
 # www.blender.org
-mtllib bed.mtl
+mtllib a.mtl
 o Cube.004_Cube.007
 v -0.063432 0.638807 -2.163711
 v -0.598734 0.638807 -2.104642

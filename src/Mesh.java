@@ -22,6 +22,7 @@ public class Mesh {
 	private Texture texture;
 	private Program program;
 	private Model model;
+	public ModelNode parentNode;
 	public Mesh(Model model,AIMesh mesh) {
 		this.model = model;
 		System.out.println("mesh init mesh:"+mesh);
@@ -93,12 +94,13 @@ public class Mesh {
 			}
 		}
 		System.out.println("loaded mesh");
+		parentNode = model.meshParentMap.get(this);
 	}
 
 	private FloatBuffer transformBuffer = memAllocFloat(16);
 
 	public void render() {
-		model.meshParentMap.get(this).absoluteTransform.get(transformBuffer);
+		parentNode.absoluteTransform.get(transformBuffer);
 		//System.out.println("mesh render transform:"+model.meshParentMap.get(this).absoluteTransform);
 		//System.out.println("parent:"+model.meshParentMap.get(this).name);
 		if(texture != null)

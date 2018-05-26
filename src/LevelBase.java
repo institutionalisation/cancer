@@ -44,8 +44,8 @@ public abstract class LevelBase {
 		if(!glfwInit())
 			throw new IllegalStateException("Unable to initialize GLFW");
 		window = new Window(500,500,"Alternate Perspective",keyboard);
-		glfwSwapInterval(1);
 		window.makeContextCurrent();
+		glfwSwapInterval(1);
 		GL.createCapabilities();
 		program = new Program(
 			new Shader("vertex",GL_VERTEX_SHADER),
@@ -86,19 +86,22 @@ public abstract class LevelBase {
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		//https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
-		Model maze = new Model("maze0","dae",program);
+		Model maze = new Model("maze1","dae",program);
+		out.println("maze loaded");
 		for(Mesh x : maze.meshes)
 			player.colliders.add(x);
-		maze.rootNode.defaultTransform.rotateLocalX((float)Math.toRadians(180));
+		//maze.rootNode.defaultTransform.rotateLocalX((float)Math.toRadians(180));
 		renderedModels.add(maze);
 		glClearColor(0,.5f,.5f,0);
 		long prevTime = System.currentTimeMillis();
 		for(;!glfwWindowShouldClose(window.getId());) {
 			glfwPollEvents();
+			out.println("aa");
 			long nowTime = System.currentTimeMillis();
 			int delta = (int)(nowTime-prevTime);
 			prevTime = nowTime;
 			player.handleInput(delta);
+			out.println("bb");
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,player.getView());
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 			for(Model x : renderedModels) {

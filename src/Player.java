@@ -58,67 +58,66 @@ public class Player {
 		keyRun(GLFW_KEY_S,forward.mul(-distance,new Vector3f()));
 		keyRun(GLFW_KEY_D,right.mul(distance,new Vector3f()));
 		keyRun(GLFW_KEY_A,right.mul(-distance,new Vector3f()));
-		// if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE) && dy==0)
-		// 	dy = INITIAL_DY;
-		// loc.y += dy*delta;
-		// dy -= GRAVITY;
+		if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE) && dy==0)
+			dy = INITIAL_DY;
+		loc.y += dy*delta;
+		dy -= GRAVITY;
 		//System.out.println("dy:"+dy);
-		keyRun(GLFW_KEY_SPACE,UP.mul(distance,new Vector3f()));
-		keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,new Vector3f()));
+		// keyRun(GLFW_KEY_SPACE,UP.mul(distance,new Vector3f()));
+		// keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,new Vector3f()));
 		//System.out.println("view:"+viewMatrix);
 		// collide
 		for(Mesh meshWrapper : colliders) {
+			out.println("in collider");
 			AIMesh mesh = meshWrapper.getAIMesh();
 			AIFace.Buffer faces = mesh.mFaces();
 			AIVector3D.Buffer vertexBuffer = mesh.mVertices();
-			//System.out.println("vertexBuffer:"+vertexBuffer);
 			for(int j = 0;faces.hasRemaining();++j) {
 				AIFace face = faces.get();
 				IntBuffer indices = face.mIndices();
+				Vector3f[] vertices3D = new Vector3f[3];
+				for(int i = 0; indices.hasRemaining(); ++i) {
+					AIVector3D vertex = vertexBuffer.get(indices.get());
+					vertices3D[i] = new Vector3f(vertex.x(),vertex.y(),vertex.z());
+					meshWrapper.parentNode.defaultTransform.transformPosition(vertices3D[i]);
+					float tmp = vertices3D[i].y;
+					vertices3D[i].y = vertices3D[i].z;
+					vertices3D[i].z = -tmp;
+				}
 				float
 					lowest=Float.MAX_VALUE,
 					highest=Float.MIN_VALUE;
-				for(;indices.hasRemaining();) {
-
-					// LOOK HERE, I'm taking z as y
-
-					float y = vertexBuffer.get(indices.get()).z();
-					lowest = Math.min(lowest,y);
-					highest = Math.max(highest,y);
+				for(Vector3f x : vertices3D) {
+					lowest = Math.min(lowest,x.y);
+					highest = Math.max(highest,x.y);
 				}
-				indices.clear();
 				if(loc.y()+HEAD_OFFSET<lowest || highest<loc.y()-FOOT_OFFSET)
 					continue;
+				//System.out.println("in level");
 				//else
 				//	System.out.println("ha");
 				Vector2f[] vertices = new Vector2f[3];
-				for(int i = 0; i < vertices.length; ++i) {
-					int index = indices.get();
-					AIVector3D vertex = vertexBuffer.get(index);
-
-					// look here, I'm taking y as z (and negating it for some reason)
-
-					vertices[i] = new Vector2f(vertex.x(),-vertex.y());
-				}
+				for(int i = 0; i < vertices.length; ++i)
+					vertices[i] = new Vector2f(vertices3D[i].x(),vertices3D[i].z());
 				Vector2f locXZ = new Vector2f(loc.x(),loc.z());
 				if(
 					highest-lowest < .01f &&
 					new Triangle2f(vertices[0],vertices[1],vertices[2]).contains(locXZ)
 				) {
-					//System.out.println("floor");
+					System.out.println("floor");
 					dy = 0;
 					loc.y = highest + FOOT_OFFSET;
 					continue;
 				}
 				Vector2f a=null, b=null;
 				// find which vertices are overlapping, ignore one of them
-				if(vertices[0].distance(vertices[1]) < .01f) {
+				if(vertices[0].distance(vertices[1]) < .05f) {
 					a = vertices[0]; b = vertices[2];
 				} else
-				if(vertices[0].distance(vertices[2]) < .01f) {
+				if(vertices[0].distance(vertices[2]) < .05f) {
 					a = vertices[0]; b = vertices[1];
 				} else
-				if(vertices[1].distance(vertices[2]) < .01f) {
+				if(vertices[1].distance(vertices[2]) < .05f) {
 					a = vertices[0]; b = vertices[1];
 				} else
 					continue;

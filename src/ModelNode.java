@@ -29,9 +29,7 @@ public class ModelNode {
 		if(meshes != null && 0<meshes.capacity()) {
 			System.out.println("modelNode mesh count:"+meshes.capacity());
 			for(int i = 0;meshes.hasRemaining();++i)
-				model.meshParentMap.put(
-					model.meshes[meshes.get()],
-					this);
+				model.meshes[meshes.get()].parentNode = this;
 			System.out.println("end");
 		}
 
