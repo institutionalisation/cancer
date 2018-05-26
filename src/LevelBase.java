@@ -27,21 +27,30 @@ public abstract class LevelBase {
 	public Program program;
 	public Player player;
 	public abstract void close();
+	public abstract void onReady();
+	public abstract void inContext();
 	public List<Mesh> renderedMeshes = new ArrayList<Mesh>();
 	// inContext needs to have the GL context
 	// ready is put to a new thread
-	public void render(Runnable inContext,Runnable ready) { exPrint(()->{
+	public void run() { exPrint(()->{
 		init();
-		inContext.run();
-		new Thread(ready).start();
+		inContext();
+		new Thread(()->{exPrint(()->{onReady();});}).start();
 		renderLoop();
 	});}
-	public void init() {
+	public void init() { exPrint(()->{
 		GLFWErrorCallback.createPrint(System.err).set();
 		// initialize GLFW. most GLFW functions will not work before doing this.
 		if(!glfwInit())
 			throw new IllegalStateException("Unable to initialize GLFW");
 		window = new Window(500,500,"Alternate Perspective",keyboard);
+		glfwSwapInterval(1);
+		window.makeContextCurrent();
+		GL.createCapabilities();
+		program = new Program(
+			new Shader("vertex",GL_VERTEX_SHADER),
+			new Shader("fragment",GL_FRAGMENT_SHADER));
+		program.use();
 		mouse = new Mouse(window);
 		new Runnable() { final Runnable capture = this;
 			public void run() {
@@ -53,17 +62,9 @@ public abstract class LevelBase {
 			}
 		}.run();
 		player = new Player(keyboard,mouse);
-	}
+	});}
 	public void renderLoop() { exPrint(()->{
-		window.makeContextCurrent();
-		GL.createCapabilities();
-		// Enable v-sync
-		glfwSwapInterval(1);
 		window.show();
-		program = new Program(
-			new Shader("vertex",GL_VERTEX_SHADER),
-			new Shader("fragment",GL_FRAGMENT_SHADER));
-		program.use();
 		window.resizeCallbacks.add(new Window.BoundCallback() {
 			public void invoke(Window a,Dimension size) {
 				int

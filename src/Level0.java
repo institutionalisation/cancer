@@ -15,7 +15,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 import org.joml.*;
 import java.lang.Math;
 import javax.swing.*;
-public class Level0 extends LevelBase {
+public class Level0 {//extends LevelBase {
 	public void logic() {}
 	public void close() {}
 }

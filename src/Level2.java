@@ -57,40 +57,38 @@ public class Level2 extends LevelBase {
 			}
 	}
 	private Model bed;
-	public void run() {
-		render(
-			()->{
-				// bed = new Model("bed","obj",program);
-				// for(Mesh x : bed.meshes)
-				// 	renderedMeshes.add(x);
-			},
-			()->{
-				initFrames(()->{exPrint(()->{
-					dialog("hecc!");
-					List<RefillPoint> refillPoints = new ArrayList<RefillPoint>(){{
-						add(new RefillPoint("Happiness",new Vector3f(0,0,0)));
-					}};
-					// check proximity to refill points
-					new Thread() { public void run() { exPrint(()->{
-						out.println("die");
-						for(;;) {
-							Thread.sleep(50);
-							for(RefillPoint x : refillPoints)
-								if(player.loc.distance(x.loc) < 5)
-									meterFrame.meters.get(x.name)
-										.lastRefill = System.currentTimeMillis();
-						}
-					});}}.start();
-					for(;;) {
-						Thread.sleep(1000);
-						out.println("player.loc:"+player.loc);
-					}
-			});});});
+	public void inContext() {
+		out.println("inContext thread name"+Thread.currentThread().getName());
+		out.println("inContext error:"+glGetError());
+		bed = new Model("bed","obj",program);
+		for(Mesh x : bed.meshes)
+			renderedMeshes.add(x);
+	}
+	public void onReady() {
+		initFrames(()->{exPrint(()->{
+			dialog("hecc!");
+			List<RefillPoint> refillPoints = new ArrayList<RefillPoint>(){{
+				add(new RefillPoint("Happiness",new Vector3f(0,0,0)));
+			}};
+			// check proximity to refill points
+			new Thread() { public void run() { exPrint(()->{
+				out.println("die");
+				for(;;) {
+					Thread.sleep(50);
+					for(RefillPoint x : refillPoints)
+						if(player.loc.distance(x.loc) < 5)
+							meterFrame.meters.get(x.name)
+								.lastRefill = System.currentTimeMillis();
+				}
+			});}}.start();
+			for(;;) {
+				Thread.sleep(1000);
+				out.println("player.loc:"+player.loc);
+			}
+		});});
 	}
 	public void close() {
 		System.exit(0);
 	}
-	public static void main(String[] a) throws Exception {
-		new Level2().run();
-	}
+	public static void main(String[] a) { new Level2().run(); }
 }
