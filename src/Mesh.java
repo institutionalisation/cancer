@@ -28,6 +28,7 @@ public class Mesh {
 		this.mesh = mesh;
 		this.program = model.program;
 		System.out.println("mat index:"+mesh.mMaterialIndex());
+		System.out.println("material index:"+mesh.mMaterialIndex());
 		this.texture = model.textures[mesh.mMaterialIndex()];
 		vertexArrayObject = glGenVertexArrays();
 		glBindVertexArray(vertexArrayObject);
@@ -97,8 +98,8 @@ public class Mesh {
 	private FloatBuffer transformBuffer = memAllocFloat(16);
 
 	public void render() {
-		model.meshParentMap.get(this).transform.get(transformBuffer);
-		System.out.println("mesh render transform:"+model.meshParentMap.get(this).transform);
+		model.meshParentMap.get(this).absoluteTransform.get(transformBuffer);
+		//System.out.println("mesh render transform:"+model.meshParentMap.get(this).transform);
 		if(texture != null)
 			glBindTexture(GL_TEXTURE_2D,texture.id);
 		//System.out.println("mesh render texture:"+texture);
@@ -114,6 +115,7 @@ public class Mesh {
 		// System.out.println("mesh render indexCount:"+indexCount);
 		glDrawElements(GL_TRIANGLES,indexCount,GL_UNSIGNED_INT,0);
 		System.out.println("render error:"+glGetError());
+		//glBindTexture(GL_TEXTURE_2D,0);
 	}
 	public AIMesh getAIMesh() {
 		return mesh; }

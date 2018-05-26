@@ -61,8 +61,8 @@ public class Level2 extends LevelBase {
 		out.println("inContext thread name"+Thread.currentThread().getName());
 		out.println("inContext error:"+glGetError());
 		bed = new Model("bed","obj",program);
-		for(Mesh x : bed.meshes)
-			renderedMeshes.add(x);
+		bed.rootNode.defaultTransform.translate(new Vector3f(0,1,0));
+		renderedModels.add(bed);
 	}
 	public void onReady() {
 		initFrames(()->{exPrint(()->{

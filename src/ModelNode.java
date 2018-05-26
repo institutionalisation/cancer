@@ -3,9 +3,12 @@ import org.lwjgl.assimp.*;
 import org.lwjgl.*;
 import java.nio.*;
 import java.util.*;
+import static util.Util.*;
 public class ModelNode {
 	public String name;
-	public Matrix4f transform;
+	public Matrix4f
+		defaultTransform,
+		absoluteTransform = new Matrix4f(); // current state in animation
 	public ModelNode[] children;
 	public Model model;
 	public ModelNode(Model model,AINode node) {
@@ -33,13 +36,13 @@ public class ModelNode {
 		}
 
 		AIMatrix4x4 tran = node.mTransformation();
-		transform = new Matrix4f(
+		defaultTransform = new Matrix4f(
 			tran.a1(), tran.b1(), tran.c1(), tran.d1(),
 			tran.a2(), tran.b2(), tran.c2(), tran.d2(),
 			tran.a3(), tran.b3(), tran.c3(), tran.d3(),
 			tran.a4(), tran.b4(), tran.c4(), tran.d4()
 		);
-		System.out.println("transform:"+transform);
+		System.out.println("defaultTransform:"+defaultTransform);
 	}
 	private AIVectorKey.Buffer positionKeys;
 	private AIQuatKey.Buffer rotationKeys;
@@ -57,14 +60,11 @@ public class ModelNode {
 	public void interpolate(Matrix4f transform) {
 		//System.out.println("model node interpolate input trans:\n"+transform);
 		// figure out my local transform
-		Matrix4f myTransform = new Matrix4f();
-		System.out.println("model.currentNodeAnimationMap.keySet():"+model.currentNodeAnimationMap.keySet());
+		absoluteTransform.set(defaultTransform);
 		if(model.currentNodeAnimationMap.keySet().contains(this))
 			System.out.println("I should be animating");
-		transform.mul(myTransform,myTransform);
-		this.transform = myTransform;
-		System.out.println("ModelNode interpolate this trans:\n"+this.transform);
+		transform.mul(absoluteTransform,absoluteTransform);
 		for(ModelNode x : children)
-			x.interpolate(myTransform);
+			x.interpolate(absoluteTransform);
 	}
 }

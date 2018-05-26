@@ -29,7 +29,7 @@ public abstract class LevelBase {
 	public abstract void close();
 	public abstract void onReady();
 	public abstract void inContext();
-	public List<Mesh> renderedMeshes = new ArrayList<Mesh>();
+	public List<Model> renderedModels = new ArrayList<Model>();
 	// inContext needs to have the GL context
 	// ready is put to a new thread
 	public void run() { exPrint(()->{
@@ -86,11 +86,11 @@ public abstract class LevelBase {
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		// https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
-		Model maze = new Model("maze0","dae",program);
-		for(Mesh x : maze.meshes) {
-			//renderedMeshes.add(x);
-			player.colliders.add(x);
-		}
+		// Model maze = new Model("maze0","dae",program);
+		// for(Mesh x : maze.meshes)
+		// 	player.colliders.add(x);
+		// maze.rootNode.defaultTransform.scale(1,-1,-1);
+		//renderedModels.add(maze);
 		glClearColor(0,.5f,.5f,0);
 		long prevTime = System.currentTimeMillis();
 		for(;!glfwWindowShouldClose(window.getId());) {
@@ -101,8 +101,10 @@ public abstract class LevelBase {
 			player.handleInput(delta);
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,player.getView());
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-			for(Mesh x : renderedMeshes)
+			for(Model x : renderedModels) {
+				x.rootNode.interpolate(new Matrix4f());
 				x.render();
+			}
 			//System.out.println("error:"+glGetError());
 			glDisableVertexAttribArray(0);
 			glBindVertexArray(0);
