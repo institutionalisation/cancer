@@ -31,7 +31,7 @@ public class Level2 extends LevelBase {
 			"</body></html>");
 	}
 	public String getName() { return "Level 2"; }
-	public void initFrames(Runnable done) {
+	public void initFrames() {
 		dialogFrame = new JFrame(){{
 			add(BorderLayout.NORTH,dialog);
 			setUndecorated(true);
@@ -54,12 +54,12 @@ public class Level2 extends LevelBase {
 			window.resizeCallbacks.add(x);
 			window.positionCallbacks.add(x);
 		}
-		new Thread(done).start();
-		for(;;)
-			for(JFrame x : new JFrame[]{dialogFrame,meterFrame}) {
+		new Thread() { public void run() {
+			for(;;) for(JFrame x : new JFrame[]{dialogFrame,meterFrame}) {
 				exPrint(()->{Thread.sleep(20);});
 				x.repaint();
 			}
+		}}.start();
 	}
 	private Model bed,guitar,books,arduino;
 	public void inContext() {
@@ -82,31 +82,30 @@ public class Level2 extends LevelBase {
 		for(Model x : new Model[]{bed,guitar,books,arduino})
 			renderedModels.add(x);
 	}
-	public void onReady() {
-		initFrames(()->{exPrint(()->{
-			dialog("hecc!");
-			List<RefillPoint> refillPoints = new ArrayList<RefillPoint>(){{
-				add(new RefillPoint("Sleep",new Vector3f(5,0,-7.5f),bed));
-				add(new RefillPoint("Music",new Vector3f(-6.5f,0,-6.928f),guitar));
-				add(new RefillPoint("Studying",new Vector3f(8.132f,1.5f,8.127f),books));
-				add(new RefillPoint("Engineering",new Vector3f(-6.5f,1.5f,7f),arduino));
-			}};
-			// check proximity to refill points
-			new Thread() { public void run() { exPrint(()->{
-				for(;;) {
-					Thread.sleep(50);
-					for(RefillPoint x : refillPoints)
-						if(player.loc.distance(x.loc) < 2)
-							meterFrame.meters.get(x.name)
-								.lastRefill = System.currentTimeMillis();
-				}
-			});}}.start();
+	public void onReady() { exPrint(()->{
+		initFrames();
+		dialog("hecc!");
+		List<RefillPoint> refillPoints = new ArrayList<RefillPoint>(){{
+			add(new RefillPoint("Sleep",new Vector3f(5,0,-7.5f),bed));
+			add(new RefillPoint("Music",new Vector3f(-6.5f,0,-6.928f),guitar));
+			add(new RefillPoint("Studying",new Vector3f(8.132f,1.5f,8.127f),books));
+			add(new RefillPoint("Engineering",new Vector3f(-6.5f,1.5f,7f),arduino));
+		}};
+		// check proximity to refill points
+		new Thread() { public void run() { exPrint(()->{
 			for(;;) {
-				Thread.sleep(1000);
-				out.println("player.loc:"+player.loc);
+				Thread.sleep(50);
+				for(RefillPoint x : refillPoints)
+					if(player.loc.distance(x.loc) < 2)
+						meterFrame.meters.get(x.name)
+							.lastRefill = System.currentTimeMillis();
 			}
-		});});
-	}
+		});}}.start();
+		for(;;) {
+			Thread.sleep(1000);
+			out.println("player.loc:"+player.loc);
+		}
+	});}
 	public void close() {
 		System.exit(0);
 	}
