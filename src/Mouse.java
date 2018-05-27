@@ -3,10 +3,10 @@ import org.lwjgl.glfw.*;
 import static org.lwjgl.glfw.GLFW.*;
 import java.lang.Math;
 public class Mouse {
-	private Window window;
+	private GLWindow window;
 	private boolean captured = false;
 	private final float SENSITIVITY = 3;
-	public Mouse(Window window) {
+	public Mouse(GLWindow window) {
 		this.window = window;
 	}
 	private Vector2f

@@ -14,18 +14,18 @@ import java.util.*;
 import java.awt.*;
 import java.util.List;
 
-public class Window {
-	private final Window window = this;
+public class GLWindow {
+	private final GLWindow window = this;
 	private long id;
 	public int
 		width,height,
 		x,y;
 	public interface BoundCallback {
-		public void invoke(Window a,Dimension b); }
+		public void invoke(GLWindow a); }
 	public List<BoundCallback>
 		resizeCallbacks = new ArrayList<>(),
 		positionCallbacks = new ArrayList<>();
-	public Window(int width,int height,String title,Keyboard keyboard) {
+	public GLWindow(int width,int height,String title,Keyboard keyboard) {
 		this.width = width;
 		this.height = height;
 		// Configure GLFW
@@ -40,20 +40,16 @@ public class Window {
 			public void invoke(long windowId,int width,int height) {
 				window.width = width;
 				window.height = height;
-				System.out.println("resizeCallbacks.size()"+resizeCallbacks.size());
-				for(BoundCallback x : resizeCallbacks) {
-					System.out.println("callback resize");
-					x.invoke(window,new Dimension(width,height));
-				}
+				for(BoundCallback x : resizeCallbacks)
+					x.invoke(window);
 			}
 		});
 		glfwSetWindowPosCallback(id,new GLFWWindowPosCallback() {
 			public void invoke(long windowId,int x,int y) {
 				window.x = x;
 				window.y = y;
-				System.out.println("positionCallbacks.size():"+positionCallbacks.size());
 				for(BoundCallback xx : positionCallbacks)
-					xx.invoke(window,new Dimension(x,y));
+					xx.invoke(window);
 			}
 		});
 		glfwSetKeyCallback(id,keyboard.listener);

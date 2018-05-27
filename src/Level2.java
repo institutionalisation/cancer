@@ -34,18 +34,22 @@ public class Level2 extends LevelBase {
 	public void initFrames(Runnable done) {
 		dialogFrame = new JFrame(){{
 			add(BorderLayout.NORTH,dialog);
+			setUndecorated(true);
 			setVisible(true);
 		}};
 		meterFrame = new MeterFrame(){{
 			meters.put("Happiness",new Meter(.02f));
 			meters.put("Exercise",new Meter(.01f));
+			setUndecorated(true);
 			setVisible(true);
 		}};
-		Window.BoundCallback bottomFrameAdjust = new Window.BoundCallback() {
-			public void invoke(Window w,Dimension b) {
-				dialogFrame.setBounds(w.x,w.y+w.height,w.width,w.height/3); } };
+		meterFrame.boundCallback.invoke(window);
+		GLWindow.BoundCallback bottomFrameAdjust = new GLWindow.BoundCallback() {
+			public void invoke(GLWindow w) {
+				dialogFrame.setBounds(w.x,w.y+w.height,w.width+meterFrame.getWidth(),w.height/3); }
+			{invoke(window);}};
 		
-		for(Window.BoundCallback x : new Window.BoundCallback[]{bottomFrameAdjust,meterFrame.boundCallback}) {
+		for(GLWindow.BoundCallback x : new GLWindow.BoundCallback[]{bottomFrameAdjust,meterFrame.boundCallback}) {
 			window.resizeCallbacks.add(x);
 			window.positionCallbacks.add(x);
 		}

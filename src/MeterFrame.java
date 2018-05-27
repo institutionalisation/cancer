@@ -7,9 +7,9 @@ public class MeterFrame extends JFrame {
 	final int numMeters = 1;
 	Graphics g;
 	Map<String,Meter> meters = new TreeMap<>();
-	public Window.BoundCallback boundCallback = new Window.BoundCallback() {
-		public void invoke(Window w,Dimension b) {
-			setBounds(w.x+w.width,w.y,w.height/3 * meters.size(),w.height*4/3); } };
+	public GLWindow.BoundCallback boundCallback = new GLWindow.BoundCallback() {
+		public void invoke(GLWindow w) {
+			setBounds(w.x+w.width,w.y,w.height/3 * meters.size(),w.height); } };
 	public void paint(Graphics g) {
 		// https://stackoverflow.com/questions/9367502/double-buffer-a-jframe
 		BufferedImage bufferedImage = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_ARGB);

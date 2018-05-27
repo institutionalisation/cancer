@@ -23,7 +23,7 @@ import java.util.List;
 public abstract class LevelBase {
 	public Keyboard keyboard = new Keyboard();
 	public Mouse mouse;
-	public Window window;
+	public GLWindow window;
 	public Program program;
 	public Player player;
 	public abstract void close();
@@ -43,7 +43,7 @@ public abstract class LevelBase {
 		// initialize GLFW. most GLFW functions will not work before doing this.
 		if(!glfwInit())
 			throw new IllegalStateException("Unable to initialize GLFW");
-		window = new Window(500,500,"Alternate Perspective",keyboard);
+		window = new GLWindow(500,500,"Alternate Perspective",keyboard);
 		window.makeContextCurrent();
 		glfwSwapInterval(1);
 		GL.createCapabilities();
@@ -65,11 +65,11 @@ public abstract class LevelBase {
 	});}
 	public void renderLoop() { exPrint(()->{
 		window.show();
-		window.resizeCallbacks.add(new Window.BoundCallback() {
-			public void invoke(Window a,Dimension size) {
+		window.resizeCallbacks.add(new GLWindow.BoundCallback() {
+			public void invoke(GLWindow a) {
 				int
-					height = size.height,
-					width = size.width;
+					height = window.height,
+					width = window.width;
 				System.out.println("resize");
 				final float FOV = (float) Math.toRadians(100f);
 				final float Z_NEAR = .1f;
@@ -82,7 +82,7 @@ public abstract class LevelBase {
 					perspectiveMatrix.get(new float[16]));
 				glViewport(0,0,width,height);
 			}
-		});
+			{invoke(window);}});
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		//https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
