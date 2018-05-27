@@ -30,7 +30,6 @@ public class Level2 extends LevelBase {
 			text+
 			"</body></html>");
 	}
-	public String getName() { return "Level 2"; }
 	GLWindow.BoundCallback dialogFrameBoundsCallback;
 	public void initDialogFrame() {
 		dialogFrame = new JFrame(){{
@@ -86,26 +85,6 @@ public class Level2 extends LevelBase {
 			.rotateLocalX((float)Math.toRadians(-70));
 	}
 	List<RefillPoint> refillPoints;
-	public void play() { exPrint(()->{
-		dialog("Survive for 100 seconds to win the game.");
-		initMeterFrame();
-		// resize dialog frame to fill space for newly-created meterFrame
-		dialogFrameBoundsCallback.invoke(window);
-		// check proximity to refill points
-		new Thread() { public void run() { exPrint(()->{
-			for(;;) {
-				Thread.sleep(50);
-				for(RefillPoint x : refillPoints)
-					if(player.loc.distance(x.loc) < 2)
-						meterFrame.meters.get(x.name)
-							.lastRefill = System.currentTimeMillis();
-			}
-		});}}.start();
-		for(;;) {
-			Thread.sleep(1000);
-			out.println("player.loc:"+player.loc);
-		}
-	});}
 	public void onReady() { exPrint(()->{
 		initDialogFrame();
 		refillPoints = new ArrayList<RefillPoint>(){{
@@ -131,12 +110,79 @@ public class Level2 extends LevelBase {
 				if(dialogIndex < dialogStrs.length)
 					dialog(dialogStrs[dialogIndex++]);
 				else {
-					new Thread(){public void run(){play();}}.start();
+					keyboard.immediateKeys.remove(GLFW_KEY_T);
+					new Thread(){public void run(){
+						play(); end();
+					}}.start();
 				}
 			}
 			{ run(); }
 		});
 	});}
+	public void play() { exPrint(()->{
+		initMeterFrame();
+		// resize dialog frame to fill space for newly-created meterFrame
+		dialogFrameBoundsCallback.invoke(window);
+		// check proximity to refill points
+		new Thread() { public void run() { exPrint(()->{
+			for(;;) {
+				Thread.sleep(50);
+				for(RefillPoint x : refillPoints)
+					if(player.loc.distance(x.loc) < 2)
+						meterFrame.meters.get(x.name)
+							.lastRefill = System.currentTimeMillis();
+			}
+		});}}.start();
+		long startTime = System.currentTimeMillis();
+		for(long remaining=1;0<remaining;) {
+			Thread.sleep(1000);
+			long now = System.currentTimeMillis();
+			remaining = 3-(now-startTime)/1000;
+			dialog("Survive for "+remaining+" seconds to win the game.");
+			//out.println("player.loc:"+player.loc);
+		}
+	});}
+	public void end() {
+		long now = System.currentTimeMillis();
+		int scoreAcc = 0;
+		{
+			Set<String> meterNames = meterFrame.meters.keySet();
+			for(String name : meterNames) {
+				Meter x = meterFrame.meters.get(name);
+				scoreAcc += 1000*(1f-x.leakRate*(now-x.lastRefill)/1000);
+				out.println("scoreAcc is now " + scoreAcc);
+			}
+		}
+		meterFrame.hide();
+		meterFrame = null;
+		dialogFrameBoundsCallback.invoke(window);
+		final int score = scoreAcc;
+		String[] dialogStrs = new String[]{
+			"You won! Press T to continue",
+			"Your final score was " + score + " which is how full your meters were at the end.",
+			"That was pretty hard, wasn't it?",
+			"Now imagine how much harder it would be if we added in procrastination.",
+			"There really is no time for procrastination.",
+			"We get no work done, and it isn't even fun.",
+			"Procrastinating usually makes us feel bad about ourselves.",
+			"So here are some things you can do to stop procrastinating...",
+		};
+		keyboard.immediateKeys.put(GLFW_KEY_T,new Runnable() {
+			private int dialogIndex = 0;
+			public void run() {
+				if(dialogIndex < dialogStrs.length)
+					dialog(dialogStrs[dialogIndex++]);
+				else {
+					keyboard.immediateKeys.remove(GLFW_KEY_T);
+					new Thread(){public void run(){
+						Scores.saveScore(2,score);
+						System.exit(0);
+					}}.start();
+				}
+			}
+			{ run(); }
+		});
+	}
 	public void close() {
 		System.exit(0);
 	}

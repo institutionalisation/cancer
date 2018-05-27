@@ -103,7 +103,7 @@ public abstract class LevelBase {
 				player.handleInput(delta);
 			}
 		});}}.start();
-		for(;!glfwWindowShouldClose(window.getId());) {
+		for(;;) {
 			glfwPollEvents();
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,player.getView());
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -115,9 +115,10 @@ public abstract class LevelBase {
 			glBindVertexArray(0);
 			window.swapBuffers();
 		}
-		window.destroy();
-		glfwTerminate();
-		glfwSetErrorCallback(null).free();
-		close();
+		// window.setShouldClose(true);
+		// window.destroy();
+		// glfwTerminate();
+		// glfwSetErrorCallback(null).free();
+		// close();
 	});}
 }

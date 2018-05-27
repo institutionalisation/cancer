@@ -54,9 +54,10 @@ public class GLWindow {
 		});
 		glfwSetKeyCallback(id,keyboard.listener);
 		keyboard.getImmediateKeys().put(GLFW_KEY_X,new Runnable() { public void run() {
-			glfwSetWindowShouldClose(id,true);
+			System.exit(0);
 		}});
 	}
+	public void setShouldClose(boolean shouldClose) { glfwSetWindowShouldClose(id,true); }
 	public boolean shouldClose() { return glfwWindowShouldClose(id); }
 	public void makeContextCurrent() { glfwMakeContextCurrent(id); }
 	public void show() { glfwShowWindow(id); }
