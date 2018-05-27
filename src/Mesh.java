@@ -46,8 +46,8 @@ public class Mesh {
 				// float tmp = floats.get(i+1);
 				// floats.put(i+1,floats.get(i+2));
 				// floats.put(i+2,tmp);
-				if(i<30)
-					System.out.println("vertex:"+floats.get(i)+" "+floats.get(i+1)+" "+floats.get(i+2));
+				// if(i<30)
+				// 	System.out.println("vertex:"+floats.get(i)+" "+floats.get(i+1)+" "+floats.get(i+2));
 				//System.out.println(floats.get()+" "+floats.get()+" "+floats.get());
 			}
 			vertexBuffer = glGenBuffers();

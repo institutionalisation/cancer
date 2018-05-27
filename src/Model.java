@@ -39,9 +39,9 @@ public class Model {
 				}
 			}
 		}
-		System.out.println("model material count:"+scene.mNumMaterials());
-		for(int i = 0; i < textures.length; ++i)
-			System.out.println("textures["+i+"]:"+textures[i]);
+		// System.out.println("model material count:"+scene.mNumMaterials());
+		// for(int i = 0; i < textures.length; ++i)
+		// 	System.out.println("textures["+i+"]:"+textures[i]);
 		
 		meshes = new Mesh[scene.mNumMeshes()];
 		PointerBuffer meshBuffer = scene.mMeshes();
@@ -69,22 +69,22 @@ public class Model {
 				nodeAnimationMap.put(
 					nameNodeMap.get(channel.mNodeName().dataString()),
 					channel);
-				System.out.println("anim channel name:"+channel.mNodeName().dataString());
+				out.println("anim channel name:"+channel.mNodeName().dataString());
 			}
 			//System.out.println("animation channel count:"+channels.capacity());
 			animationNameNodeAnimationMap.put(animation.mName().dataString(),nodeAnimationMap);
 			System.out.println("model: animation name:"+animation.mName().dataString());
 			if(animations.capacity() == 1) {
-				System.out.println("there is only one animation, autoplay");
+				out.println("there is only one animation, autoplay");
 				animationStartTime = System.currentTimeMillis();
 				currentNodeAnimationMap = nodeAnimationMap;
 				rootNode.updateAnimation();
 			}
 		}
 	}
-	public void render(Matrix4f transform) {
+	public void render() {
 		//System.out.println("model render");
-		rootNode.interpolate(transform); // identity matrix
+		rootNode.interpolate(new Matrix4f()); // identity matrix
 		// all nodes should now have local-to-global transform matrices
 		for(Mesh x : meshes)
 			x.render();

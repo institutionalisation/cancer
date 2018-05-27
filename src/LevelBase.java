@@ -93,18 +93,22 @@ public abstract class LevelBase {
 		//maze.rootNode.defaultTransform.rotateLocalX((float)Math.toRadians(180));
 		renderedModels.add(maze);
 		glClearColor(0,.5f,.5f,0);
-		long prevTime = System.currentTimeMillis();
+		new Thread() { public void run() { exPrint(()->{
+			long prevTime = System.currentTimeMillis();
+			for(;;) {
+				Thread.sleep(20);
+				long nowTime = System.currentTimeMillis();
+				int delta = (int)(nowTime-prevTime);
+				prevTime = nowTime;
+				player.handleInput(delta);
+			}
+		});}}.start();
 		for(;!glfwWindowShouldClose(window.getId());) {
 			glfwPollEvents();
-			long nowTime = System.currentTimeMillis();
-			int delta = (int)(nowTime-prevTime);
-			prevTime = nowTime;
-			player.handleInput(delta);
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,player.getView());
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-			for(Model x : renderedModels) {
-				x.render(new Matrix4f());//.rotateX((float)Math.toRadians(90)));
-			}
+			for(Model x : renderedModels)
+				x.render();
 			out.println("player.loc"+player.loc);
 			//System.out.println("error:"+glGetError());
 			glDisableVertexAttribArray(0);
