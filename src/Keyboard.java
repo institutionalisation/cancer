@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 public class Keyboard {
 	private Set<Integer> keysPressed = new TreeSet<Integer>();
-	private Map<Integer,Runnable> immediateKeys = new TreeMap<Integer,Runnable>();
+	public Map<Integer,Runnable> immediateKeys = new TreeMap<Integer,Runnable>();
 	public GLFWKeyCallbackI listener = new GLFWKeyCallbackI() {
 		public void invoke(long window,int key,int scancode,int action,int mods) {
 			switch(action) {

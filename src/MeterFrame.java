@@ -7,7 +7,7 @@ public class MeterFrame extends JFrame {
 	final int numMeters = 1;
 	Graphics g;
 	Map<String,Meter> meters = new TreeMap<>();
-	public GLWindow.BoundCallback boundCallback = new GLWindow.BoundCallback() {
+	public GLWindow.BoundCallback boundsCallback = new GLWindow.BoundCallback() {
 		public void invoke(GLWindow w) {
 			setBounds(w.x+w.width,w.y,w.height/5 * meters.size(),w.height); } };
 	public void paint(Graphics g) {

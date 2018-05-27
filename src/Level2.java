@@ -31,12 +31,24 @@ public class Level2 extends LevelBase {
 			"</body></html>");
 	}
 	public String getName() { return "Level 2"; }
-	public void initFrames() {
+	GLWindow.BoundCallback dialogFrameBoundsCallback;
+	public void initDialogFrame() {
 		dialogFrame = new JFrame(){{
 			add(BorderLayout.NORTH,dialog);
 			setUndecorated(true);
 			setVisible(true);
 		}};
+		dialogFrameBoundsCallback = new GLWindow.BoundCallback() {
+			public void invoke(GLWindow w) {
+				dialogFrame.setBounds(w.x,w.y+w.height,
+					w.width+(meterFrame==null?0:meterFrame.getWidth()),
+					w.height/3); }
+			{invoke(window);}};
+		window.resizeCallbacks.add(dialogFrameBoundsCallback);
+		window.positionCallbacks.add(dialogFrameBoundsCallback);
+
+	}
+	public void initMeterFrame() {
 		meterFrame = new MeterFrame(){{
 			meters.put("Sleep",new Meter(.01f));
 			meters.put("Music",new Meter(.03f));
@@ -45,19 +57,13 @@ public class Level2 extends LevelBase {
 			setUndecorated(true);
 			setVisible(true);
 		}};
-		meterFrame.boundCallback.invoke(window);
-		GLWindow.BoundCallback bottomFrameAdjust = new GLWindow.BoundCallback() {
-			public void invoke(GLWindow w) {
-				dialogFrame.setBounds(w.x,w.y+w.height,w.width+meterFrame.getWidth(),w.height/3); }
-			{invoke(window);}};
-		for(GLWindow.BoundCallback x : new GLWindow.BoundCallback[]{bottomFrameAdjust,meterFrame.boundCallback}) {
-			window.resizeCallbacks.add(x);
-			window.positionCallbacks.add(x);
-		}
+		window.resizeCallbacks.add(meterFrame.boundsCallback);
+		window.positionCallbacks.add(meterFrame.boundsCallback);
+		meterFrame.boundsCallback.invoke(window);
 		new Thread() { public void run() {
-			for(;;) for(JFrame x : new JFrame[]{dialogFrame,meterFrame}) {
+			for(;;) {
 				exPrint(()->{Thread.sleep(20);});
-				x.repaint();
+				meterFrame.repaint();
 			}
 		}}.start();
 	}
@@ -66,7 +72,6 @@ public class Level2 extends LevelBase {
 		(bed = new Model("bed","dae",program)).rootNode.defaultTransform
 			.rotateLocalY((float)Math.toRadians(-90))
 			.translateLocal(new Vector3f(0,0,0));
-		renderedModels.add(bed);
 		(guitar = new Model("guitar","dae",program)).rootNode.defaultTransform
 			.scale(.02f)
 			.rotateLocalX((float)Math.toRadians(90))
@@ -79,18 +84,13 @@ public class Level2 extends LevelBase {
 			.scale(.3f)
 			.rotateLocalY((float)Math.toRadians(90))
 			.rotateLocalX((float)Math.toRadians(-70));
-		for(Model x : new Model[]{bed,guitar,books,arduino})
-			renderedModels.add(x);
 	}
-	public void onReady() { exPrint(()->{
-		initFrames();
-		dialog("hecc!");
-		List<RefillPoint> refillPoints = new ArrayList<RefillPoint>(){{
-			add(new RefillPoint("Sleep",new Vector3f(5,0,-7.5f),bed));
-			add(new RefillPoint("Music",new Vector3f(-6.5f,0,-6.928f),guitar));
-			add(new RefillPoint("Studying",new Vector3f(8.132f,1.5f,8.127f),books));
-			add(new RefillPoint("Engineering",new Vector3f(-6.5f,1.5f,7f),arduino));
-		}};
+	List<RefillPoint> refillPoints;
+	public void play() { exPrint(()->{
+		dialog("Survive for 100 seconds to win the game.");
+		initMeterFrame();
+		// resize dialog frame to fill space for newly-created meterFrame
+		dialogFrameBoundsCallback.invoke(window);
 		// check proximity to refill points
 		new Thread() { public void run() { exPrint(()->{
 			for(;;) {
@@ -105,6 +105,37 @@ public class Level2 extends LevelBase {
 			Thread.sleep(1000);
 			out.println("player.loc:"+player.loc);
 		}
+	});}
+	public void onReady() { exPrint(()->{
+		initDialogFrame();
+		refillPoints = new ArrayList<RefillPoint>(){{
+			add(new RefillPoint("Sleep",new Vector3f(5,0,-7.5f),bed));
+			add(new RefillPoint("Music",new Vector3f(-6.5f,0,-6.928f),guitar));
+			add(new RefillPoint("Studying",new Vector3f(8.132f,1.5f,8.127f),books));
+			add(new RefillPoint("Engineering",new Vector3f(-6.5f,1.5f,7f),arduino));
+		}};
+		// now that they're in the right spots, start rendering the models
+		for(Model x : new Model[]{bed,guitar,books,arduino})
+			renderedModels.add(x);
+		String[] dialogStrs = new String[]{
+			"Use  W A S D  to move around. Press T to continue.",
+			"Explore the level! Find the 4 refill points at the corners of the maze.",
+			"When the game starts, meters will appear that are constantly draining.",
+			"If any of the meters gets completely empty, you lose.",
+			"Keep these meters full by running to the corresonding station.",
+			"Good luck! Press T to start the game!",
+		};
+		keyboard.immediateKeys.put(GLFW_KEY_T,new Runnable() {
+			private int dialogIndex = 0;
+			public void run() {
+				if(dialogIndex < dialogStrs.length)
+					dialog(dialogStrs[dialogIndex++]);
+				else {
+					new Thread(){public void run(){play();}}.start();
+				}
+			}
+			{ run(); }
+		});
 	});}
 	public void close() {
 		System.exit(0);
