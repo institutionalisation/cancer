@@ -96,12 +96,10 @@ public abstract class LevelBase {
 		long prevTime = System.currentTimeMillis();
 		for(;!glfwWindowShouldClose(window.getId());) {
 			glfwPollEvents();
-			out.println("aa");
 			long nowTime = System.currentTimeMillis();
 			int delta = (int)(nowTime-prevTime);
 			prevTime = nowTime;
 			player.handleInput(delta);
-			out.println("bb");
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,player.getView());
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 			for(Model x : renderedModels) {

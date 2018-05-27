@@ -9,7 +9,7 @@ public class MeterFrame extends JFrame {
 	Map<String,Meter> meters = new TreeMap<>();
 	public GLWindow.BoundCallback boundCallback = new GLWindow.BoundCallback() {
 		public void invoke(GLWindow w) {
-			setBounds(w.x+w.width,w.y,w.height/3 * meters.size(),w.height); } };
+			setBounds(w.x+w.width,w.y,w.height/5 * meters.size(),w.height); } };
 	public void paint(Graphics g) {
 		// https://stackoverflow.com/questions/9367502/double-buffer-a-jframe
 		BufferedImage bufferedImage = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_ARGB);

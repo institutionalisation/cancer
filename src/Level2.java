@@ -38,8 +38,10 @@ public class Level2 extends LevelBase {
 			setVisible(true);
 		}};
 		meterFrame = new MeterFrame(){{
-			meters.put("Happiness",new Meter(.02f));
-			meters.put("Exercise",new Meter(.01f));
+			meters.put("Sleep",new Meter(.01f));
+			meters.put("Music",new Meter(.03f));
+			meters.put("Engineering",new Meter(.04f));
+			meters.put("Studying",new Meter(.02f));
 			setUndecorated(true);
 			setVisible(true);
 		}};
@@ -48,7 +50,6 @@ public class Level2 extends LevelBase {
 			public void invoke(GLWindow w) {
 				dialogFrame.setBounds(w.x,w.y+w.height,w.width+meterFrame.getWidth(),w.height/3); }
 			{invoke(window);}};
-		
 		for(GLWindow.BoundCallback x : new GLWindow.BoundCallback[]{bottomFrameAdjust,meterFrame.boundCallback}) {
 			window.resizeCallbacks.add(x);
 			window.positionCallbacks.add(x);
@@ -60,31 +61,42 @@ public class Level2 extends LevelBase {
 				x.repaint();
 			}
 	}
-	// private Model bed;
-	private Model bed;
+	private Model bed,guitar,books,arduino;
 	public void inContext() {
-		out.println("inContext thread name"+Thread.currentThread().getName());
-		out.println("inContext error:"+glGetError());
-		bed = new Model("bed","dae",program);
-		bed.rootNode.defaultTransform
-			//.rotateLocalY((float)Math.toRadians(180))
-			.translateLocal(new Vector3f(0,0,0 /* -2 */));
-		// for(Mesh x : bed.meshes)
-		// 	player.colliders.add(x);
+		(bed = new Model("bed","dae",program)).rootNode.defaultTransform
+			.rotateLocalY((float)Math.toRadians(-90))
+			.translateLocal(new Vector3f(0,0,0));
+		renderedModels.add(bed);
+		(guitar = new Model("guitar","dae",program)).rootNode.defaultTransform
+			.scale(.02f)
+			.rotateLocalX((float)Math.toRadians(90))
+			.translateLocal(new Vector3f(0,2,0));
+		(books = new Model("books","obj",program)).rootNode.defaultTransform
+			.scale(.5f)
+			.rotateLocalY((float)Math.toRadians(-45))
+			.translateLocal(0,-1,0);
+		(arduino = new Model("arduino","obj",program)).rootNode.defaultTransform
+			.scale(.3f)
+			.rotateLocalY((float)Math.toRadians(90))
+			.rotateLocalX((float)Math.toRadians(-70));
+		for(Model x : new Model[]{bed,guitar,books,arduino})
+			renderedModels.add(x);
 	}
 	public void onReady() {
 		initFrames(()->{exPrint(()->{
 			dialog("hecc!");
 			List<RefillPoint> refillPoints = new ArrayList<RefillPoint>(){{
-				add(new RefillPoint("Happiness",new Vector3f(0,5,10/*6.561E+0f,0,7.323E+0f*/),bed));
+				add(new RefillPoint("Sleep",new Vector3f(5,0,-7.5f),bed));
+				add(new RefillPoint("Music",new Vector3f(-6.5f,0,-6.928f),guitar));
+				add(new RefillPoint("Studying",new Vector3f(8.132f,1.5f,8.127f),books));
+				add(new RefillPoint("Engineering",new Vector3f(-6.5f,1.5f,7f),arduino));
 			}};
-			renderedModels.add(bed);
 			// check proximity to refill points
 			new Thread() { public void run() { exPrint(()->{
 				for(;;) {
 					Thread.sleep(50);
 					for(RefillPoint x : refillPoints)
-						if(player.loc.distance(x.loc) < 3)
+						if(player.loc.distance(x.loc) < 2)
 							meterFrame.meters.get(x.name)
 								.lastRefill = System.currentTimeMillis();
 				}

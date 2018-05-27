@@ -7,6 +7,7 @@ import java.nio.*;
 import java.nio.charset.StandardCharsets;
 import org.joml.*;
 import java.util.*;
+import static util.Util.*;
 public class Model {
 	private AIScene scene;
 	public Mesh[] meshes;
@@ -20,6 +21,7 @@ public class Model {
 	public Map<ModelNode,AINodeAnim> currentNodeAnimationMap;
 	public Model(String name,String extension,Program program) {
 		this.program = program;
+		out.println("loading:"+"models/"+name+"/a."+extension);
 		scene = aiImportFile("models/"+name+"/a."+extension,aiProcess_JoinIdenticalVertices|aiProcess_Triangulate);
 		PointerBuffer materials = scene.mMaterials();
 		textures = new Texture[scene.mNumMaterials()];

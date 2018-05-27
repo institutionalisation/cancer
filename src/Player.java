@@ -68,7 +68,6 @@ public class Player {
 		//System.out.println("view:"+viewMatrix);
 		// collide
 		for(Mesh meshWrapper : colliders) {
-			out.println("in collider");
 			AIMesh mesh = meshWrapper.getAIMesh();
 			AIFace.Buffer faces = mesh.mFaces();
 			AIVector3D.Buffer vertexBuffer = mesh.mVertices();
@@ -104,7 +103,6 @@ public class Player {
 					highest-lowest < .01f &&
 					new Triangle2f(vertices[0],vertices[1],vertices[2]).contains(locXZ)
 				) {
-					System.out.println("floor");
 					dy = 0;
 					loc.y = highest + FOOT_OFFSET;
 					continue;
