@@ -5,6 +5,6 @@ public class RefillPoint {
 	public RefillPoint(String name,Vector3f loc,Model model) {
 		this.name = name;
 		this.loc = loc;
-		model.rootNode.defaultTransform.translateLocal(loc);
+		model.transforms.get(0).translateLocal(loc);
 	}
 }
