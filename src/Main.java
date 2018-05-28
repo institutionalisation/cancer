@@ -22,76 +22,67 @@ public class Main {
 			for(int x : new int[]{0,1,2})
 				add(new JButton(){{
 					setText("Level"+x);
-					addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							frame.setVisible(false);
-							new JFrame(){ final JFrame namePromptFrame = this; {
-								setLayout(new FlowLayout());
-								add(new JLabel("Player name:"));
-								JTextField textField = new JTextField(){{
-									setPreferredSize(new Dimension(200,20));
-									setVisible(true);
-								}};
-								add(textField);
-								add(new JButton("Back"){{
-									addActionListener(new ActionListener(){
-										public void actionPerformed(ActionEvent e) {
-											frame.setVisible(true);
-											dispose();
-										}
-									});
-								}});
-								add(new JButton("Continue"){{
-									addActionListener((ActionEvent e)->{
-										namePromptFrame.dispose();
-										try {
-											Process proc = Runtime.getRuntime().exec("java -Dorg.lwjgl.util.Debug=true -cp " + classpath + " Level"+x,null,new File(System.getProperty("user.dir")));
-											// https://stackoverflow.com/questions/5711084/java-runtime-getruntime-getting-output-from-executing-a-command-line-program
-											BufferedReader stdInput = new BufferedReader(new 
-												InputStreamReader(proc.getInputStream()));
-											BufferedReader stdError = new BufferedReader(new 
-												InputStreamReader(proc.getErrorStream()));
-											// read the output from the command
-											String lastLine = null;
-											for(String line;(line=stdInput.readLine()) != null;) {
-												lastLine = line;
-												System.out.println("hecc:"+line);
-											}
-											final String line = lastLine;
-											out.println("lastLine:"+line);
-											// read any errors from the attempted command
-											for(String s;(s=stdError.readLine()) != null;) {
-												System.out.println(s); }
-											int score = Integer.parseInt(line);
-											System.out.println("menu score was "+score);
-											scores.addScore(x,new Score(textField.getText(),score));
-										} catch(Exception a) {
-											System.out.println("Exception was thrown:"+a);
-											a.printStackTrace();
-										}
-										out.println("exited somehow");
-										frame.setVisible(true);
-									});
-								}});
-								pack(); setVisible(true);
+					addActionListener((ActionEvent e)->{
+						frame.setVisible(false);
+						new JFrame(){ final JFrame namePromptFrame = this; {
+							setLayout(new FlowLayout());
+							add(new JLabel("Player name:"));
+							JTextField textField = new JTextField(){{
+								setPreferredSize(new Dimension(200,20));
+								setVisible(true);
 							}};
-						}
+							add(textField);
+							add(new JButton("Back"){{
+								addActionListener((ActionEvent e)->{
+									frame.setVisible(true);
+									dispose();
+								});
+							}});
+							add(new JButton("Continue"){{
+								addActionListener((ActionEvent e)->{
+									namePromptFrame.dispose();
+									try {
+										Process proc = Runtime.getRuntime().exec("java -Dorg.lwjgl.util.Debug=true -cp " + classpath + " Level"+x,null,new File(System.getProperty("user.dir")));
+										// https://stackoverflow.com/questions/5711084/java-runtime-getruntime-getting-output-from-executing-a-command-line-program
+										BufferedReader stdInput = new BufferedReader(new 
+											InputStreamReader(proc.getInputStream()));
+										BufferedReader stdError = new BufferedReader(new 
+											InputStreamReader(proc.getErrorStream()));
+										// read the output from the command
+										String lastLine = null;
+										for(String line;(line=stdInput.readLine()) != null;) {
+											lastLine = line;
+											System.out.println("hecc:"+line);
+										}
+										final String line = lastLine;
+										out.println("lastLine:"+line);
+										// read any errors from the attempted command
+										for(String s;(s=stdError.readLine()) != null;) {
+											System.out.println(s); }
+										int score = Integer.parseInt(line);
+										System.out.println("menu score was "+score);
+										scores.addScore(x,new Score(textField.getText(),score));
+									} catch(Exception a) {
+										System.out.println("Exception was thrown:"+a);
+										a.printStackTrace();
+									}
+									out.println("exited somehow");
+									frame.setVisible(true);
+								});
+							}});
+							pack(); setVisible(true);
+						}};
 					});
 				}});
 			add(new JButton(){{
 				setText("Scores");
-				addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-
-					}
+				addActionListener((ActionEvent e)->{
 				});
 			}});
 			add(new JButton(){{
 				setText("Quit");
-				addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						frame.dispatchEvent(new WindowEvent(frame,WindowEvent.WINDOW_CLOSING));
-					}
+				addActionListener((ActionEvent e)->{
+					frame.dispatchEvent(new WindowEvent(frame,WindowEvent.WINDOW_CLOSING));
 				});
 			}});
 			setVisible(true);
