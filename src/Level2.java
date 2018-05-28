@@ -139,7 +139,6 @@ public class Level2 extends LevelBase {
 			long now = System.currentTimeMillis();
 			remaining = 3-(now-startTime)/1000;
 			dialog("Survive for "+remaining+" seconds to win the game.");
-			//out.println("player.loc:"+player.loc);
 		}
 	});}
 	public void end() {
@@ -150,13 +149,13 @@ public class Level2 extends LevelBase {
 			for(String name : meterNames) {
 				Meter x = meterFrame.meters.get(name);
 				scoreAcc += 1000*(1f-x.leakRate*(now-x.lastRefill)/1000);
-				out.println("scoreAcc is now " + scoreAcc);
 			}
 		}
+		final int score = scoreAcc;
 		meterFrame.hide();
 		meterFrame = null;
 		dialogFrameBoundsCallback.invoke(window);
-		final int score = scoreAcc;
+		
 		String[] dialogStrs = new String[]{
 			"You won! Press T to continue",
 			"Your final score was " + score + " which is how full your meters were at the end.",
@@ -175,12 +174,12 @@ public class Level2 extends LevelBase {
 				else {
 					keyboard.immediateKeys.remove(GLFW_KEY_T);
 					new Thread(){public void run(){
-						Scores.saveScore(2,score);
+						out.println(score);
 						System.exit(0);
 					}}.start();
 				}
 			}
-			{ run(); }
+			{run();}
 		});
 	}
 	public void close() {

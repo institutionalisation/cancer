@@ -109,10 +109,7 @@ public abstract class LevelBase {
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 			for(Model x : renderedModels)
 				x.render();
-			out.println("player.loc"+player.loc);
 			//System.out.println("error:"+glGetError());
-			glDisableVertexAttribArray(0);
-			glBindVertexArray(0);
 			window.swapBuffers();
 		}
 		// window.setShouldClose(true);
