@@ -78,10 +78,10 @@ public class Player {
 				for(int i = 0; indices.hasRemaining(); ++i) {
 					AIVector3D vertex = vertexBuffer.get(indices.get());
 					vertices3D[i] = new Vector3f(vertex.x(),vertex.y(),vertex.z());
-					meshWrapper.parentNode.defaultTransform.transformPosition(vertices3D[i]);
-					float tmp = vertices3D[i].y;
-					vertices3D[i].y = vertices3D[i].z;
-					vertices3D[i].z = -tmp;
+					meshWrapper.parentNode.absoluteTransform.transformPosition(vertices3D[i]);
+					// float tmp = vertices3D[i].y;
+					// vertices3D[i].y = vertices3D[i].z;
+					// vertices3D[i].z = -tmp;
 				}
 				float
 					lowest=Float.MAX_VALUE,

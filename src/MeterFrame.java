@@ -2,11 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.*;
+import java.util.List;
 public class MeterFrame extends JFrame {
 	Color backgroundColor = new Color(242, 226, 109);
 	final int numMeters = 1;
 	Graphics g;
 	Map<String,Meter> meters = new TreeMap<>();
+	public List<Runnable> emptyCallbacks = new ArrayList<>();
 	public GLWindow.BoundCallback boundsCallback = new GLWindow.BoundCallback() {
 		public void invoke(GLWindow w) {
 			setBounds(w.x+w.width,w.y,w.height/5 * meters.size(),w.height); } };
@@ -19,8 +21,11 @@ public class MeterFrame extends JFrame {
 	    int i = 0;
 	    for(String name : names) {
 	    	Meter x = meters.get(name);
-	    	drawMeter(imageGraphics,name,
-	    		1f-x.leakRate*(now-x.lastRefill)/1000,i);
+	    	float fill = 1-x.leakRate*(now-x.lastRefill)/1000;
+	    	if(fill<0)
+	    		for(Runnable y : emptyCallbacks)
+	    			y.run();
+	    	drawMeter(imageGraphics,name,fill,i);
 	    	++i;
 	    }
 	    g.drawImage(bufferedImage,0,0,null);

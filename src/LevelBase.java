@@ -86,12 +86,6 @@ public abstract class LevelBase {
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		//https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
-		Model maze = new Model("maze1","dae",program);
-		out.println("maze loaded");
-		for(Mesh x : maze.meshes)
-			player.colliders.add(x);
-		//maze.rootNode.defaultTransform.rotateLocalX((float)Math.toRadians(180));
-		renderedModels.add(maze);
 		glClearColor(0,.5f,.5f,0);
 		new Thread() { public void run() { exPrint(()->{
 			long prevTime = System.currentTimeMillis();

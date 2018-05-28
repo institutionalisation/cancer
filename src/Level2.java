@@ -21,6 +21,7 @@ import static util.Util.*;
 import java.util.*;
 import java.util.List;
 public class Level2 extends LevelBase {
+	public final static int LEVEL_DURATION = 60;
 	private JFrame dialogFrame;
 	private MeterFrame meterFrame;
 	private JLabel dialog = new JLabel();
@@ -66,8 +67,9 @@ public class Level2 extends LevelBase {
 			}
 		}}.start();
 	}
-	private Model bed,guitar,books,arduino;
+	private Model maze,bed,guitar,books,arduino;
 	public void inContext() {
+		maze = new Model("maze1","dae",program);
 		(bed = new Model("bed","dae",program)).rootNode.defaultTransform
 			.rotateLocalY((float)Math.toRadians(-90))
 			.translateLocal(new Vector3f(0,0,0));
@@ -83,6 +85,8 @@ public class Level2 extends LevelBase {
 			.scale(.3f)
 			.rotateLocalY((float)Math.toRadians(90))
 			.rotateLocalX((float)Math.toRadians(-70));
+		for(Mesh x : maze.meshes)
+			player.colliders.add(x);
 	}
 	List<RefillPoint> refillPoints;
 	public void onReady() { exPrint(()->{
@@ -94,7 +98,7 @@ public class Level2 extends LevelBase {
 			add(new RefillPoint("Engineering",new Vector3f(-6.5f,1.5f,7f),arduino));
 		}};
 		// now that they're in the right spots, start rendering the models
-		for(Model x : new Model[]{bed,guitar,books,arduino})
+		for(Model x : new Model[]{maze,bed,guitar,books,arduino})
 			renderedModels.add(x);
 		String[] dialogStrs = new String[]{
 			"Use  W A S D  to move around. Press T to continue.",
@@ -119,6 +123,12 @@ public class Level2 extends LevelBase {
 			{ run(); }
 		});
 	});}
+	public void hideMeterFrame() {
+		meterFrame.hide();
+		meterFrame = null;
+		dialogFrameBoundsCallback.invoke(window);
+	}
+	boolean[] win = new boolean[]{true};
 	public void play() { exPrint(()->{
 		initMeterFrame();
 		// resize dialog frame to fill space for newly-created meterFrame
@@ -133,54 +143,58 @@ public class Level2 extends LevelBase {
 							.lastRefill = System.currentTimeMillis();
 			}
 		});}}.start();
+		meterFrame.emptyCallbacks.add(()->{ win[0] = false; });
 		long startTime = System.currentTimeMillis();
-		for(long remaining=1;0<remaining;) {
+		for(long remaining=1;0<remaining && win[0];) {
 			Thread.sleep(1000);
 			long now = System.currentTimeMillis();
-			remaining = 3-(now-startTime)/1000;
+			remaining = LEVEL_DURATION-(now-startTime)/1000;
 			dialog("Survive for "+remaining+" seconds to win the game.");
 		}
 	});}
 	public void end() {
-		long now = System.currentTimeMillis();
-		int scoreAcc = 0;
-		{
-			Set<String> meterNames = meterFrame.meters.keySet();
-			for(String name : meterNames) {
-				Meter x = meterFrame.meters.get(name);
-				scoreAcc += 1000*(1f-x.leakRate*(now-x.lastRefill)/1000);
-			}
-		}
-		final int score = scoreAcc;
-		meterFrame.hide();
-		meterFrame = null;
-		dialogFrameBoundsCallback.invoke(window);
-		
-		String[] dialogStrs = new String[]{
-			"You won! Press T to continue",
-			"Your final score was " + score + " which is how full your meters were at the end.",
-			"That was pretty hard, wasn't it?",
-			"Now imagine how much harder it would be if we added in procrastination.",
-			"There really is no time for procrastination.",
-			"We get no work done, and it isn't even fun.",
-			"Procrastinating usually makes us feel bad about ourselves.",
-			"So here are some things you can do to stop procrastinating...",
-		};
-		keyboard.immediateKeys.put(GLFW_KEY_T,new Runnable() {
-			private int dialogIndex = 0;
-			public void run() {
-				if(dialogIndex < dialogStrs.length)
-					dialog(dialogStrs[dialogIndex++]);
-				else {
-					keyboard.immediateKeys.remove(GLFW_KEY_T);
-					new Thread(){public void run(){
-						out.println(score);
-						System.exit(0);
-					}}.start();
+		if(win[0]) {
+			long now = System.currentTimeMillis();
+			int scoreAcc = 0;
+			{
+				Set<String> meterNames = meterFrame.meters.keySet();
+				for(String name : meterNames) {
+					Meter x = meterFrame.meters.get(name);
+					scoreAcc += 1000*(1f-x.leakRate*(now-x.lastRefill)/1000);
 				}
 			}
-			{run();}
-		});
+			final int score = scoreAcc;
+			hideMeterFrame();
+			String[] dialogStrs = new String[]{
+				"You won! Press T to continue",
+				"Your final score was " + score + " which is how full your meters were at the end.",
+				"That was pretty hard, wasn't it?",
+				"Now imagine how much harder it would be if we added in procrastination.",
+				"There really is no time for procrastination.",
+				"We get no work done, and it isn't even fun.",
+				"Procrastinating usually makes us feel bad about ourselves.",
+				"So here are some things you can do to stop procrastinating...",
+			};
+			keyboard.immediateKeys.put(GLFW_KEY_T,new Runnable() {
+				private int dialogIndex = 0;
+				public void run() {
+					if(dialogIndex < dialogStrs.length)
+						dialog(dialogStrs[dialogIndex++]);
+					else {
+						keyboard.immediateKeys.remove(GLFW_KEY_T);
+						new Thread(){public void run(){
+							out.println(score);
+							close();
+						}}.start();
+					}
+				}
+				{run();}
+			});
+		} else {
+			hideMeterFrame();
+			dialog("You lose. Press T to return to the menu.");
+			keyboard.immediateKeys.put(GLFW_KEY_T,()->{close();});
+		}
 	}
 	public void close() {
 		System.exit(0);
