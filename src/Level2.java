@@ -134,7 +134,7 @@ public class Level2 extends LevelBase {
 		// resize dialog frame to fill space for newly-created meterFrame
 		dialogFrameBoundsCallback.invoke(window);
 		// check proximity to refill points
-		new Thread() { public void run() { exPrint(()->{
+		new Thread(()->{exPrint(()->{
 			for(;;) {
 				Thread.sleep(50);
 				for(RefillPoint x : refillPoints)
@@ -142,7 +142,7 @@ public class Level2 extends LevelBase {
 						meterFrame.meters.get(x.name)
 							.lastRefill = System.currentTimeMillis();
 			}
-		});}}.start();
+		});}).start();
 		meterFrame.emptyCallbacks.add(()->{ win[0] = false; });
 		long startTime = System.currentTimeMillis();
 		for(long remaining=1;0<remaining && win[0];) {

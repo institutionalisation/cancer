@@ -14,6 +14,7 @@ public class Model {
 	public Texture[] textures;
 	public ModelNode rootNode;
 	public Program program;
+	public List<Matrix4f> transforms = new ArrayList<>();
 	public Map<Mesh,ModelNode> meshParentMap = new HashMap<Mesh,ModelNode>();
 	public Map<String,ModelNode> nameNodeMap = new TreeMap<String,ModelNode>();
 	public Map<String,Map<ModelNode,AINodeAnim>> animationNameNodeAnimationMap = new TreeMap<String,Map<ModelNode,AINodeAnim>>();
@@ -84,10 +85,12 @@ public class Model {
 	}
 	public void render() {
 		//System.out.println("model render");
-		rootNode.interpolate(new Matrix4f()); // identity matrix
-		// all nodes should now have local-to-global transform matrices
-		for(Mesh x : meshes)
-			x.render();
+		for(Matrix4f transform : transforms) {
+			rootNode.interpolate(transform); // identity matrix
+			// all nodes should now have local-to-global transform matrices
+			for(Mesh x : meshes)
+				x.render();
+		}
 	}
 	public void animate(String animationName) {
 		animationStartTime = System.currentTimeMillis();
