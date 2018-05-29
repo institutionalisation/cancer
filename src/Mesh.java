@@ -10,6 +10,7 @@ import java.nio.*;
 import static org.lwjgl.system.MemoryUtil.*;
 import org.lwjgl.*;
 import org.joml.*;
+import static util.Util.*;
 public class Mesh {
 	private float scale = 1;
 	private AIMesh mesh;
@@ -99,8 +100,9 @@ public class Mesh {
 
 	private FloatBuffer transformBuffer = memAllocFloat(16);
 
-	public void render() {
-		parentNode.absoluteTransform.get(transformBuffer);
+	public void render(Matrix4f transform) {
+		//out.println("rendered");
+		transform.get(transformBuffer);
 		//System.out.println("mesh render transform:"+model.meshParentMap.get(this).absoluteTransform);
 		//System.out.println("parent:"+model.meshParentMap.get(this).name);
 		if(texture != null)
