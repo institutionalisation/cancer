@@ -85,7 +85,7 @@ public class Level2 extends LevelBase {
 			.scale(.3f)
 			.rotateLocalY((float)Math.toRadians(90))
 			.rotateLocalX((float)Math.toRadians(-70)));
-		for(Mesh x : maze.meshes)
+		for(Model x : new Model[]{maze,bed,books,arduino})
 			player.colliders.add(x);
 	}
 	List<RefillPoint> refillPoints;
