@@ -7,7 +7,7 @@ import static util.Util.*;
 public class ModelNode {
 	public String name;
 	public Matrix4f
-		defaultTransform,
+		localTransform,
 		absoluteTransform = new Matrix4f(); // current state in animation
 	public ModelNode[] children;
 	public Mesh[] meshes;
@@ -35,16 +35,16 @@ public class ModelNode {
 		 meshes = new Mesh[0];
 
 		AIMatrix4x4 tran = node.mTransformation();
-		defaultTransform = new Matrix4f(
+		localTransform = new Matrix4f(
 			tran.a1(), tran.b1(), tran.c1(), tran.d1(),
 			tran.a2(), tran.b2(), tran.c2(), tran.d2(),
 			tran.a3(), tran.b3(), tran.c3(), tran.d3(),
 			tran.a4(), tran.b4(), tran.c4(), tran.d4()
 		);
-		System.out.println("defaultTransform:"+defaultTransform);
+		System.out.println("localTransform:"+localTransform);
 	}
 	public void render(Matrix4f transform) {
-		absoluteTransform.set(defaultTransform);
+		absoluteTransform.set(localTransform);
 		// if(model.currentNodeAnimationMap.keySet().contains(this))
 		// 	System.out.println("I should be animating");
 		transform.mul(absoluteTransform,absoluteTransform);
@@ -71,6 +71,6 @@ public class ModelNode {
 		a.children = children;
 		a.meshes = meshes;
 		a.absoluteTransform = absoluteTransform;
-		a.defaultTransform = defaultTransform;
+		a.localTransform = localTransform;
 	}
 }
