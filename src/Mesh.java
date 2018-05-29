@@ -29,15 +29,15 @@ public class Mesh {
 		System.out.println("mesh init mesh:"+mesh);
 		this.mesh = mesh;
 		this.program = model.program;
-		System.out.println("mat index:"+mesh.mMaterialIndex());
-		System.out.println("material index:"+mesh.mMaterialIndex());
+		//System.out.println("mat index:"+mesh.mMaterialIndex());
+		//System.out.println("material index:"+mesh.mMaterialIndex());
 		this.texture = model.textures[mesh.mMaterialIndex()];
 		vertexArrayObject = glGenVertexArrays();
 		glBindVertexArray(vertexArrayObject);
-		System.out.println("cc:"+glGetError());
+		//System.out.println("cc:"+glGetError());
 		{
 			AIVector3D.Buffer orig = mesh.mVertices();
-			System.out.println("vertices:"+orig.capacity());
+			//System.out.println("vertices:"+orig.capacity());
 			FloatBuffer floats = memFloatBuffer(orig.address(),orig.capacity()*AIVector3D.SIZEOF/4);
 			// flip y and z values (because blender and collada and hecc)
 			for(int i = 0; i < floats.capacity(); i+=3) {
@@ -58,7 +58,7 @@ public class Mesh {
 		}
 		{
 			indexCount = mesh.mNumFaces()*3;
-			System.out.println("elements:"+indexCount);
+			//System.out.println("elements:"+indexCount);
 			AIFace.Buffer orig = mesh.mFaces();
 			IntBuffer indexBufferData = memAllocInt(indexCount);
 			for(AIFace x : orig) {
@@ -73,7 +73,7 @@ public class Mesh {
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER,indexBufferData,GL_STATIC_DRAW);
 		}
 		{
-			System.out.println("texCoords:"+(mesh.mTextureCoords()!=null));
+			//System.out.println("texCoords:"+(mesh.mTextureCoords()!=null));
 			PointerBuffer texCoordsBuffer = mesh.mTextureCoords();
 			FloatBuffer UVBufferData = null;
 			
@@ -94,7 +94,7 @@ public class Mesh {
 				glVertexAttribPointer(glGetAttribLocation(program.getId(),"vertexUV"),2,GL_FLOAT,false,0,0);
 			}
 		}
-		System.out.println("loaded mesh");
+		//System.out.println("loaded mesh");
 		parentNode = model.meshParentMap.get(this);
 	}
 

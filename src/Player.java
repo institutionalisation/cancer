@@ -27,7 +27,7 @@ public class Player {
 		FOOT_OFFSET = 1.5f,
 		HEAD_OFFSET = .4f,
 		INITIAL_DY = 15/1000f,
-		GRAVITY = .4f/1000f;
+		GRAVITY = .00004f;
 	float dy = 0;
 	boolean grounded = true;
 	public void handleInput(int delta) {
@@ -61,7 +61,7 @@ public class Player {
 		if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE) && dy==0)
 			dy = INITIAL_DY;
 		loc.y += dy*delta;
-		dy -= GRAVITY;
+		dy -= GRAVITY*delta;
 		//System.out.println("dy:"+dy);
 		// keyRun(GLFW_KEY_SPACE,UP.mul(distance,new Vector3f()));
 		// keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,new Vector3f()));
