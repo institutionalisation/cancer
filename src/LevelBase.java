@@ -90,7 +90,7 @@ public abstract class LevelBase {
 		new Thread() { public void run() { exPrint(()->{
 			long prevTime = System.currentTimeMillis();
 			for(;;) {
-				Thread.sleep(20);
+				//Thread.sleep(20);
 				long nowTime = System.currentTimeMillis();
 				int delta = (int)(nowTime-prevTime);
 				prevTime = nowTime;
