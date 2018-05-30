@@ -9,10 +9,10 @@ import static util.Util.*;
 public class Player { final Player player = this;
 	private Keyboard keyboard;
 	private Mouse mouse;
-	public Vector3f loc = new Vector3f(0,1,0);
+	public Vector3f loc = new Vector3f(0,3,0);
 	private Matrix4f viewMatrix = new Matrix4f();
 	private FloatBuffer viewMatrixBuffer = memAllocFloat(16);
-	public List<ModelNode> colliders = new ArrayList<>();
+	public Set<ModelNode> colliders = new HashSet<>();
 	boolean flying = true;
 	public Player(Keyboard keyboard,Mouse mouse) {
 		this.keyboard = keyboard;
@@ -77,16 +77,19 @@ public class Player { final Player player = this;
 				dy = INITIAL_DY;
 			loc.y += dy*delta;
 			dy -= GRAVITY*delta;
-			//System.out.println("dy:"+dy);
 		}
 		//System.out.println("view:"+viewMatrix);
 		// collide
-		for(ModelNode modelNode : colliders)
-			collide(modelNode);
+		synchronized(colliders) {
+			for(ModelNode modelNode : colliders)
+				if(modelNode.shouldCollide)
+					collide(modelNode);
+		}
 	}
-	private void collide(ModelNode modelNode) {
+	private boolean collide(ModelNode modelNode) {
+		boolean collided = false;
 		for(ModelNode child : modelNode.children)
-			collide(child);
+			collided = collided|collide(child);
 		for(Mesh meshWrapper : modelNode.meshes) {
 			AIMesh mesh = meshWrapper.getAIMesh();
 			AIFace.Buffer faces = mesh.mFaces();
@@ -122,6 +125,7 @@ public class Player { final Player player = this;
 				) {
 					dy = 0;
 					loc.y = highest + FOOT_OFFSET;
+					collided = true;
 					continue;
 				}
 				Vector2f a=null, b=null;
@@ -150,6 +154,7 @@ public class Player { final Player player = this;
 							Vector2f bounce = vertex.sub(locXZ,new Vector2f()).normalize().mul(dist-RADIUS);
 							loc.x += bounce.x;
 							loc.z += bounce.y;
+							collided = true;
 							break;
 						}
 					}
@@ -161,6 +166,7 @@ public class Player { final Player player = this;
 				final float h = 2*A/AB;
 				// if in wall, move to just outside wall
 				if(h<RADIUS) {
+					collided = true;
 					//System.out.println("bounce:"+j);
 					// if the wall is small enough, step over it
 					if(highest<loc.y-STEP_MAX_HEIGHT+.1f) {
@@ -183,6 +189,10 @@ public class Player { final Player player = this;
 				}
 			}
 		}
+		//out.println("collided:"+collided);
+		if(collided) for(Runnable callback : modelNode.collisionCallbacks)
+			callback.run();
+		return collided;
 	}
 	public void keyRun(int key,Vector3f direction) {
 		if(keyboard.getKeysPressed().contains(key))

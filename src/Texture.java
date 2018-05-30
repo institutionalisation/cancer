@@ -7,13 +7,17 @@ public class Texture {
 	public int
 		width,height,channelCount,
 		id;
-	public Texture(String fileName) {
+	public Texture(String modelName,String fileName) {
 		int[]
-			width = new int[1],
+			width = new int[]{-1},
 			height = new int[1],
 			channelCount = new int[1];
-		out.println("loading image:"+fileName);
-		ByteBuffer data = stbi_load(fileName,width,height,channelCount,4);
+		out.println("loading image:"+modelName+fileName);
+		ByteBuffer data = stbi_load(modelName+fileName,width,height,channelCount,4);
+		if(width[0] == -1) {
+			out.println("failed, retry:"+fileName);
+			data = stbi_load(fileName,width,height,channelCount,4);
+		}
 		this.width = width[0];
 		this.height = height[0];
 		this.channelCount = channelCount[0];
