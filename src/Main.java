@@ -61,19 +61,21 @@ public class Main {
 														InputStreamReader(proc.getInputStream()));
 													BufferedReader stdError = new BufferedReader(new 
 														InputStreamReader(proc.getErrorStream()));
+													new Thread(()->{exPrint(()->{
+														// read any errors from the attempted command
+														for(String s;(s=stdError.readLine()) != null;) {
+															out.println(s); }
+													});}).start();
 													// read the output from the command
 													String lastLine = null;
 													for(String line;(line=stdInput.readLine()) != null;) {
 														lastLine = line;
-														System.out.println("hecc:"+line);
+														out.println("hecc:"+line);
 													}
 													final String line = lastLine;
 													out.println("lastLine:"+line);
-													// read any errors from the attempted command
-													for(String s;(s=stdError.readLine()) != null;) {
-														System.out.println(s); }
 													int score = Integer.parseInt(line);
-													System.out.println("menu score was "+score);
+													out.println("menu score was "+score);
 													scores.addScore(x,new Score(textField.getText(),score));
 												} catch(Exception a) {
 													System.out.println("Exception was thrown:"+a);

@@ -6,11 +6,14 @@ import java.util.*;
 import static util.Util.*;
 public class ModelNode {
 	public String name;
+	public boolean shouldRender=true,shouldCollide=true;
 	public Matrix4f
 		localTransform,
 		absoluteTransform = new Matrix4f(); // current state in animation
 	public ModelNode[] children;
+	public List<Runnable> collisionCallbacks = new ArrayList<>();
 	public Mesh[] meshes;
+	public ModelNode() {}
 	public ModelNode(Model model,AINode node) {
 		name = node.mName().dataString();
 		System.out.println("name:"+name);
@@ -70,7 +73,20 @@ public class ModelNode {
 	public void set(ModelNode a) {
 		a.children = children;
 		a.meshes = meshes;
-		a.absoluteTransform = absoluteTransform;
-		a.localTransform = localTransform;
+		Matrix4f transformCopy = 
+		a.localTransform = new Matrix4f(){{
+			localTransform.set(this);
+		}};
+	}
+	public ModelNode getChild(String name) {
+		for(ModelNode x : children)
+			if(x.name.equals(name))
+				return x;
+		for(ModelNode x : children) {
+			ModelNode child = x.getChild(name);
+			if(child != null)
+				return child;
+		}
+		return null;
 	}
 }

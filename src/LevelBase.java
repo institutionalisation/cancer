@@ -29,7 +29,7 @@ public abstract class LevelBase {
 	public abstract void close();
 	public abstract void onReady();
 	public abstract void inContext();
-	public List<ModelNode> renderedModelNodes = new ArrayList<ModelNode>();
+	public Set<ModelNode> renderedModelNodes = new HashSet<ModelNode>();
 	// inContext needs to have the GL context
 	// ready is put to a new thread
 	public void run() { exPrint(()->{
@@ -90,7 +90,7 @@ public abstract class LevelBase {
 		new Thread() { public void run() { exPrint(()->{
 			long prevTime = System.currentTimeMillis();
 			for(;;) {
-				Thread.sleep(20);
+				//Thread.sleep(20);
 				long nowTime = System.currentTimeMillis();
 				int delta = (int)(nowTime-prevTime);
 				prevTime = nowTime;
@@ -101,8 +101,10 @@ public abstract class LevelBase {
 			glfwPollEvents();
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,player.getView());
 			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-			for(ModelNode x : renderedModelNodes)
-				x.render(new Matrix4f());
+			synchronized(renderedModelNodes) {
+				for(ModelNode x : renderedModelNodes)
+					x.render(new Matrix4f());
+			}
 			//System.out.println("error:"+glGetError());
 			window.swapBuffers();
 		}
