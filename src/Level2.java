@@ -124,7 +124,7 @@ public class Level2 extends LevelBase {
 		});
 	});}
 	public void hideMeterFrame() {
-		meterFrame.hide();
+		meterFrame.setVisible(false);
 		meterFrame = null;
 		dialogFrameBoundsCallback.invoke(window);
 	}
