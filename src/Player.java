@@ -6,17 +6,28 @@ import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.assimp.*;
 import java.util.*;
 import static util.Util.*;
-public class Player {
+public class Player { final Player player = this;
 	private Keyboard keyboard;
 	private Mouse mouse;
 	public Vector3f loc = new Vector3f(0,1,0);
 	private Matrix4f viewMatrix = new Matrix4f();
 	private FloatBuffer viewMatrixBuffer = memAllocFloat(16);
 	public List<ModelNode> colliders = new ArrayList<>();
+	boolean flying = true;
 	public Player(Keyboard keyboard,Mouse mouse) {
 		this.keyboard = keyboard;
 		this.mouse = mouse;
 		this.colliders = colliders;
+		keyboard.immediateKeys.put(GLFW_KEY_Q,new Runnable() {
+			final Runnable stopFlying = this;
+			public void run() {
+				player.flying = false;
+				keyboard.immediateKeys.put(GLFW_KEY_Q,()->{
+					player.flying = true;
+					keyboard.immediateKeys.put(GLFW_KEY_Q,stopFlying);
+				});
+			}
+		});
 	}
 	final float moveSpeed = .005f;
 	final static Matrix4f IDENTITY = new Matrix4f();
@@ -58,13 +69,16 @@ public class Player {
 		keyRun(GLFW_KEY_S,forward.mul(-distance,new Vector3f()));
 		keyRun(GLFW_KEY_D,right.mul(distance,new Vector3f()));
 		keyRun(GLFW_KEY_A,right.mul(-distance,new Vector3f()));
-		if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE) && dy==0)
-			dy = INITIAL_DY;
-		loc.y += dy*delta;
-		dy -= GRAVITY*delta;
-		//System.out.println("dy:"+dy);
-		// keyRun(GLFW_KEY_SPACE,UP.mul(distance,new Vector3f()));
-		// keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,new Vector3f()));
+		if(flying) {
+			keyRun(GLFW_KEY_SPACE,UP.mul(distance,new Vector3f()));
+			keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,new Vector3f()));
+		} else {
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE) && dy==0)
+				dy = INITIAL_DY;
+			loc.y += dy*delta;
+			dy -= GRAVITY*delta;
+			//System.out.println("dy:"+dy);
+		}
 		//System.out.println("view:"+viewMatrix);
 		// collide
 		for(ModelNode modelNode : colliders)
