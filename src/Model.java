@@ -82,12 +82,16 @@ public class Model {
 			}
 		}
 	}
-	public void render() {
+	public void render(Matrix4f transform) {
 		//System.out.println("model render");
-		rootNode.interpolate(new Matrix4f()); // identity matrix
+		rootNode.interpolate(transform); // identity matrix
 		// all nodes should now have local-to-global transform matrices
 		for(Mesh x : meshes)
 			x.render();
+	}
+	public void render()
+	{
+		render(new Matrix4f());
 	}
 	public void animate(String animationName) {
 		animationStartTime = System.currentTimeMillis();
