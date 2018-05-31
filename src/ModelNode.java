@@ -7,16 +7,9 @@ import static util.Util.*;
 public class ModelNode {
 	public String name;
 	public boolean shouldRender=true,shouldCollide=true;
-<<<<<<< HEAD
 	private Matrix4f localTransform;
 	public Matrix4f absoluteTransform = new Matrix4f(); // current state in animation
-	public ModelNode[] children;
-=======
-	public Matrix4f
-		localTransform,
-		absoluteTransform = new Matrix4f(); // current state in animation
 	public List<ModelNode> children = new ArrayList<>();
->>>>>>> level1
 	public List<Runnable> collisionCallbacks = new ArrayList<>();
 	public List<Mesh> meshes = new ArrayList<>();
 	public ModelNode() {
