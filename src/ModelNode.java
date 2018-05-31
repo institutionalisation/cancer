@@ -43,7 +43,7 @@ public class ModelNode {
 		System.out.println("localTransform:"+localTransform);
 	}
 	public void render(Matrix4f transform) {
-		absoluteTransform.set(localTransform);
+		absoluteTransform.set(getLocalTransform());
 		// if(model.currentNodeAnimationMap.keySet().contains(this))
 		// 	System.out.println("I should be animating");
 		transform.mul(absoluteTransform,absoluteTransform);
