@@ -18,7 +18,7 @@ public class ButtonBuilder {
 			unpressed[i] = new Model("button/center-unpressed/"+Color.names[i],"obj",program).rootNode;
 		}
 	}
-	public ModelNode create(int color,int stickTime) {
+	public ModelNode create(int color,int stickTime,Runnable pressCallback) {
 		return new ModelNode(){
 			boolean[] isPressed = new boolean[]{false};
 		{
@@ -27,6 +27,7 @@ public class ButtonBuilder {
 				unpressed[color].set(this);
 				collisionCallbacks.add(()->{
 					if(!isPressed[0]) {
+						pressCallback.run();
 						isPressed[0]=true;
 						pressed[color].set(this);
 						new Thread(()->{exPrint(()->{
