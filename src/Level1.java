@@ -45,7 +45,7 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 		base0 = new Model("button/base","obj",program).rootNode;
 		base1 = new ModelNode(){{
 			base0.set(this);
-			localTransform
+			getLocalTransform()
 				.translate(new Vector3f(3,0,0));
 		}};
 		for(ModelNode x : new ModelNode[]{stage,base0,base1,buttonSlot})

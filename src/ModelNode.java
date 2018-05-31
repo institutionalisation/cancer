@@ -7,9 +7,8 @@ import static util.Util.*;
 public class ModelNode {
 	public String name;
 	public boolean shouldRender=true,shouldCollide=true;
-	public Matrix4f
-		localTransform,
-		absoluteTransform = new Matrix4f(); // current state in animation
+	private Matrix4f localTransform;
+	public Matrix4f absoluteTransform = new Matrix4f(); // current state in animation
 	public ModelNode[] children;
 	public List<Runnable> collisionCallbacks = new ArrayList<>();
 	public Mesh[] meshes;
@@ -89,4 +88,6 @@ public class ModelNode {
 		}
 		return null;
 	}
+	public Matrix4f getLocalTransform() {
+		return localTransform; }
 }
