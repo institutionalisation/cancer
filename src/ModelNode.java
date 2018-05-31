@@ -10,32 +10,29 @@ public class ModelNode {
 	public Matrix4f
 		localTransform,
 		absoluteTransform = new Matrix4f(); // current state in animation
-	public ModelNode[] children;
+	public List<ModelNode> children = new ArrayList<>();
 	public List<Runnable> collisionCallbacks = new ArrayList<>();
-	public Mesh[] meshes;
-	public ModelNode() {}
+	public List<Mesh> meshes = new ArrayList<>();
+	public ModelNode() {
+		localTransform = new Matrix4f(); }
 	public ModelNode(Model model,AINode node) {
 		name = node.mName().dataString();
 		System.out.println("name:"+name);
 		model.nameNodeMap.put(name,this);
 		PointerBuffer children = node.mChildren();
 		if(children != null && 0<children.capacity()) {
-			this.children = new ModelNode[children.capacity()];
 			System.out.println("chidren.capacity:"+children.capacity());
-			for(int i = 0;children.hasRemaining();++i)
-				this.children[i] = new ModelNode(model,AINode.create(children.get()));
-		} else
-			this.children = new ModelNode[0];
+			for(;children.hasRemaining();)
+				this.children.add(new ModelNode(model,AINode.create(children.get())));
+		}
 
 		IntBuffer meshBuffer = node.mMeshes();
 		if(meshBuffer != null && 0<meshBuffer.capacity()) {
-			meshes = new Mesh[meshBuffer.capacity()];
 			System.out.println("modelNode mesh count:"+meshBuffer.capacity());
-			for(int i = 0;meshBuffer.hasRemaining();++i)
-				meshes[i] = model.meshes[meshBuffer.get()];
+			for(;meshBuffer.hasRemaining();)
+				meshes.add(model.meshes[meshBuffer.get()]);
 			out.println("end");
-		} else
-		 meshes = new Mesh[0];
+		}
 
 		AIMatrix4x4 tran = node.mTransformation();
 		localTransform = new Matrix4f(

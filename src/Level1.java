@@ -21,36 +21,15 @@ import static util.Util.*;
 import java.util.*;
 import java.util.List;
 public class Level1 extends LevelBase { final Level1 level1 = this;
-	private ModelNode stage,base0,base1,redUnpressed,redPressed,buttonSlot;
+	private ModelNode stage,blueButton;
 	public void inContext() {
 		stage = new Model("maze2","obj",program).rootNode;
-		redPressed = new Model("button/center-pressed/red","obj",program).rootNode;
-		redUnpressed = new Model("button/center-unpressed/red","obj",program).rootNode;
-		buttonSlot = new ModelNode(){
-			boolean[] pressed = new boolean[]{false};
-		{
-			redUnpressed.set(this);
-			collisionCallbacks.add(()->{
-				if(!pressed[0]) {
-					pressed[0] = true;
-					redPressed.set(this);
-					new Thread(()->{exPrint(()->{
-						Thread.sleep(2000);
-						redUnpressed.set(this);
-						pressed[0] = false;
-					});}).start();
-				}
-			});
-		}};
-		base0 = new Model("button/base","obj",program).rootNode;
-		base1 = new ModelNode(){{
-			base0.set(this);
-			localTransform
-				.translate(new Vector3f(3,0,0));
-		}};
-		for(ModelNode x : new ModelNode[]{stage,base0,base1,buttonSlot})
+		ButtonBuilder bb = new ButtonBuilder(program);
+		(blueButton = bb.create(ButtonBuilder.Color.BLUE,2000)).localTransform
+			.translate(new Vector3f(0,0,3));
+		for(ModelNode x : new ModelNode[]{stage,blueButton})
 			player.colliders.add(x);
-		for(ModelNode x : new ModelNode[]{stage,base0,base1,buttonSlot})
+		for(ModelNode x : new ModelNode[]{stage,blueButton})
 			renderedModelNodes.add(x);
 	}
 	public void onReady() { exPrint(()->{
