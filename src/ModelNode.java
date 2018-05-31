@@ -7,12 +7,11 @@ import static util.Util.*;
 public class ModelNode {
 	public String name;
 	public Matrix4f
-		defaultTransform,
+		localTransform,
 		absoluteTransform = new Matrix4f(); // current state in animation
 	public ModelNode[] children;
-	public Model model;
+	public Mesh[] meshes;
 	public ModelNode(Model model,AINode node) {
-		this.model = model;
 		name = node.mName().dataString();
 		System.out.println("name:"+name);
 		model.nameNodeMap.put(name,this);
@@ -25,42 +24,53 @@ public class ModelNode {
 		} else
 			this.children = new ModelNode[0];
 
-		IntBuffer meshes = node.mMeshes();
-		if(meshes != null && 0<meshes.capacity()) {
-			System.out.println("modelNode mesh count:"+meshes.capacity());
-			for(int i = 0;meshes.hasRemaining();++i)
-				model.meshes[meshes.get()].parentNode = this;
-			System.out.println("end");
-		}
+		IntBuffer meshBuffer = node.mMeshes();
+		if(meshBuffer != null && 0<meshBuffer.capacity()) {
+			meshes = new Mesh[meshBuffer.capacity()];
+			System.out.println("modelNode mesh count:"+meshBuffer.capacity());
+			for(int i = 0;meshBuffer.hasRemaining();++i)
+				meshes[i] = model.meshes[meshBuffer.get()];
+			out.println("end");
+		} else
+		 meshes = new Mesh[0];
 
 		AIMatrix4x4 tran = node.mTransformation();
-		defaultTransform = new Matrix4f(
+		localTransform = new Matrix4f(
 			tran.a1(), tran.b1(), tran.c1(), tran.d1(),
 			tran.a2(), tran.b2(), tran.c2(), tran.d2(),
 			tran.a3(), tran.b3(), tran.c3(), tran.d3(),
 			tran.a4(), tran.b4(), tran.c4(), tran.d4()
 		);
-		System.out.println("defaultTransform:"+defaultTransform);
+		System.out.println("localTransform:"+localTransform);
+	}
+	public void render(Matrix4f transform) {
+		absoluteTransform.set(localTransform);
+		// if(model.currentNodeAnimationMap.keySet().contains(this))
+		// 	System.out.println("I should be animating");
+		transform.mul(absoluteTransform,absoluteTransform);
+		for(ModelNode x : children)
+			x.render(absoluteTransform);
+		for(Mesh x : meshes)
+			x.render(absoluteTransform);
 	}
 	private AIVectorKey.Buffer positionKeys;
 	private AIQuatKey.Buffer rotationKeys;
 	private AIVectorKey.Buffer scalingKeys;
 	public void updateAnimation() {
-		if(model.currentNodeAnimationMap.keySet().contains(this)) {
-			AINodeAnim thisChannel = model.currentNodeAnimationMap.get(this);
-			positionKeys = thisChannel.mPositionKeys();
-			rotationKeys = thisChannel.mRotationKeys();
-			scalingKeys = thisChannel.mScalingKeys();
-		}
-		for(ModelNode x : children)
-			x.updateAnimation();
+		// if(model.currentNodeAnimationMap.keySet().contains(this)) {
+		// 	AINodeAnim thisChannel = model.currentNodeAnimationMap.get(this);
+		// 	positionKeys = thisChannel.mPositionKeys();
+		// 	rotationKeys = thisChannel.mRotationKeys();
+		// 	scalingKeys = thisChannel.mScalingKeys();
+		// }
+		// for(ModelNode x : children)
+		// 	x.updateAnimation();
 	}
-	public void interpolate(Matrix4f transform) {
-		absoluteTransform.set(defaultTransform);
-		// if(model.currentNodeAnimationMap.keySet().contains(this))
-		// 	System.out.println("I should be animating");
-		transform.mul(absoluteTransform,absoluteTransform);
-		for(ModelNode x : children)
-			x.interpolate(absoluteTransform);
+	// set $a with the values of $this
+	public void set(ModelNode a) {
+		a.children = children;
+		a.meshes = meshes;
+		a.absoluteTransform = absoluteTransform;
+		a.localTransform = localTransform;
 	}
 }

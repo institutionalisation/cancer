@@ -9,10 +9,10 @@ import static util.Util.*;
 public class Player {
 	private Keyboard keyboard;
 	private Mouse mouse;
-	public Vector3f loc = new Vector3f(0,0,0);
+	public Vector3f loc = new Vector3f(0,1,0);
 	private Matrix4f viewMatrix = new Matrix4f();
 	private FloatBuffer viewMatrixBuffer = memAllocFloat(16);
-	public List<Mesh> colliders = new ArrayList<>();
+	public List<ModelNode> colliders = new ArrayList<>();
 	public Player(Keyboard keyboard,Mouse mouse) {
 		this.keyboard = keyboard;
 		this.mouse = mouse;
@@ -27,7 +27,7 @@ public class Player {
 		FOOT_OFFSET = 1.5f,
 		HEAD_OFFSET = .4f,
 		INITIAL_DY = 15/1000f,
-		GRAVITY = .4f/1000f;
+		GRAVITY = .00004f;
 	float dy = 0;
 	boolean grounded = true;
 	public void handleInput(int delta) {
@@ -71,7 +71,13 @@ public class Player {
 		//keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,new Vector3f()));
 		//System.out.println("view:"+viewMatrix);
 		// collide
-		for(Mesh meshWrapper : colliders) {
+		for(ModelNode modelNode : colliders)
+			collide(modelNode);
+	}
+	private void collide(ModelNode modelNode) {
+		for(ModelNode child : modelNode.children)
+			collide(child);
+		for(Mesh meshWrapper : modelNode.meshes) {
 			AIMesh mesh = meshWrapper.getAIMesh();
 			AIFace.Buffer faces = mesh.mFaces();
 			AIVector3D.Buffer vertexBuffer = mesh.mVertices();
@@ -82,10 +88,7 @@ public class Player {
 				for(int i = 0; indices.hasRemaining(); ++i) {
 					AIVector3D vertex = vertexBuffer.get(indices.get());
 					vertices3D[i] = new Vector3f(vertex.x(),vertex.y(),vertex.z());
-					meshWrapper.parentNode.absoluteTransform.transformPosition(vertices3D[i]);
-					// float tmp = vertices3D[i].y;
-					// vertices3D[i].y = vertices3D[i].z;
-					// vertices3D[i].z = -tmp;
+					modelNode.absoluteTransform.transformPosition(vertices3D[i]);
 				}
 				float
 					lowest=Float.MAX_VALUE,

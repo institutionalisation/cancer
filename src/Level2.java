@@ -67,25 +67,25 @@ public class Level2 extends LevelBase {
 			}
 		}}.start();
 	}
-	private Model maze,bed,guitar,books,arduino;
+	private ModelNode maze,bed,guitar,books,arduino;
 	public void inContext() {
-		maze = new Model("maze1","dae",program);
-		(bed = new Model("bed","dae",program)).rootNode.defaultTransform
+		maze = new Model("maze1","dae",program).rootNode;
+		(bed = new Model("bed","dae",program).rootNode).localTransform
 			.rotateLocalY((float)Math.toRadians(-90))
 			.translateLocal(new Vector3f(0,0,0));
-		(guitar = new Model("guitar","dae",program)).rootNode.defaultTransform
+		(guitar = new Model("guitar","dae",program).rootNode).localTransform
 			.scale(.02f)
 			.rotateLocalX((float)Math.toRadians(90))
 			.translateLocal(new Vector3f(0,2,0));
-		(books = new Model("books","obj",program)).rootNode.defaultTransform
+		(books = new Model("books","obj",program).rootNode).localTransform
 			.scale(.5f)
 			.rotateLocalY((float)Math.toRadians(-45))
 			.translateLocal(0,-1,0);
-		(arduino = new Model("arduino","obj",program)).rootNode.defaultTransform
+		(arduino = new Model("arduino","obj",program).rootNode).localTransform
 			.scale(.3f)
 			.rotateLocalY((float)Math.toRadians(90))
 			.rotateLocalX((float)Math.toRadians(-70));
-		for(Mesh x : maze.meshes)
+		for(ModelNode x : new ModelNode[]{maze,bed,books,arduino})
 			player.colliders.add(x);
 	}
 	List<RefillPoint> refillPoints;
@@ -98,8 +98,8 @@ public class Level2 extends LevelBase {
 			add(new RefillPoint("Engineering",new Vector3f(-6.5f,1.5f,7f),arduino));
 		}};
 		// now that they're in the right spots, start rendering the models
-		for(Model x : new Model[]{maze,bed,guitar,books,arduino})
-			renderedModels.add(x);
+		for(ModelNode x : new ModelNode[]{maze,bed,guitar,books,arduino})
+			renderedModelNodes.add(x);
 		String[] dialogStrs = new String[]{
 			"Use  W A S D  to move around. Press T to continue.",
 			"Explore the level! Find the 4 refill points at the corners of the maze.",
@@ -134,7 +134,7 @@ public class Level2 extends LevelBase {
 		// resize dialog frame to fill space for newly-created meterFrame
 		dialogFrameBoundsCallback.invoke(window);
 		// check proximity to refill points
-		new Thread() { public void run() { exPrint(()->{
+		new Thread(()->{exPrint(()->{
 			for(;;) {
 				Thread.sleep(50);
 				for(RefillPoint x : refillPoints)
@@ -142,7 +142,7 @@ public class Level2 extends LevelBase {
 						meterFrame.meters.get(x.name)
 							.lastRefill = System.currentTimeMillis();
 			}
-		});}}.start();
+		});}).start();
 		meterFrame.emptyCallbacks.add(()->{ win[0] = false; });
 		long startTime = System.currentTimeMillis();
 		for(long remaining=1;0<remaining && win[0];) {
