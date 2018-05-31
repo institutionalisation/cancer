@@ -23,6 +23,7 @@ import java.util.List;
 public class Level1 extends LevelBase { final Level1 level1 = this;
 	private ModelNode stage,blueButton;
 	public void inContext() {
+/*
 		stage = new Model("maze2","obj",program).rootNode;
 		ButtonBuilder bb = new ButtonBuilder(program);
 		(blueButton = bb.create(ButtonBuilder.Color.BLUE,2000)).localTransform
@@ -31,6 +32,7 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 			player.colliders.add(x);
 		for(ModelNode x : new ModelNode[]{stage,blueButton})
 			renderedModelNodes.add(x);
+*/
 	}
 	public void onReady() { exPrint(()->{
 	});}
