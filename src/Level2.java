@@ -85,7 +85,7 @@ public class Level2 extends LevelBase {
 			.scale(.3f)
 			.rotateLocalY((float)Math.toRadians(90))
 			.rotateLocalX((float)Math.toRadians(-70));
-		for(ModelNode x : new ModelNode[]{maze,bed,books,arduino})
+		for(ModelNode x : new ModelNode[]{maze,bed})
 			player.colliders.add(x);
 	}
 	List<RefillPoint> refillPoints;
@@ -98,8 +98,7 @@ public class Level2 extends LevelBase {
 			add(new RefillPoint("Engineering",new Vector3f(-6.5f,1.5f,7f),arduino));
 		}};
 		// now that they're in the right spots, start rendering the models
-		for(ModelNode x : new ModelNode[]{maze,bed,guitar,books,arduino})
-			renderedModelNodes.add(x);
+		renderedModelNodes.add(asList(new ModelNode[]{maze,bed,books,guitar,arduino}));
 		String[] dialogStrs = new String[]{
 			"Use  W A S D  to move around. Press T to continue.",
 			"Explore the level! Find the 4 refill points at the corners of the maze.",
