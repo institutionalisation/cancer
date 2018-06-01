@@ -98,7 +98,7 @@ public class Level2 extends LevelBase {
 			add(new RefillPoint("Engineering",new Vector3f(-6.5f,1.5f,7f),arduino));
 		}};
 		// now that they're in the right spots, start rendering the models
-		renderedModelNodes.add(asList(new ModelNode[]{maze,bed,books,guitar,arduino}));
+		renderedModelNodes.addAll(list(new ModelNode[]{maze,bed,books,guitar,arduino}));
 		String[] dialogStrs = new String[]{
 			"Use  W A S D  to move around. Press T to continue.",
 			"Explore the level! Find the 4 refill points at the corners of the maze.",
