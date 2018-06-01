@@ -2,6 +2,7 @@ package util;
 import java.nio.file.*;
 import java.io.*;
 import org.joml.*;
+import java.util.*;
 public class Util {
 	public static Matrix4f identityMatrix = new Matrix4f();
 	public static PrintStream out = System.out;
@@ -19,4 +20,6 @@ public class Util {
 		catch(Exception e) {
 			e.printStackTrace(); }
 	}
+	public static <E> List<E> list(E... a) {
+		return Arrays.asList(a); }
 }

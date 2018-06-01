@@ -77,7 +77,7 @@ public class Player { final Player player = this;
 				canJump = false;
 				dy = INITIAL_DY;
 			}
-			out.println("dy:"+dy);
+			//out.println("dy:"+dy);
 			loc.y += dy*delta;
 			dy -= GRAVITY*delta;
 		}
@@ -120,7 +120,7 @@ public class Player { final Player player = this;
 					highest = Math.max(highest,x.y);
 				}
 				if(loc.y+HEAD_OFFSET-delta*dy<lowest || highest<loc.y-FOOT_OFFSET) {
-					out.println("cut off");
+					//out.println("cut off");
 					continue;
 				}
 				//System.out.println("in level");
@@ -135,7 +135,7 @@ public class Player { final Player player = this;
 					new Triangle2f(vertices[0],vertices[1],vertices[2]).contains(locXZ)
 				) {
 					canJump = collided = true;
-					dy = -.5f; 
+					dy = 0; 
 					loc.y = highest + FOOT_OFFSET;
 					continue;
 				}
@@ -183,7 +183,7 @@ public class Player { final Player player = this;
 					if(highest<loc.y-STEP_MAX_HEIGHT+.1f) {
 						//System.out.println("step");
 						loc.y = highest+FOOT_OFFSET;
-						dy = -.5f;
+						dy = 0;
 						continue;
 					}
 					Vector2f wall = a.sub(b,new Vector2f());

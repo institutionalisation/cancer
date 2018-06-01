@@ -38,8 +38,6 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 				.translate(new Vector3f(0,-f*f,0),currentTransform);
 		}
 	}
-	private ModelNode stage,redButton,blueButton;
-	private Platform redPlatform,bluePlatform,yellowPlatform;
 	private Runnable raisePlatform(Platform platform) {
 		return ()->{
 			long now = System.currentTimeMillis();
@@ -52,31 +50,45 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 				platform.lastRaise = now;
 		};
 	}
+	private ModelNode stage;
+	private Platform redPlatform,bluePlatform,yellowPlatform;
 	public void inContext() {
-		redPlatform = new Platform(){{ new Model("maze2/red","obj",program).rootNode.set(this); }};
-		bluePlatform = new Platform(){{ new Model("maze2/blue","obj",program).rootNode.set(this); }};
-		yellowPlatform = new Platform(){{ new Model("maze2/yellow","obj",program).rootNode.set(this); }};
-		stage = new ModelNode(){
-			long start = System.currentTimeMillis();
-			{new Model("maze2/static","obj",program).rootNode.set(this);}
-			private Matrix4f currentTransform = new Matrix4f();
-			public Matrix4f getLocalTransform() {
-				float delta = (int)(System.currentTimeMillis()-start)/1000f;
-				return identityMatrix.translate(new Vector3f(0,-delta*.01f,0),currentTransform);
-			}
-		};
-		ButtonBuilder bb = new ButtonBuilder(program);
-		(blueButton = bb.create(ButtonBuilder.Color.BLUE,2000,raisePlatform(bluePlatform))).getLocalTransform()
-			.translate(new Vector3f(0,0,3));
-		(redButton = bb.create(ButtonBuilder.Color.RED,2000,raisePlatform(redPlatform))).getLocalTransform()
-			;
-		redPlatform.children.add(blueButton);
-		for(ModelNode x : new ModelNode[]{stage,redButton,redPlatform,bluePlatform})
-			player.colliders.add(x);
-		for(ModelNode x : new ModelNode[]{stage,redButton,redPlatform,bluePlatform})
-			renderedModelNodes.add(x);
+		redPlatform = new Platform(){{ set(new Model("maze2/red","obj",program).rootNode); }};
+		bluePlatform = new Platform(){{ set(new Model("maze2/blue","obj",program).rootNode); }};
+		yellowPlatform = new Platform(){{ set(new Model("maze2/yellow","obj",program).rootNode); }};
+		stage = new Model("maze2/static","obj",program).rootNode;
+		renderedModelNodes.addAll(list(
+			stage,
+			redPlatform,bluePlatform,yellowPlatform));
+		player.colliders.addAll(list(
+			stage,redPlatform,bluePlatform,yellowPlatform));
+		ButtonBuilder bb = new ButtonBuilder(program)
+			.setStickTime(2000);
+		ModelNode redButton,blueButton,yellowButton;
+		redButton = bb.create(ButtonBuilder.Color.RED,raisePlatform(redPlatform));
+		blueButton = bb.create(ButtonBuilder.Color.BLUE,raisePlatform(bluePlatform));
+		yellowButton = bb.create(ButtonBuilder.Color.YELLOW,raisePlatform(yellowPlatform));
+		for(ModelNode button : new ModelNode[]{
+			new ModelNode(){{ set(redButton);
+				getLocalTransform().translate(-10.3f,0,-10.8f); }},
+			new ModelNode(){{ set(blueButton);
+				getLocalTransform().translate(-.75f,0,-10.8f); }},
+			new ModelNode(){{ set(yellowButton);
+				getLocalTransform().translate(8.8f,0,-10.8f); }},
+		}) {
+			renderedModelNodes.add(button);
+			player.colliders.add(button);
+		}
+		bluePlatform.children.addAll(list(
+			new ModelNode(){{ set(redButton);
+				getLocalTransform().translate(0,0,-3.190f);
+				bluePlatform.children.add(this); }}));
 	}
 	public void onReady() { exPrint(()->{
+		for(;;) {
+			Thread.sleep(300);
+			out.println(player.loc+" dy:"+player.dy);
+		}
 	});}
 	public void close() {
 		System.exit(0);

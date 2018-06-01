@@ -18,21 +18,26 @@ public class ButtonBuilder {
 			unpressed[i] = new Model("button/center-unpressed/"+Color.names[i],"obj",program).rootNode;
 		}
 	}
-	public ModelNode create(int color,int stickTime,Runnable pressCallback) {
+	private int stickTime;
+	public ButtonBuilder setStickTime(int stickTime) {
+		this.stickTime = stickTime;
+		return this;
+	}
+	public ModelNode create(int color,Runnable pressCallback) {
 		return new ModelNode(){
 			boolean[] isPressed = new boolean[]{false};
 		{
-			children.add(new ModelNode(){{ base.set(this); }});
+			children.add(new ModelNode(){{ set(base); }});
 			children.add(new ModelNode(){{
-				unpressed[color].set(this);
+				set(unpressed[color]);
 				collisionCallbacks.add(()->{
 					if(!isPressed[0]) {
 						pressCallback.run();
 						isPressed[0]=true;
-						pressed[color].set(this);
+						set(pressed[color]);
 						new Thread(()->{exPrint(()->{
 							Thread.sleep(stickTime);
-							unpressed[color].set(this);
+							set(unpressed[color]);
 							isPressed[0]=false;
 						});}).start();
 					}
