@@ -21,23 +21,6 @@ import static util.Util.*;
 import java.util.*;
 import java.util.List;
 public class Level1 extends LevelBase { final Level1 level1 = this;
-	private static class Platform extends ModelNode {
-		public long lastRaise;// = System.currentTimeMillis();
-		public static int
-			RAISE_TIME = 2000,
-			HOLD_TIME = 2000;
-		public int totalTime() { return RAISE_TIME*2 + HOLD_TIME; }
-		public int delta() { return (int)(System.currentTimeMillis()-lastRaise); }
-		private Matrix4f currentTransform = new Matrix4f();
-		public Matrix4f getLocalTransform() {
-			float f = Math.abs(delta()-totalTime()/2);
-			f-=HOLD_TIME/2;
-			f=f<0?0:f;
-			f/=1000;
-			return identityMatrix
-				.translate(new Vector3f(0,-f*f,0),currentTransform);
-		}
-	}
 	private Runnable raisePlatform(Platform platform) {
 		return ()->{
 			long now = System.currentTimeMillis();
@@ -68,21 +51,25 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 		redButton = bb.create(ButtonBuilder.Color.RED,raisePlatform(redPlatform));
 		blueButton = bb.create(ButtonBuilder.Color.BLUE,raisePlatform(bluePlatform));
 		yellowButton = bb.create(ButtonBuilder.Color.YELLOW,raisePlatform(yellowPlatform));
-		for(ModelNode button : new ModelNode[]{
+		stage.children.addAll(list(
+			// first 3
 			new ModelNode(){{ set(redButton);
 				getLocalTransform().translate(-10.3f,0,-10.8f); }},
 			new ModelNode(){{ set(blueButton);
 				getLocalTransform().translate(-.75f,0,-10.8f); }},
 			new ModelNode(){{ set(yellowButton);
 				getLocalTransform().translate(8.8f,0,-10.8f); }},
-		}) {
-			renderedModelNodes.add(button);
-			player.colliders.add(button);
-		}
+			// on the top-hat-shaped block
+			new ModelNode(){{ set(yellowButton);
+				getLocalTransform().translate(11.6f,0,2.9f); }},
+			new ModelNode(){{ set(blueButton);
+				getLocalTransform().translate(11.6f,0,5.2f); }}
+		));
 		bluePlatform.children.addAll(list(
 			new ModelNode(){{ set(redButton);
 				getLocalTransform().translate(0,0,-3.190f);
-				bluePlatform.children.add(this); }}));
+				bluePlatform.children.add(this); }}
+		));
 	}
 	public void onReady() { exPrint(()->{
 		for(;;) {
