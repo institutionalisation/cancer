@@ -68,12 +68,10 @@ public class ModelNode {
 	}
 	// set $a with the values of $this
 	public void set(ModelNode a) {
-		a.children = children;
-		a.meshes = meshes;
+		children = a.children;
+		meshes = a.meshes;
 		Matrix4f transformCopy = 
-		a.localTransform = new Matrix4f(){{
-			localTransform.set(this);
-		}};
+		localTransform.set(a.localTransform);
 	}
 	public ModelNode getChild(String name) {
 		for(ModelNode x : children)
