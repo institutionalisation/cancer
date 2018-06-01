@@ -12,10 +12,12 @@ public class Line
 		this.pointB = pointB;
 	}
 
+	private static double EPS = 0.001;
+
 	private static boolean inBox(Vector2d pointA,Vector2d pointB,Vector2d sect)
 	{
-		return min(pointA.x,pointB.x) <= sect.x && sect.x <= max(pointA.x,pointB.x)
-			&& min(pointA.y,pointB.y) <= sect.y && sect.y <= max(pointA.y,pointB.y);
+		return min(pointA.x,pointB.x) - EPS <= sect.x && sect.x <= max(pointA.x,pointB.x) + EPS
+			&& min(pointA.y,pointB.y) - EPS <= sect.y && sect.y <= max(pointA.y,pointB.y) + EPS;
 	}
 
 	public boolean collide(final Vector2d pointA,final Vector2d pointB)
