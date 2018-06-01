@@ -20,35 +20,22 @@ public class Level0 extends LevelBase
 {
 	private ModelNode maze;
 	private ModelNode oBug;
-	private ModelNode bug;
+	private Bug bug;
+	private Pathfinder pathfinder = new Pathfinder(2,new Line[]{new Line(new Vector2d(-20,2.37),new Vector2d(20,2.37))},.2);
 
 	public void inContext()
 	{
 		maze = new Model("maze1","dae",program).rootNode;
 		renderedModelNodes.add(maze);
 		oBug = new Model("teapot","obj",program).rootNode;
-		bug = new ModelNode()
-		{
-			long startTime = System.nanoTime();
-			Matrix4f origXlat = new Matrix4f();
-			Matrix4f curPos = new Matrix4f();
-			{
-				oBug.set(this);
-				//getLocalTransform().scale(.2f);
-				renderedModelNodes.add(this);
-			}
-			@Override
-			public Matrix4f getLocalTransform()
-			{
-				long delta = System.nanoTime() - startTime;
-				System.out.println("orig" + origXlat);
-				return origXlat.translate(new Vector3f(delta * .000000001f,0,0),curPos);
-			}
-		};
+		bug = new Bug(new Matrix4f(),oBug);
+		renderedModelNodes.add(bug);
 	}
 
 	public void onReady()
 	{
+		Vector2d[] path = pathfinder.findPath(new Vector2d(),new Vector2d(0,5));
+		bug.setPath(path);
 	}
 	
 	public void close()

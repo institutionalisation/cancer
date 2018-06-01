@@ -11,6 +11,7 @@ public class Pathfinder
 
 	public Pathfinder(final double extWidth,final Line[] walls,final double stepSize)
 	{
+/*
 		Line[] lines = new Line[walls.length * 4];
 		for(int i = 0;i < walls.length;i++)
 		{
@@ -32,7 +33,8 @@ public class Pathfinder
 			lines[i * 4 + 2] = perpA;
 			lines[i * 4 + 3] = perpB;
 		}
-		collider = new LineCollide(lines);
+*/
+		collider = new LineCollide(walls);
 		this.stepSize = stepSize;
 	}
 
@@ -92,31 +94,37 @@ public class Pathfinder
 		}
 	}
 
-	private void step(final PriorityQueue<Node> queue,final Set<Position> vis,final Vector2d dest,final Node cur,final int x,final int y) // abs(x),abs(y) <= 1
+	private void step(final PriorityQueue<Node> queue,final Set<Position> vis,final Vector2d start,final Vector2d dest,final Node cur,final int x,final int y) // abs(x),abs(y) <= 1
 	{
-		final Vector2d pos = new Vector2d(cur.pos.x + x * stepSize,cur.pos.y + y * stepSize);
-		if(vis.contains(pos))
-			return;
 		final Position key = new Position(cur.key.x + x,cur.key.y + y);
+		if(vis.contains(key))
+			return;
+		final Vector2d pos = new Vector2d(cur.pos.x + x * stepSize,cur.pos.y + y * stepSize);
+		if(start.distance(pos) < stepSize)
+			return;
 		double dist = Double.MAX_VALUE;
 		Node prev = null;
 		if(!collider.check(cur.pos,pos)) // edge from u to v
 		{
-			dist = stepSize;
+			dist = cur.dist + stepSize;
+			//System.out.println(cur + " edge " + cur.pos + " " + pos + " dist " + dist);
 			prev = cur;
 		}
 		if(!collider.check(cur.prev.pos,pos)) // edge tightening
 		{
-			double newDist = cur.prev.pos.distance(pos);
+			double newDist = cur.prev.dist + cur.prev.pos.distance(pos);
+			//System.out.println(cur.prev + " tighten " + cur.prev.pos + " " + pos + " dist " + newDist);
 			if(newDist < dist)
 			{
 				dist = newDist;
 				prev = cur.prev;
 			}
 		}
-		if(dist != Double.MAX_VALUE)
+		if(prev != null)
 		{
-			queue.offer(new Node(key,pos,dest.distance(pos),dist));
+			Node next = new Node(key,pos,dest.distance(pos),dist);
+			next.prev = prev;
+			queue.offer(next);
 			vis.add(key);
 		}
 	}
@@ -125,20 +133,22 @@ public class Pathfinder
 	{
 		Set<Position> vis = new TreeSet<>();
 		PriorityQueue<Node> queue = new PriorityQueue<Node>();
-		Node root = new Node(new Position(Long.MAX_VALUE,Long.MAX_VALUE),start,0,0);
+		Node root = new Node(new Position(Long.MAX_VALUE,Long.MAX_VALUE),start,start.distance(end),0);
 		root.prev = root;
+		queue.offer(root);
 		do
 		{
 			Node cur = queue.poll();
 			if(cur.heuristic - cur.dist < stepSize)
 			{
+				System.out.println("stop at dist: " + (cur.heuristic - cur.dist) + " dist " + cur.dist + " pos " + cur.pos);
 				root = cur;
 				break;
 			}
-			step(queue,vis,end,cur,0,1);
-			step(queue,vis,end,cur,0,-1);
-			step(queue,vis,end,cur,-1,0);
-			step(queue,vis,end,cur,1,0);
+			step(queue,vis,start,end,cur,0,1);
+			step(queue,vis,start,end,cur,0,-1);
+			step(queue,vis,start,end,cur,-1,0);
+			step(queue,vis,start,end,cur,1,0);
 		}
 		while(queue.size() != 0);
 		int count = 0;
@@ -148,13 +158,15 @@ public class Pathfinder
 			cur = cur.prev;
 			count++;
 		}
-		Vector2d[] path = new Vector2d[count];
-		int index = count - 1;
+		Vector2d[] path = new Vector2d[count + 2];
+		int index = count;
 		while(root.prev != root)
 		{
 			path[index--] = root.pos;
 			root = root.prev;
 		}
+		path[0] = start;
+		path[count + 1] = end;
 		return path;
 	}
 }
