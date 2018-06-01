@@ -35,7 +35,7 @@ public class Model {
 				if(propertyName.equals("$tex.file")) {
 					String textureFileName = StandardCharsets.UTF_8.decode(property.mData()).toString();
 					textureFileName = textureFileName.trim();
-					textures[i] = new Texture("models/"+name+"/"+textureFileName);
+					textures[i] = Texture.fromFile("models/"+name+"/",textureFileName);
 				}
 			}
 		}

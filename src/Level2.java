@@ -70,18 +70,18 @@ public class Level2 extends LevelBase {
 	private ModelNode maze,bed,guitar,books,arduino;
 	public void inContext() {
 		maze = new Model("maze1","dae",program).rootNode;
-		(bed = new Model("bed","dae",program).rootNode).localTransform
+		(bed = new Model("bed","dae",program).rootNode).getLocalTransform()
 			.rotateLocalY((float)Math.toRadians(-90))
 			.translateLocal(new Vector3f(0,0,0));
-		(guitar = new Model("guitar","dae",program).rootNode).localTransform
+		(guitar = new Model("guitar","dae",program).rootNode).getLocalTransform()
 			.scale(.02f)
 			.rotateLocalX((float)Math.toRadians(90))
 			.translateLocal(new Vector3f(0,2,0));
-		(books = new Model("books","obj",program).rootNode).localTransform
+		(books = new Model("books","obj",program).rootNode).getLocalTransform()
 			.scale(.5f)
 			.rotateLocalY((float)Math.toRadians(-45))
 			.translateLocal(0,-1,0);
-		(arduino = new Model("arduino","obj",program).rootNode).localTransform
+		(arduino = new Model("arduino","obj",program).rootNode).getLocalTransform()
 			.scale(.3f)
 			.rotateLocalY((float)Math.toRadians(90))
 			.rotateLocalX((float)Math.toRadians(-70));

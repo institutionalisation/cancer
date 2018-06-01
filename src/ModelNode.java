@@ -6,33 +6,32 @@ import java.util.*;
 import static util.Util.*;
 public class ModelNode {
 	public String name;
-	public Matrix4f
-		localTransform,
-		absoluteTransform = new Matrix4f(); // current state in animation
-	public ModelNode[] children;
-	public Mesh[] meshes;
+	public boolean shouldRender=true,shouldCollide=true;
+	private Matrix4f localTransform;
+	public Matrix4f absoluteTransform = new Matrix4f(); // current state in animation
+	public List<ModelNode> children = new ArrayList<>();
+	public List<Runnable> collisionCallbacks = new ArrayList<>();
+	public List<Mesh> meshes = new ArrayList<>();
+	public ModelNode() {
+		localTransform = new Matrix4f(); }
 	public ModelNode(Model model,AINode node) {
 		name = node.mName().dataString();
 		System.out.println("name:"+name);
 		model.nameNodeMap.put(name,this);
 		PointerBuffer children = node.mChildren();
 		if(children != null && 0<children.capacity()) {
-			this.children = new ModelNode[children.capacity()];
 			System.out.println("chidren.capacity:"+children.capacity());
-			for(int i = 0;children.hasRemaining();++i)
-				this.children[i] = new ModelNode(model,AINode.create(children.get()));
-		} else
-			this.children = new ModelNode[0];
+			for(;children.hasRemaining();)
+				this.children.add(new ModelNode(model,AINode.create(children.get())));
+		}
 
 		IntBuffer meshBuffer = node.mMeshes();
 		if(meshBuffer != null && 0<meshBuffer.capacity()) {
-			meshes = new Mesh[meshBuffer.capacity()];
 			System.out.println("modelNode mesh count:"+meshBuffer.capacity());
-			for(int i = 0;meshBuffer.hasRemaining();++i)
-				meshes[i] = model.meshes[meshBuffer.get()];
+			for(;meshBuffer.hasRemaining();)
+				meshes.add(model.meshes[meshBuffer.get()]);
 			out.println("end");
-		} else
-		 meshes = new Mesh[0];
+		}
 
 		AIMatrix4x4 tran = node.mTransformation();
 		localTransform = new Matrix4f(
@@ -43,11 +42,12 @@ public class ModelNode {
 		);
 		System.out.println("localTransform:"+localTransform);
 	}
+	Matrix4f temp = new Matrix4f();
 	public void render(Matrix4f transform) {
-		absoluteTransform.set(localTransform);
+		temp.set(getLocalTransform());
 		// if(model.currentNodeAnimationMap.keySet().contains(this))
 		// 	System.out.println("I should be animating");
-		transform.mul(absoluteTransform,absoluteTransform);
+		transform.mul(temp,absoluteTransform);
 		for(ModelNode x : children)
 			x.render(absoluteTransform);
 		for(Mesh x : meshes)
@@ -70,7 +70,22 @@ public class ModelNode {
 	public void set(ModelNode a) {
 		a.children = children;
 		a.meshes = meshes;
-		a.absoluteTransform = absoluteTransform;
-		a.localTransform = localTransform;
+		Matrix4f transformCopy = 
+		a.localTransform = new Matrix4f(){{
+			localTransform.set(this);
+		}};
 	}
+	public ModelNode getChild(String name) {
+		for(ModelNode x : children)
+			if(x.name.equals(name))
+				return x;
+		for(ModelNode x : children) {
+			ModelNode child = x.getChild(name);
+			if(child != null)
+				return child;
+		}
+		return null;
+	}
+	public Matrix4f getLocalTransform() {
+		return localTransform; }
 }
