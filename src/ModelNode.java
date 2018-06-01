@@ -42,11 +42,12 @@ public class ModelNode {
 		);
 		System.out.println("localTransform:"+localTransform);
 	}
+	Matrix4f temp = new Matrix4f();
 	public void render(Matrix4f transform) {
-		absoluteTransform.set(getLocalTransform());
+		temp.set(getLocalTransform());
 		// if(model.currentNodeAnimationMap.keySet().contains(this))
 		// 	System.out.println("I should be animating");
-		transform.mul(absoluteTransform,absoluteTransform);
+		transform.mul(temp,absoluteTransform);
 		for(ModelNode x : children)
 			x.render(absoluteTransform);
 		for(Mesh x : meshes)

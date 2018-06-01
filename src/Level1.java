@@ -38,33 +38,44 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 				.translate(new Vector3f(0,-f*f,0),currentTransform);
 		}
 	}
-	private ModelNode stage,blueButton;
-	private Platform redPlatform;
-	public void inContext() {
-		redPlatform = new Platform(){{
-			new Model("maze2/red","obj",program).rootNode.set(this);
-		}};
-		stage = new Model("maze2/static","obj",program).rootNode;
-		ButtonBuilder bb = new ButtonBuilder(program);
-		(blueButton = bb.create(ButtonBuilder.Color.BLUE,2000,()->{
+	private ModelNode stage,redButton,blueButton;
+	private Platform redPlatform,bluePlatform,yellowPlatform;
+	private Runnable raisePlatform(Platform platform) {
+		return ()->{
 			long now = System.currentTimeMillis();
-			int since = Math.abs((int)(now - redPlatform.lastRaise));
+			int since = Math.abs((int)(now - platform.lastRaise));
 			if(since<6000)
-				redPlatform.lastRaise = now
-					- (redPlatform.totalTime()/2
-						- Math.abs(redPlatform.totalTime()/2 - since));
+				platform.lastRaise = now
+					- (platform.totalTime()/2
+						- Math.abs(platform.totalTime()/2 - since));
 			else
-				redPlatform.lastRaise = now;
-		})).getLocalTransform()
+				platform.lastRaise = now;
+		};
+	}
+	public void inContext() {
+		redPlatform = new Platform(){{ new Model("maze2/red","obj",program).rootNode.set(this); }};
+		bluePlatform = new Platform(){{ new Model("maze2/blue","obj",program).rootNode.set(this); }};
+		yellowPlatform = new Platform(){{ new Model("maze2/yellow","obj",program).rootNode.set(this); }};
+		stage = new ModelNode(){
+			long start = System.currentTimeMillis();
+			{new Model("maze2/static","obj",program).rootNode.set(this);}
+			private Matrix4f currentTransform = new Matrix4f();
+			public Matrix4f getLocalTransform() {
+				float delta = (int)(System.currentTimeMillis()-start)/1000f;
+				return identityMatrix.translate(new Vector3f(0,-delta*.01f,0),currentTransform);
+			}
+		};
+		ButtonBuilder bb = new ButtonBuilder(program);
+		(blueButton = bb.create(ButtonBuilder.Color.BLUE,2000,raisePlatform(bluePlatform))).getLocalTransform()
 			.translate(new Vector3f(0,0,3));
-		for(ModelNode x : new ModelNode[]{stage,blueButton,redPlatform})
+		(redButton = bb.create(ButtonBuilder.Color.RED,2000,raisePlatform(redPlatform))).getLocalTransform()
+			;
+		for(ModelNode x : new ModelNode[]{stage,redButton,blueButton,redPlatform,bluePlatform})
 			player.colliders.add(x);
-		for(ModelNode x : new ModelNode[]{stage,blueButton,redPlatform})
+		for(ModelNode x : new ModelNode[]{stage,redButton,blueButton,redPlatform,bluePlatform})
 			renderedModelNodes.add(x);
 	}
 	public void onReady() { exPrint(()->{
-		for(;;)
-			out.println(redPlatform.totalTime()/2-redPlatform.delta());
 	});}
 	public void close() {
 		System.exit(0);
