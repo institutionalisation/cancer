@@ -70,9 +70,10 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 			.translate(new Vector3f(0,0,3));
 		(redButton = bb.create(ButtonBuilder.Color.RED,2000,raisePlatform(redPlatform))).getLocalTransform()
 			;
-		for(ModelNode x : new ModelNode[]{stage,redButton,blueButton,redPlatform,bluePlatform})
+		redPlatform.children.add(blueButton);
+		for(ModelNode x : new ModelNode[]{stage,redButton,redPlatform,bluePlatform})
 			player.colliders.add(x);
-		for(ModelNode x : new ModelNode[]{stage,redButton,blueButton,redPlatform,bluePlatform})
+		for(ModelNode x : new ModelNode[]{stage,redButton,redPlatform,bluePlatform})
 			renderedModelNodes.add(x);
 	}
 	public void onReady() { exPrint(()->{
