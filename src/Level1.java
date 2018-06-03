@@ -56,19 +56,37 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 			new ModelNode(){{ set(redButton);
 				getLocalTransform().translate(-10.3f,0,-10.8f); }},
 			new ModelNode(){{ set(blueButton);
-				getLocalTransform().translate(-.75f,0,-10.8f); }},
+				getLocalTransform().translate(-3.13f,0,-10.8f); }},
 			new ModelNode(){{ set(yellowButton);
-				getLocalTransform().translate(8.8f,0,-10.8f); }},
+				getLocalTransform().translate(4.05f,0,-10.8f); }},
 			// on the top-hat-shaped block
 			new ModelNode(){{ set(yellowButton);
 				getLocalTransform().translate(11.6f,0,2.9f); }},
 			new ModelNode(){{ set(blueButton);
-				getLocalTransform().translate(11.6f,0,5.2f); }}
+				getLocalTransform().translate(11.6f,0,5.2f); }},
+			// at the end
+			new ModelNode(){{ set(redButton);
+				getLocalTransform().translate(8.6f,0,34.8f); }},
+			new ModelNode(){{ set(yellowButton);
+				getLocalTransform().translate(8.7f,0,30.7f); }}
 		));
 		bluePlatform.children.addAll(list(
 			new ModelNode(){{ set(redButton);
-				getLocalTransform().translate(0,0,-3.190f);
-				bluePlatform.children.add(this); }}
+				getLocalTransform().translate(0,0,-3.190f); }},
+			new ModelNode(){{ set(redButton);
+				getLocalTransform().translate(-4.641f,0,8.120f); }},
+			new ModelNode(){{ set(yellowButton);
+				getLocalTransform().translate(.8f,0,24.6f); }}
+		));
+		redPlatform.children.addAll(list(
+			new ModelNode(){{ set(yellowButton);
+				getLocalTransform().translate(-1.2f,0,8.5f); }},
+			new ModelNode(){{ set(redButton);
+				getLocalTransform().translate(-7f,0f,16.8f); }},
+			new ModelNode(){{ set(yellowButton); 
+				getLocalTransform().translate(-9f,0,16.8f); }},
+			new ModelNode(){{ set(blueButton); 
+				getLocalTransform().translate(-11f,0,16.8f); }}
 		));
 	}
 	public void onReady() { exPrint(()->{
