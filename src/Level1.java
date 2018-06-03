@@ -49,9 +49,9 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 				bb.new Button(RED){{
 					getLocalTransform().translate(-10.3f,0,-10.8f); }},
 				bb.new Button(BLUE){{
-					getLocalTransform().translate(-3.13f,0,-10.8f); }},
+					getLocalTransform().translate(10.4f,0,-10.8f); }},
 				bb.new Button(YELLOW){{
-					getLocalTransform().translate(4.05f,0,-10.8f); }},
+					getLocalTransform().translate(.05f,0,-10.8f); }},
 				// on the top-hat-shaped block
 				bb.new Button(YELLOW){{
 					getLocalTransform().translate(11.6f,0,2.9f); }},
@@ -69,7 +69,9 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 				bb.new Button(RED){{
 					getLocalTransform().translate(-4.641f,0,8.120f); }},
 				bb.new Button(YELLOW){{
-					getLocalTransform().translate(.8f,0,24.6f); }}
+					getLocalTransform().translate(.8f,0,24.6f); }},
+				bb.new Button(RED){{
+					getLocalTransform().translate(3.6f,0,25.1f); }}
 			));
 			redPlatform.children.addAll(list(
 				bb.new Button(YELLOW){{
