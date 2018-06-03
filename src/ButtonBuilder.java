@@ -26,13 +26,14 @@ public class ButtonBuilder {
 		return this;
 	}
 	public class Button extends ModelNode {
-		boolean[] isPressed = new boolean[]{false};
+		private boolean[] isPressed = new boolean[]{false};
 		public Button(Color color) {
 			children.add(new ModelNode(){{ set(base); }});
 			children.add(new ModelNode(){{
 				set(unpressed[color.ordinal()]);
 				collisionCallbacks.add(()->{
 					if(!isPressed[0]) {
+						out.println("pressed");
 						colorCallbacks.get(color).run();
 						isPressed[0]=true;
 						set(pressed[color.ordinal()]);

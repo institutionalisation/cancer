@@ -21,20 +21,9 @@ import static util.Util.*;
 import java.util.*;
 import java.util.List;
 public class Level1 extends LevelBase { final Level1 level1 = this;
-	private Runnable raisePlatform(Platform platform) {
-		return ()->{
-			long now = System.currentTimeMillis();
-			int since = Math.abs((int)(now - platform.lastRaise));
-			if(since<6000)
-				platform.lastRaise = now
-					- (platform.totalTime()/2
-						- Math.abs(platform.totalTime()/2 - since));
-			else
-				platform.lastRaise = now;
-		};
-	}
 	private ModelNode stage;
 	private Platform redPlatform,bluePlatform,yellowPlatform;
+	private enum State { TO_END,TO_START };
 	public void inContext() {
 		redPlatform = new Platform(){{ set(new Model("maze2/red","obj",program).rootNode); }};
 		bluePlatform = new Platform(){{ set(new Model("maze2/blue","obj",program).rootNode); }};
@@ -52,17 +41,17 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 			ButtonBuilder.Color RED = ButtonBuilder.Color.RED;
 			ButtonBuilder.Color BLUE = ButtonBuilder.Color.BLUE;
 			ButtonBuilder.Color YELLOW = ButtonBuilder.Color.YELLOW;
-			bb.colorCallbacks.put(RED,raisePlatform(redPlatform));
-			bb.colorCallbacks.put(BLUE,raisePlatform(bluePlatform));
-			bb.colorCallbacks.put(YELLOW,raisePlatform(yellowPlatform));
+			bb.colorCallbacks.put(RED,redPlatform.raise());
+			bb.colorCallbacks.put(BLUE,bluePlatform.raise());
+			bb.colorCallbacks.put(YELLOW,yellowPlatform.raise());
 			stage.children.addAll(list(
 				// first 3
 				bb.new Button(RED){{
 					getLocalTransform().translate(-10.3f,0,-10.8f); }},
 				bb.new Button(BLUE){{
-					getLocalTransform().translate(-3.13f,0,-10.8f); }},
+					getLocalTransform().translate(10.4f,0,-10.8f); }},
 				bb.new Button(YELLOW){{
-					getLocalTransform().translate(4.05f,0,-10.8f); }},
+					getLocalTransform().translate(.05f,0,-10.8f); }},
 				// on the top-hat-shaped block
 				bb.new Button(YELLOW){{
 					getLocalTransform().translate(11.6f,0,2.9f); }},
@@ -80,7 +69,9 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 				bb.new Button(RED){{
 					getLocalTransform().translate(-4.641f,0,8.120f); }},
 				bb.new Button(YELLOW){{
-					getLocalTransform().translate(.8f,0,24.6f); }}
+					getLocalTransform().translate(.8f,0,24.6f); }},
+				bb.new Button(RED){{
+					getLocalTransform().translate(3.6f,0,25.1f); }}
 			));
 			redPlatform.children.addAll(list(
 				bb.new Button(YELLOW){{
@@ -93,7 +84,41 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 					getLocalTransform().translate(-11f,0,16.8f); }}
 			));
 		}
+		// needs to be accessed from anonymous classes
+		State[] state = new State[]{State.TO_END};
+		keyboard.immediateKeys.put(GLFW_KEY_R,new Runnable() {
+			public void run() {
+				dialog("Restarted.");
+				state[0] = State.TO_END;
+				player.loc.set( 9.2f,1.5f,-10.8f);
+				// move away all the platforms
+				for(Platform x : list(redPlatform,bluePlatform,yellowPlatform))
+					x.lastRaise = 0;
+			}
+			{run();}
+		});
+
 		new Thread(()->{exPrint(()->{onReady();});}).start();
+		new Thread(()->{exPrint(()->{
+			for(;;) {
+				switch(state[0]) {
+					case TO_END:
+						if(37 < player.loc.z) {
+							dialog("Good job, now make it back!");
+							state[0] = State.TO_START;
+						}
+						break;
+					case TO_START:
+						if(player.loc.z<-9) {
+							dialog("You win!");
+							System.exit(0);
+						}
+				}
+				if(player.loc.y<-10)
+					dialog("You fell off the stage, press R to restart.");
+				Thread.sleep(200);
+			}
+		});}).start();
 	}
 	public void onReady() { exPrint(()->{
 		for(;;) {
