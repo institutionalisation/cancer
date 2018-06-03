@@ -94,6 +94,7 @@ public class Main {
 
 								});
 							}});
+							pack();
 							setVisible(true);
 						}};
 					});

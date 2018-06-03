@@ -22,32 +22,7 @@ import java.util.*;
 import java.util.List;
 public class Level2 extends LevelBase {
 	public final static int LEVEL_DURATION = 60;
-	private JFrame dialogFrame;
 	private MeterFrame meterFrame;
-	private JLabel dialog = new JLabel();
-	private void dialog(String text) {
-		dialog.setText(
-			"<html><style>body{font-size:20px;}</style><body>"+
-			text+
-			"</body></html>");
-	}
-	GLWindow.BoundCallback dialogFrameBoundsCallback;
-	public void initDialogFrame() {
-		dialogFrame = new JFrame(){{
-			add(BorderLayout.NORTH,dialog);
-			setUndecorated(true);
-			setVisible(true);
-		}};
-		dialogFrameBoundsCallback = new GLWindow.BoundCallback() {
-			public void invoke(GLWindow w) {
-				dialogFrame.setBounds(w.x,w.y+w.height,
-					w.width+(meterFrame==null?0:meterFrame.getWidth()),
-					w.height/3); }
-			{invoke(window);}};
-		window.resizeCallbacks.add(dialogFrameBoundsCallback);
-		window.positionCallbacks.add(dialogFrameBoundsCallback);
-
-	}
 	public void initMeterFrame() {
 		meterFrame = new MeterFrame(){{
 			meters.put("Sleep",new Meter(.01f));
@@ -69,6 +44,11 @@ public class Level2 extends LevelBase {
 	}
 	private ModelNode maze,bed,guitar,books,arduino;
 	public void inContext() {
+		dialogFrameBoundsCallback = new GLWindow.BoundCallback() {
+			public void invoke(GLWindow w) {
+				dialogFrame.setBounds(w.x,w.y+w.height,
+					w.width+(meterFrame==null?0:meterFrame.getWidth()),
+					w.height/3); } };
 		maze = new Model("maze1","dae",program).rootNode;
 		(bed = new Model("bed","dae",program).rootNode).getLocalTransform()
 			.rotateLocalY((float)Math.toRadians(-90))
@@ -85,12 +65,11 @@ public class Level2 extends LevelBase {
 			.scale(.3f)
 			.rotateLocalY((float)Math.toRadians(90))
 			.rotateLocalX((float)Math.toRadians(-70));
-		for(ModelNode x : new ModelNode[]{maze,bed})
+		for(ModelNode x : new ModelNode[]{maze})
 			player.colliders.add(x);
 	}
 	List<RefillPoint> refillPoints;
 	public void onReady() { exPrint(()->{
-		initDialogFrame();
 		refillPoints = new ArrayList<RefillPoint>(){{
 			add(new RefillPoint("Sleep",new Vector3f(5,0,-7.5f),bed));
 			add(new RefillPoint("Music",new Vector3f(-6.5f,0,-6.928f),guitar));
