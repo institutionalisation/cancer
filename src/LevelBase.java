@@ -27,7 +27,6 @@ public abstract class LevelBase {
 	public Program program;
 	public Player player;
 	public abstract void close();
-	public abstract void onReady();
 	public abstract void inContext();
 	public Set<ModelNode> renderedModelNodes = new HashSet<ModelNode>();
 	public JFrame dialogFrame;
@@ -55,7 +54,6 @@ public abstract class LevelBase {
 	public void run() { exPrint(()->{
 		init();
 		inContext();
-		new Thread(()->{exPrint(()->{onReady();});}).start();
 		renderLoop();
 	});}
 	public void init() { exPrint(()->{
