@@ -152,7 +152,17 @@ public class Level2 extends LevelBase {
 				"There really is no time for procrastination.",
 				"We get no work done, and it isn't even fun.",
 				"Procrastinating usually makes us feel bad about ourselves.",
-				"So here are some things you can do to stop procrastinating...",
+				"So here are some things you can do to stop procrastinating...<br>(Press G to skip)",
+				"1. Create a list of things you want to get done, then pick a time to do each of those things.",
+				"Planning out your work can be a good way of relieving stress, because you know when you'll be finished.",
+				"2. Change your environment. Many students don't have a good working environment.",
+				"Clear your workspace of distractions and make sure you have everything you need to work.",
+				"3. If you can, find someone who has the same assignment as you, or who can help you stay on track.",
+				"Sometimes just having another person with you is enough to motivate you to do your work.",
+				"4. Finally, start with the hardest tasks.",
+				"It might make more sense to get easy work out of the way, but you're most productive when you start working.",
+				"If you focus on your hard work at the beginning, you'll only have easier work to do when you finish.",
+				"I hope you learned something. Press T to end the game."
 			};
 			keyboard.immediateKeys.put(GLFW_KEY_T,new Runnable() {
 				private int dialogIndex = 0;
@@ -168,6 +178,10 @@ public class Level2 extends LevelBase {
 					}
 				}
 				{run();}
+			});
+			keyboard.immediateKeys.put(GLFW_KEY_G,()->{
+				out.println(score);
+				close();
 			});
 		} else {
 			hideMeterFrame();
