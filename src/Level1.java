@@ -93,6 +93,7 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 					getLocalTransform().translate(-11f,0,16.8f); }}
 			));
 		}
+		new Thread(()->{exPrint(()->{onReady();});}).start();
 	}
 	public void onReady() { exPrint(()->{
 		for(;;) {
