@@ -214,8 +214,6 @@ public class Player { final Player player = this;
 			}
 		}
 		//out.println("collided:"+collided);
-		if(collided)
-			out.println("collided:"+modelNode);
 		if(collided) for(Runnable callback : modelNode.collisionCallbacks)
 			callback.run();
 		return collided;

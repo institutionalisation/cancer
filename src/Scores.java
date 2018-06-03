@@ -1,6 +1,7 @@
 import java.util.*;
 import java.io.*;
 import static util.Util.*;
+import javax.swing.*;
 public class Scores {
 	final static int LEVEL_COUNT = 3;
 	List<List<Score>> value = new ArrayList<>();
@@ -26,4 +27,5 @@ public class Scores {
 		value.get(level).add(score);
 		Collections.sort(value.get(level));
 	}
+	public void format(JLabel jLabel) {}
 }
