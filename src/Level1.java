@@ -47,47 +47,52 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 			stage,redPlatform,bluePlatform,yellowPlatform));
 		ButtonBuilder bb = new ButtonBuilder(program)
 			.setStickTime(2000);
-		ModelNode redButton,blueButton,yellowButton;
-		redButton = bb.create(ButtonBuilder.Color.RED,raisePlatform(redPlatform));
-		blueButton = bb.create(ButtonBuilder.Color.BLUE,raisePlatform(bluePlatform));
-		yellowButton = bb.create(ButtonBuilder.Color.YELLOW,raisePlatform(yellowPlatform));
-		stage.children.addAll(list(
-			// first 3
-			new ModelNode(){{ set(redButton);
-				getLocalTransform().translate(-10.3f,0,-10.8f); }},
-			new ModelNode(){{ set(blueButton);
-				getLocalTransform().translate(-3.13f,0,-10.8f); }},
-			new ModelNode(){{ set(yellowButton);
-				getLocalTransform().translate(4.05f,0,-10.8f); }},
-			// on the top-hat-shaped block
-			new ModelNode(){{ set(yellowButton);
-				getLocalTransform().translate(11.6f,0,2.9f); }},
-			new ModelNode(){{ set(blueButton);
-				getLocalTransform().translate(11.6f,0,5.2f); }},
-			// at the end
-			new ModelNode(){{ set(redButton);
-				getLocalTransform().translate(8.6f,0,34.8f); }},
-			new ModelNode(){{ set(yellowButton);
-				getLocalTransform().translate(8.7f,0,30.7f); }}
-		));
-		bluePlatform.children.addAll(list(
-			new ModelNode(){{ set(redButton);
-				getLocalTransform().translate(0,0,-3.190f); }},
-			new ModelNode(){{ set(redButton);
-				getLocalTransform().translate(-4.641f,0,8.120f); }},
-			new ModelNode(){{ set(yellowButton);
-				getLocalTransform().translate(.8f,0,24.6f); }}
-		));
-		redPlatform.children.addAll(list(
-			new ModelNode(){{ set(yellowButton);
-				getLocalTransform().translate(-1.2f,0,8.5f); }},
-			new ModelNode(){{ set(redButton);
-				getLocalTransform().translate(-7f,0f,16.8f); }},
-			new ModelNode(){{ set(yellowButton); 
-				getLocalTransform().translate(-9f,0,16.8f); }},
-			new ModelNode(){{ set(blueButton); 
-				getLocalTransform().translate(-11f,0,16.8f); }}
-		));
+		{
+			// no faster way to expose the enum :(
+			ButtonBuilder.Color RED = ButtonBuilder.Color.RED;
+			ButtonBuilder.Color BLUE = ButtonBuilder.Color.BLUE;
+			ButtonBuilder.Color YELLOW = ButtonBuilder.Color.YELLOW;
+			bb.colorCallbacks.put(RED,raisePlatform(redPlatform));
+			bb.colorCallbacks.put(BLUE,raisePlatform(bluePlatform));
+			bb.colorCallbacks.put(YELLOW,raisePlatform(yellowPlatform));
+			stage.children.addAll(list(
+				// first 3
+				bb.new Button(RED){{
+					getLocalTransform().translate(-10.3f,0,-10.8f); }},
+				bb.new Button(BLUE){{
+					getLocalTransform().translate(-3.13f,0,-10.8f); }},
+				bb.new Button(YELLOW){{
+					getLocalTransform().translate(4.05f,0,-10.8f); }},
+				// on the top-hat-shaped block
+				bb.new Button(YELLOW){{
+					getLocalTransform().translate(11.6f,0,2.9f); }},
+				bb.new Button(BLUE){{
+					getLocalTransform().translate(11.6f,0,5.2f); }},
+				// at the end
+				bb.new Button(RED){{
+					getLocalTransform().translate(8.6f,0,34.8f); }},
+				bb.new Button(YELLOW){{
+					getLocalTransform().translate(8.7f,0,30.7f); }}
+			));
+			bluePlatform.children.addAll(list(
+				bb.new Button(RED){{
+					getLocalTransform().translate(0,0,-3.190f); }},
+				bb.new Button(RED){{
+					getLocalTransform().translate(-4.641f,0,8.120f); }},
+				bb.new Button(YELLOW){{
+					getLocalTransform().translate(.8f,0,24.6f); }}
+			));
+			redPlatform.children.addAll(list(
+				bb.new Button(YELLOW){{
+					getLocalTransform().translate(-1.2f,0,8.5f); }},
+				bb.new Button(RED){{
+					getLocalTransform().translate(-7f,0f,16.8f); }},
+				bb.new Button(YELLOW){{
+					getLocalTransform().translate(-9f,0,16.8f); }},
+				bb.new Button(BLUE){{
+					getLocalTransform().translate(-11f,0,16.8f); }}
+			));
+		}
 	}
 	public void onReady() { exPrint(()->{
 		for(;;) {
