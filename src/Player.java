@@ -65,13 +65,21 @@ public class Player { final Player player = this;
 		// kind of magic, but it works
 		IDENTITY.lookAt(loc,loc.add(dir,new Vector3f()),right.cross(dir,new Vector3f()),viewMatrix);
 		float distance = moveSpeed*delta;
-		keyRun(GLFW_KEY_W,forward.mul(distance,new Vector3f()));
-		keyRun(GLFW_KEY_S,forward.mul(-distance,new Vector3f()));
-		keyRun(GLFW_KEY_D,right.mul(distance,new Vector3f()));
-		keyRun(GLFW_KEY_A,right.mul(-distance,new Vector3f()));
+		Vector3f deltaLoc = new Vector3f();
+		if(keyboard.getKeysPressed().contains(GLFW_KEY_W))
+			deltaLoc.add(forward.mul(distance,new Vector3f()));
+		if(keyboard.getKeysPressed().contains(GLFW_KEY_S))
+			deltaLoc.add(forward.mul(-distance,new Vector3f()));
+		if(keyboard.getKeysPressed().contains(GLFW_KEY_D))
+			deltaLoc.add(right.mul(distance,new Vector3f()));
+		if(keyboard.getKeysPressed().contains(GLFW_KEY_A))
+			deltaLoc.add(right.mul(-distance,new Vector3f()));
+
 		if(flying) {
-			keyRun(GLFW_KEY_SPACE,UP.mul(distance,new Vector3f()));
-			keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,new Vector3f()));
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE))
+				deltaLoc.add(UP.mul(distance,new Vector3f()));
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_LEFT_SHIFT))
+				deltaLoc.add(UP.mul(-distance,new Vector3f()));
 		} else {
 			if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE) && canJump) {
 				canJump = false;
@@ -81,6 +89,10 @@ public class Player { final Player player = this;
 			loc.y += dy*delta;
 			dy -= GRAVITY*delta;
 		}
+		if(.001f<Math.abs(deltaLoc.length()))
+			deltaLoc.normalize();
+		deltaLoc.mul(delta*moveSpeed);
+		loc.add(deltaLoc);
 		//System.out.println("view:"+viewMatrix);
 		// collide
 		synchronized(colliders) {
@@ -204,10 +216,6 @@ public class Player { final Player player = this;
 		if(collided) for(Runnable callback : modelNode.collisionCallbacks)
 			callback.run();
 		return collided;
-	}
-	public void keyRun(int key,Vector3f direction) {
-		if(keyboard.getKeysPressed().contains(key))
-			loc.add(direction);
 	}
 	public FloatBuffer getView() {
 		return viewMatrix.get(viewMatrixBuffer);
