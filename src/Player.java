@@ -27,6 +27,7 @@ public class Player { final Player player = this;
 					keyboard.immediateKeys.put(GLFW_KEY_Q,stopFlying);
 				});
 			}
+			{run();}
 		});
 	}
 	final float moveSpeed = .005f;
@@ -105,7 +106,7 @@ public class Player { final Player player = this;
 		Matrix4f modelNodeTransform = new Matrix4f(){{set(modelNode.absoluteTransform);}};
 		boolean collided = false;
 		for(ModelNode child : modelNode.children)
-			collided = collided|collide(child,delta);
+			collided |= collide(child,delta);
 		for(Mesh meshWrapper : modelNode.meshes) {
 			AIMesh mesh = meshWrapper.getAIMesh();
 			AIFace.Buffer faces = mesh.mFaces();
@@ -213,6 +214,8 @@ public class Player { final Player player = this;
 			}
 		}
 		//out.println("collided:"+collided);
+		if(collided)
+			out.println("collided:"+modelNode);
 		if(collided) for(Runnable callback : modelNode.collisionCallbacks)
 			callback.run();
 		return collided;

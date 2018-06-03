@@ -20,10 +20,11 @@ import java.awt.event.*;
 import static util.Util.*;
 import java.util.*;
 import java.util.List;
-public class Level1 extends LevelBase { final Level1 level1 = this;
+public class Level1 extends LevelBase { final Level1 level = this;
 	private ModelNode stage;
 	private Platform redPlatform,bluePlatform,yellowPlatform;
 	private enum State { TO_END,TO_START };
+	private long startTime;
 	public void inContext() {
 		redPlatform = new Platform(){{ set(new Model("maze2/red","obj",program).rootNode); }};
 		bluePlatform = new Platform(){{ set(new Model("maze2/blue","obj",program).rootNode); }};
@@ -90,15 +91,14 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 			public void run() {
 				dialog("Restarted.");
 				state[0] = State.TO_END;
-				player.loc.set( 9.2f,1.5f,-10.8f);
+				player.loc.set(9.2f,1.5f,-10.8f);
 				// move away all the platforms
 				for(Platform x : list(redPlatform,bluePlatform,yellowPlatform))
 					x.lastRaise = 0;
+				startTime = System.currentTimeMillis();
 			}
 			{run();}
 		});
-
-		new Thread(()->{exPrint(()->{onReady();});}).start();
 		new Thread(()->{exPrint(()->{
 			for(;;) {
 				switch(state[0]) {
@@ -110,8 +110,8 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 						break;
 					case TO_START:
 						if(player.loc.z<-9) {
-							dialog("You win!");
-							System.exit(0);
+							end();
+							return;
 						}
 				}
 				if(player.loc.y<-10)
@@ -119,15 +119,55 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 				Thread.sleep(200);
 			}
 		});}).start();
+		String[] dialogStrs = new String[]{
+			"Press T to continue.",
+			"To win this level, you'll need to plan for the future. (Press T to continue)",
+			"When you press on a button, platforms of the same colour will be raised.",
+			"You can't just think about the buttons you're pressing now though.",
+			"You need to think of how they'll help you later on.",
+			"Get to the other side."
+		};
+		keyboard.immediateKeys.put(GLFW_KEY_T,new Runnable() {
+			private int dialogIndex = 0;
+			public void run() {
+				if(dialogIndex < dialogStrs.length)
+					dialog(dialogStrs[dialogIndex++]);
+				else
+					keyboard.immediateKeys.remove(GLFW_KEY_T);
+			}
+			{run();}
+		});
 	}
-	public void onReady() { exPrint(()->{
-		for(;;) {
-			Thread.sleep(300);
-			out.println(player.loc+" dy:"+player.dy);
-		}
-	});}
+	private void end() {
+		int delta = (int)(System.currentTimeMillis()-startTime);
+		int score = 30000000/delta;
+		String[] dialogStrs = new String[]{
+			"Congrats! You win! (Press T to continue)",
+			"You took "+delta/1000f+" seconds to finish, giving you a score of "+score+".",
+			"You thought about how your actions affect the future.",
+			"Whether it be saving up for a car or choosing which university we want to go to",
+			"planning for the future is an important skill that everyone must learn.",
+			"Press T to return to the menu.",
+		};
+		keyboard.immediateKeys.put(GLFW_KEY_T,new Runnable() {
+			private int dialogIndex = 0;
+			public void run() {
+				if(dialogIndex < dialogStrs.length)
+					dialog(dialogStrs[dialogIndex++]);
+				else {
+					keyboard.immediateKeys.remove(GLFW_KEY_T);
+					out.println(score);
+					close();
+				}
+			}
+			{run();}
+		});
+		keyboard.immediateKeys.put(GLFW_KEY_G,()->{
+			out.println(score);
+			close();
+		});
+	}
 	public void close() {
-		System.exit(0);
-	}
+		System.exit(0); }
 	public static void main(String[] a) { new Level1().run(); }
 }

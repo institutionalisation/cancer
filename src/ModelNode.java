@@ -43,11 +43,10 @@ public class ModelNode {
 		System.out.println("localTransform:"+localTransform);
 	}
 	Matrix4f temp = new Matrix4f();
-	public void render(Matrix4f transform) {
-		temp.set(getLocalTransform());
+	public void render(Matrix4f parentTransform) {
 		// if(model.currentNodeAnimationMap.keySet().contains(this))
 		// 	System.out.println("I should be animating");
-		transform.mul(temp,absoluteTransform);
+		parentTransform.mul(getLocalTransform(),absoluteTransform);
 		for(ModelNode x : children)
 			x.render(absoluteTransform);
 		for(Mesh x : meshes)
@@ -66,11 +65,10 @@ public class ModelNode {
 		// for(ModelNode x : children)
 		// 	x.updateAnimation();
 	}
-	// set $a with the values of $this
+	// set $this from $a
 	public void set(ModelNode a) {
 		children = a.children;
 		meshes = a.meshes;
-		Matrix4f transformCopy = 
 		localTransform.set(a.localTransform);
 	}
 	public ModelNode getChild(String name) {
