@@ -67,6 +67,7 @@ public class Level2 extends LevelBase {
 			.rotateLocalX((float)Math.toRadians(-70));
 		for(ModelNode x : new ModelNode[]{maze})
 			player.colliders.add(x);
+		new Thread(()->{exPrint(()->{onReady();});}).start();
 	}
 	List<RefillPoint> refillPoints;
 	public void onReady() { exPrint(()->{
