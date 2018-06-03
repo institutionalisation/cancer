@@ -19,8 +19,7 @@ public class Main {
 	}
 	private void run() {
 		//System.out.println("working directory: "+System.getProperty("user.dir"));
-		new JFrame(){final JFrame menuFrame = this;{
-			setTitle("Menu");
+		new JFrame("Menu"){final JFrame menuFrame = this;{
 			setupJFrame(this);
 			List<String> includes = Arrays.asList(new String[]{
 				"lwjgl/lwjgl-stb-natives-linux.jar","lwjgl/lwjgl-glfw-natives-windows.jar","lwjgl/lwjgl-assimp-javadoc.jar","lwjgl/lwjgl-glfw-sources.jar","lwjgl/lwjgl-glfw-javadoc.jar","lwjgl/lwjgl-openal-natives-macos.jar","lwjgl/lwjgl-natives-windows.jar","lwjgl/lwjgl-opengl-sources.jar","lwjgl/lwjgl-opengl-javadoc.jar","lwjgl/lwjgl-stb.jar","lwjgl/lwjgl-glfw.jar","lwjgl/lwjgl-stb-natives-macos.jar","lwjgl/lwjgl-natives-linux.jar","lwjgl/lwjgl-stb-natives-windows.jar","lwjgl/lwjgl-assimp.jar","lwjgl/lwjgl-javadoc.jar","lwjgl/lwjgl-openal.jar","lwjgl/lwjgl-stb-javadoc.jar","lwjgl/lwjgl-assimp-natives-windows.jar","lwjgl/lwjgl-assimp-natives-macos.jar","lwjgl/lwjgl-openal-sources.jar","lwjgl/lwjgl-natives-macos.jar","lwjgl/lwjgl-stb-sources.jar","lwjgl/lwjgl-openal-javadoc.jar","lwjgl/lwjgl-glfw-natives-linux.jar","lwjgl/lwjgl-assimp-sources.jar","lwjgl/lwjgl-assimp-natives-linux.jar","lwjgl/lwjgl-opengl-natives-macos.jar","lwjgl/lwjgl-openal-natives-linux.jar","lwjgl/lwjgl-glfw-natives-macos.jar","lwjgl/lwjgl-opengl.jar","lwjgl/lwjgl-opengl-natives-windows.jar","lwjgl/lwjgl-opengl-natives-linux.jar","lwjgl/lwjgl.jar","lwjgl/lwjgl-sources.jar","lwjgl/lwjgl-openal-natives-windows.jar","lwjgl/lwjgl-stb.jar","joml/joml.jar","bin"});
@@ -34,7 +33,7 @@ public class Main {
 					setText("Level"+x);
 					addActionListener((ActionEvent e)->{
 						menuFrame.setVisible(false);
-						new JFrame(){ final JFrame playScoreSelection = this; {
+						new JFrame("Level "+x){ final JFrame playScoreSelection = this; {
 							setupJFrame(this);
 							add(new JButton("Back"){{
 								setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -104,18 +103,20 @@ public class Main {
 							add(new JButton("Scores"){{
 								setAlignmentX(Component.CENTER_ALIGNMENT);
 								addActionListener((ActionEvent e)->{
-									new JFrame(){final JFrame scoresJFrame = this;{
-										add(new JLabel(){{
-											setPreferredSize(new Dimension(200,300));
-											scores.format(this);
-										}});
+									playScoreSelection.dispose();
+									new JFrame("Level "+x+" Scores"){final JFrame scoresJFrame = this;{
+										setupJFrame(this);
+										add(new JPanel(){{add(new JLabel(scores.format(x)));}});
 										add(new JButton("Back"){{
+											setAlignmentX(Component.CENTER_ALIGNMENT);
 											addActionListener((ActionEvent e)->{
 												dispose();
 												playScoreSelection.dispose();
 												menuFrame.setVisible(true);
 											});
 										}});
+										pack();
+										setVisible(true);
 									}};
 								});
 							}});

@@ -13,8 +13,8 @@ public class Scores {
 				for(String line;(line = r.readLine()) != null;) {
 					int spaceIndex = line.indexOf(' ');
 					add(new Score(
-						line.substring(spaceIndex+1,line.length()),
-						Integer.parseInt(line.substring(spaceIndex))
+						line.substring(spaceIndex,line.length()),
+						Integer.parseInt(line.substring(0,spaceIndex))
 					));
 				}
 			}});
@@ -27,5 +27,16 @@ public class Scores {
 		value.get(level).add(score);
 		Collections.sort(value.get(level));
 	}
-	public void format(JLabel jLabel) {}
+	public String format(int level) {
+		String ret = "<html>"+
+			"<style>"+
+				"body{font-size:20px}"+
+				"table, th, td {border: 1px solid black;}"+
+			"</style>"+
+			"<body><table>";
+		for(Score x : value.get(level))
+			ret += "<tr><td>"+x.name+"</td><td>"+x.value+"</td></tr>";
+		ret += "</table></body></html>";
+		return ret;
+	}
 }
