@@ -29,17 +29,16 @@ public class ButtonBuilder {
 		private boolean[] isPressed = new boolean[]{false};
 		public Button(Color color) {
 			children.add(new ModelNode(){{ set(base); }});
-			children.add(new ModelNode(){{
-				set(unpressed[color.ordinal()]);
+			children.add(new ModelNode(){final ModelNode center = this;{
+				center.set(unpressed[color.ordinal()]);
 				collisionCallbacks.add(()->{
 					if(!isPressed[0]) {
-						out.println("pressed");
 						colorCallbacks.get(color).run();
 						isPressed[0]=true;
-						set(pressed[color.ordinal()]);
+						center.set(pressed[color.ordinal()]);
 						new Thread(()->{exPrint(()->{
 							Thread.sleep(stickTime);
-							set(unpressed[color.ordinal()]);
+							center.set(unpressed[color.ordinal()]);
 							isPressed[0]=false;
 						});}).start();
 					}

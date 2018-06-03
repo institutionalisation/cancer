@@ -160,10 +160,8 @@ public class Level2 extends LevelBase {
 						dialog(dialogStrs[dialogIndex++]);
 					else {
 						keyboard.immediateKeys.remove(GLFW_KEY_T);
-						new Thread(){public void run(){
-							out.println(score);
-							close();
-						}}.start();
+						out.println(score);
+						close();
 					}
 				}
 				{run();}
