@@ -63,7 +63,12 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 			new ModelNode(){{ set(yellowButton);
 				getLocalTransform().translate(11.6f,0,2.9f); }},
 			new ModelNode(){{ set(blueButton);
-				getLocalTransform().translate(11.6f,0,5.2f); }}
+				getLocalTransform().translate(11.6f,0,5.2f); }},
+			// at the end
+			new ModelNode(){{ set(redButton);
+				getLocalTransform().translate(8.6f,0,34.8f); }},
+			new ModelNode(){{ set(yellowButton);
+				getLocalTransform().translate(8.7f,0,30.7f); }}
 		));
 		bluePlatform.children.addAll(list(
 			new ModelNode(){{ set(redButton);
@@ -71,9 +76,7 @@ public class Level1 extends LevelBase { final Level1 level1 = this;
 			new ModelNode(){{ set(redButton);
 				getLocalTransform().translate(-4.641f,0,8.120f); }},
 			new ModelNode(){{ set(yellowButton);
-				getLocalTransform().translate(6.9f,0,21.7f); }},
-			new ModelNode(){{ set(redButton);
-				getLocalTransform().translate(4.9f,0,21.7f); }}
+				getLocalTransform().translate(.8f,0,24.6f); }}
 		));
 		redPlatform.children.addAll(list(
 			new ModelNode(){{ set(yellowButton);
