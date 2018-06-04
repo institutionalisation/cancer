@@ -31,10 +31,12 @@ public class Scores {
 	public String format(int level) {
 		String ret = "<html>"+
 			"<style>"+
-				"body{font-size:20px}"+
-				"table, th, td {border: 1px solid black;}"+
+				"body{font-size:15px}"+
+				//"th, td {border: 1px solid black;}"+
+				"th{font-size:20px;}"+
 			"</style>"+
-			"<body><table>";
+			"<body><table>"
+				+"<tr><th>Name</th><th>Score</th></tr>";
 		for(Score x : value.get(level))
 			ret += "<tr><td>"+x.name+"</td><td>"+x.value+"</td></tr>";
 		ret += "</table></body></html>";
