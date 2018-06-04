@@ -17,6 +17,7 @@ public class Scores {
 						Integer.parseInt(line.substring(0,spaceIndex))
 					));
 				}
+				Collections.sort(this);
 			}});
 		}
 	});}

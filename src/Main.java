@@ -8,6 +8,7 @@ import static util.Util.*;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 public class Main {
 	Scores scores = new Scores();
+	private final static Color BACKGROUND_COLOR = new Color(138,196,234);
 	private void setupJFrame(JFrame jFrame) {
 		jFrame.setContentPane(new JPanel(){{
 			setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
@@ -16,6 +17,7 @@ public class Main {
 		jFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		jFrame.setBackground(new Color(50,100,150));
 		jFrame.setLayout(new BoxLayout(jFrame.getContentPane(),BoxLayout.Y_AXIS));
+		jFrame.getContentPane().setBackground(BACKGROUND_COLOR);
 	}
 	private void run() {
 		//System.out.println("working directory: "+System.getProperty("user.dir"));

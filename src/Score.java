@@ -6,6 +6,6 @@ public class Score implements Comparable<Score> {
 		this.value = value;
 	}
 	public int compareTo(Score a) {
-		return this.value - a.value;
+		return a.value-this.value;
 	}
 }
