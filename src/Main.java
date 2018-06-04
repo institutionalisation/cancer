@@ -118,6 +118,9 @@ public class Main {
 					menuFrame.dispatchEvent(new WindowEvent(menuFrame,WindowEvent.WINDOW_CLOSING));
 				});
 			}});
+			addWindowListener(new WindowAdapter() {
+				public void windowClosing(WindowEvent e) {
+				   	scores.save(); } });
 			pack();
 			setVisible(true);
 		}};
