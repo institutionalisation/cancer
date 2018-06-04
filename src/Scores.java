@@ -29,12 +29,14 @@ public class Scores {
 		Collections.sort(value.get(level));
 	}
 	public String format(int level) {
+		if(value.get(level).size()==0)
+			return "<html><style>body{font-size:15px}</style><body>No scores for level "+level+"</body></html>";
 		String ret =
 			"<html>"+
 				"<style>"+
 					"body{font-size:15px}"+
 					//"th, td {border: 1px solid black;}"+
-					"th{font-size:20px;}"+
+					"th{font-size:20px; border-style:solid; border-width:2px;}"+
 				"</style>"+
 				"<body><table>"+
 					"<tr><th>Name</th><th>Score</th></tr>";

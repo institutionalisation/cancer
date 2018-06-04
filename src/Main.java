@@ -14,25 +14,18 @@ public class Main {
 			List<String> includes = Arrays.asList(new String[]{
 				"lwjgl/lwjgl-stb-natives-linux.jar","lwjgl/lwjgl-glfw-natives-windows.jar","lwjgl/lwjgl-assimp-javadoc.jar","lwjgl/lwjgl-glfw-sources.jar","lwjgl/lwjgl-glfw-javadoc.jar","lwjgl/lwjgl-openal-natives-macos.jar","lwjgl/lwjgl-natives-windows.jar","lwjgl/lwjgl-opengl-sources.jar","lwjgl/lwjgl-opengl-javadoc.jar","lwjgl/lwjgl-stb.jar","lwjgl/lwjgl-glfw.jar","lwjgl/lwjgl-stb-natives-macos.jar","lwjgl/lwjgl-natives-linux.jar","lwjgl/lwjgl-stb-natives-windows.jar","lwjgl/lwjgl-assimp.jar","lwjgl/lwjgl-javadoc.jar","lwjgl/lwjgl-openal.jar","lwjgl/lwjgl-stb-javadoc.jar","lwjgl/lwjgl-assimp-natives-windows.jar","lwjgl/lwjgl-assimp-natives-macos.jar","lwjgl/lwjgl-openal-sources.jar","lwjgl/lwjgl-natives-macos.jar","lwjgl/lwjgl-stb-sources.jar","lwjgl/lwjgl-openal-javadoc.jar","lwjgl/lwjgl-glfw-natives-linux.jar","lwjgl/lwjgl-assimp-sources.jar","lwjgl/lwjgl-assimp-natives-linux.jar","lwjgl/lwjgl-opengl-natives-macos.jar","lwjgl/lwjgl-openal-natives-linux.jar","lwjgl/lwjgl-glfw-natives-macos.jar","lwjgl/lwjgl-opengl.jar","lwjgl/lwjgl-opengl-natives-windows.jar","lwjgl/lwjgl-opengl-natives-linux.jar","lwjgl/lwjgl.jar","lwjgl/lwjgl-sources.jar","lwjgl/lwjgl-openal-natives-windows.jar","lwjgl/lwjgl-stb.jar","joml/joml.jar","bin"});
 			String classpath = String.join(""+java.io.File.pathSeparatorChar,includes);
-			add(new Panel(){{ add(new JLabel("<html><style>body{font-size:20px;}</style><body>Menu</body></html>"){{
-				setAlignmentX(Component.CENTER_ALIGNMENT);
-			}});}});
 			for(int x : new int[]{0,1,2})
-				add(new JButton(){{
-					setAlignmentX(Component.CENTER_ALIGNMENT);
-					setText("Level"+x);
+				add(new Button("Level "+x){{
 					addActionListener((ActionEvent e)->{
 						menuFrame.setVisible(false);
 						new Frame("Level "+x){ final Frame playScoreSelection = this; {
-							add(new JButton("Back"){{
-								setAlignmentX(Component.CENTER_ALIGNMENT);
+							add(new Button("Back"){{
 								addActionListener((ActionEvent e)->{
 									menuFrame.setVisible(true);
 									playScoreSelection.dispose();
 								});
 							}});
-							add(new JButton("Play"){{
-								setAlignmentX(Component.CENTER_ALIGNMENT);
+							add(new Button("Play"){{
 								addActionListener((ActionEvent e)->{
 									playScoreSelection.dispose();
 									new Frame(){ final Frame namePromptFrame = this; {
@@ -44,13 +37,13 @@ public class Main {
 											setVisible(true);
 										}};
 										add(textField);
-										add(new JButton("Back"){{
+										add(new Button("Back"){{
 											addActionListener((ActionEvent e)->{
 												menuFrame.setVisible(true);
 												dispose();
 											});
 										}});
-										add(new JButton("Continue"){{
+										add(new Button("Continue"){{
 											addActionListener((ActionEvent e)->{
 												namePromptFrame.dispose();
 												try {
@@ -88,14 +81,12 @@ public class Main {
 									}};
 								});
 							}});
-							add(new JButton("Scores"){{
-								setAlignmentX(Component.CENTER_ALIGNMENT);
+							add(new Button("Scores"){{
 								addActionListener((ActionEvent e)->{
 									playScoreSelection.dispose();
 									new Frame("Level "+x+" Scores"){final Frame scoresFrame = this;{
 										add(new Panel(){{add(new JLabel(scores.format(x)));}});
-										add(new JButton("Back"){{
-											setAlignmentX(Component.CENTER_ALIGNMENT);
+										add(new Button("Back"){{
 											addActionListener((ActionEvent e)->{
 												dispose();
 												playScoreSelection.dispose();
@@ -112,7 +103,7 @@ public class Main {
 						}};
 					});
 				}});
-			add(new JButton("Quit"){{
+			add(new Button("Quit"){{
 				setAlignmentX(Component.CENTER_ALIGNMENT);
 				addActionListener((ActionEvent e)->{
 					menuFrame.dispatchEvent(new WindowEvent(menuFrame,WindowEvent.WINDOW_CLOSING));
