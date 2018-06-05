@@ -28,4 +28,6 @@ public class Frame extends JFrame {
 		}
 		super.add(a);
 	}
+	public void add(Button a) {
+		super.add(new Panel(){{add(a);}}); }
 }

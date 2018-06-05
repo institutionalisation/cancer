@@ -26,6 +26,7 @@ public class Level1 extends LevelBase { final Level1 level = this;
 	private enum State { TO_END,TO_START };
 	private long startTime;
 	public void inContext() {
+		new Thread(()->{for(;;)out.println("loc:"+player.loc);}).start();
 		redPlatform = new Platform(){{ set(new Model("maze2/red","obj",program).rootNode); }};
 		bluePlatform = new Platform(){{ set(new Model("maze2/blue","obj",program).rootNode); }};
 		yellowPlatform = new Platform(){{ set(new Model("maze2/yellow","obj",program).rootNode); }};
@@ -68,17 +69,17 @@ public class Level1 extends LevelBase { final Level1 level = this;
 				bb.new Button(RED){{
 					getLocalTransform().translate(0,0,-3.190f); }},
 				bb.new Button(RED){{
-					getLocalTransform().translate(-4.641f,0,8.120f); }},
+					getLocalTransform().translate(-4.3f,0,5.8f); }},
 				bb.new Button(YELLOW){{
-					getLocalTransform().translate(.8f,0,24.6f); }},
+					getLocalTransform().translate(.2f,0,28.5f); }},
 				bb.new Button(RED){{
-					getLocalTransform().translate(3.6f,0,25.1f); }}
+					getLocalTransform().translate(4.7f,0,28.26f); }}
 			));
 			redPlatform.children.addAll(list(
 				bb.new Button(YELLOW){{
 					getLocalTransform().translate(-1.2f,0,8.5f); }},
 				bb.new Button(RED){{
-					getLocalTransform().translate(-7f,0f,16.8f); }},
+					getLocalTransform().translate(-7f,0,16.8f); }},
 				bb.new Button(YELLOW){{
 					getLocalTransform().translate(-9f,0,16.8f); }},
 				bb.new Button(BLUE){{
