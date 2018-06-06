@@ -1,4 +1,4 @@
-# Blender MTL File: 'maze0.blend'
+# Blender MTL File: 'level1.blend'
 # Material Count: 3
 
 newmtl None
@@ -8,7 +8,7 @@ Kd 0.8 0.8 0.8
 Ks 0.8 0.8 0.8
 d 1
 illum 2
-map_Kd Stone-2394.jpg
+map_Kd Stone-2407b-darker.jpg
 
 newmtl None_NONE
 Ns 0
@@ -18,11 +18,11 @@ Ks 0.8 0.8 0.8
 d 1
 illum 2
 
-newmtl None_Stone-0205.jpg
+newmtl None_Stone-2394.jpg
 Ns 0
 Ka 0.000000 0.000000 0.000000
 Kd 0.8 0.8 0.8
 Ks 0.8 0.8 0.8
 d 1
 illum 2
-map_Kd Stone-0205.jpg
+map_Kd Stone-2394.jpg

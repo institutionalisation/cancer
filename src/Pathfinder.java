@@ -9,7 +9,7 @@ public class Pathfinder
 	private final LineCollide collider;
 	private final double stepSize;
 
-	public Pathfinder(final LineCollider collider,final double stepSize)
+	public Pathfinder(final LineCollide collider,final double stepSize)
 	{
 		this.collider = collider;
 		this.stepSize = stepSize;
@@ -20,10 +20,10 @@ public class Pathfinder
 		public final Vector2d pos;
 		public final double heuristic;
 		public final double dist;
-		public final ComparableIntPair key;
+		public final ComparableLongPair key;
 		public Node prev;
 
-		public Node(final ComparableIntPair key,final Vector2d pos,final double heuristic,final double dist)
+		public Node(final ComparableLongPair key,final Vector2d pos,final double heuristic,final double dist)
 		{
 			this.key = key;
 			this.pos = pos;
@@ -41,9 +41,9 @@ public class Pathfinder
 		}
 	}
 
-	private void step(final PriorityQueue<Node> queue,final Set<ComparableIntPair> vis,final Vector2d start,final Vector2d dest,final Node cur,final int x,final int y) // abs(x),abs(y) <= 1
+	private void step(final PriorityQueue<Node> queue,final Set<ComparableLongPair> vis,final Vector2d start,final Vector2d dest,final Node cur,final int x,final int y) // abs(x),abs(y) <= 1
 	{
-		final ComparableIntPair key = new Position(cur.key.x + x,cur.key.y + y);
+		final ComparableLongPair key = new ComparableLongPair(cur.key.x + x,cur.key.y + y);
 		if(vis.contains(key))
 			return;
 		final Vector2d pos = new Vector2d(cur.pos.x + x * stepSize,cur.pos.y + y * stepSize);
@@ -78,9 +78,9 @@ public class Pathfinder
 
 	public Vector2d[] findPath(Vector2d start,Vector2d end)
 	{
-		Set<ComparableIntPair> vis = new TreeSet<>();
+		Set<ComparableLongPair> vis = new TreeSet<>();
 		PriorityQueue<Node> queue = new PriorityQueue<Node>();
-		Node root = new Node(new ComparableIntPair(Long.MAX_VALUE,Long.MAX_VALUE),start,start.distance(end),0);
+		Node root = new Node(new ComparableLongPair(Long.MAX_VALUE,Long.MAX_VALUE),start,start.distance(end),0);
 		root.prev = root;
 		queue.offer(root);
 		do

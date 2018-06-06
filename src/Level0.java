@@ -20,22 +20,58 @@ public class Level0 extends LevelBase
 {
 	private ModelNode maze;
 	private ModelNode oBug;
-	private Bug bug;
-	private Pathfinder pathfinder = new Pathfinder(2,new Line[]{new Line(new Vector2d(-20,2.37),new Vector2d(20,2.37))},.2);
+	private Pathfinder pathfinder = new Pathfinder(new LineCollide("models/maze0/a.obj"),.2);
 
 	public void inContext()
 	{
-		maze = new Model("maze1","dae",program).rootNode;
+		maze = new Model("maze0","obj",program).rootNode;
 		renderedModelNodes.add(maze);
-		oBug = new Model("teapot","obj",program).rootNode;
-		bug = new Bug(new Matrix4f(),oBug);
-		renderedModelNodes.add(bug);
+		oBug = new Model("bug","obj",program).rootNode;
+		oBug.getLocalTransform().scale(.35f);
+		//renderedModelNodes.add(oBug);
+		LineCollide c = new LineCollide("models/maze0/a.obj");
+		new Thread(() -> {onReady();}).start();
 	}
 
 	public void onReady()
 	{
-		Vector2d[] path = pathfinder.findPath(new Vector2d(),new Vector2d(0,5));
-		bug.setPath(path);
+		Bug bug = new Bug(new Matrix4f(),oBug,new Vector3f(),1,new Vector3f());
+		bug.setPath(new Vector2d[]{new Vector2d(0,0),new Vector2d(-5,-5)});
+		renderedModelNodes.add(bug);
+		do
+		{
+			bug.setPath(pathfinder.findPath(new Vector2d(bug.pos.x,bug.pos.z),new Vector2d(player.loc.x,player.loc.z)));
+			try
+			{
+				Thread.sleep(1000);
+			}
+			catch(InterruptedException e)
+			{
+			}
+		}
+		while(true);
+/*
+		Bug[] bugs =
+		{
+			new Bug(new Matrix4f(),oBug,new Vector3f(),1,new Vector3f()),
+		};
+		for(Bug x : bugs)
+			renderedModelNodes.add(x);
+		do
+		{
+			for(Bug x : bugs)
+				if(x.isActivated())
+					x.setPath(pathfinder.findPath(new Vector2d(x.pos.x,x.pos.z),new Vector2d(player.loc.x,player.loc.y)));
+			try
+			{
+				Thread.sleep(1000);
+			}
+			catch(InterruptedException e)
+			{
+			}
+		}
+		while(true);
+*/
 	}
 	
 	public void close()

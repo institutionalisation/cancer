@@ -1,4 +1,5 @@
 import org.joml.*;
+import static java.lang.Math.*;
 
 public class Bug extends ModelNode
 {
@@ -8,8 +9,12 @@ public class Bug extends ModelNode
 	private Vector2d[] path = null;
 	private int pathIdx = 1;
 	public double speed = 0.002;
-	public final Vector3f pos = new Vector3f();
+	public final Vector3f pos;
 	private double dist = 0.0;
+	private final Vector3f activationPoint;
+	private final double activationDistance;
+	private boolean activated = false;
+	private double tilt = 0;
 
 	public void setPath(Vector2d[] path)
 	{
@@ -20,17 +25,20 @@ public class Bug extends ModelNode
 		dist = 0.0;
 	}
 
-	public Bug(final Matrix4f baseTransform,final ModelNode orig)
+	public Bug(final Matrix4f baseTransform,final ModelNode orig,final Vector3f activationPoint,final double activationDistance,final Vector3f pos)
 	{
 		orig.set(this);
 		this.baseTransform = baseTransform;
+		this.activationPoint = activationPoint;
+		this.activationDistance = activationDistance;
+		this.pos = pos;
 	}
 
 	@Override
 	public Matrix4f getLocalTransform()
 	{
 		if(path == null)
-			return new Matrix4f(baseTransform).translate(pos);
+			return new Matrix4f(baseTransform).translate(pos).rotateY(tilt);
 		//System.out.println("at " + pos);
 		long now = System.nanoTime();
 		long delta = now - lastTime;
@@ -45,6 +53,7 @@ public class Bug extends ModelNode
 			dist -= pdist;
 			pos.x = (float)path[pathIdx].x;
 			pos.z = (float)path[pathIdx].y;
+			tilt = -atan2(path[pathIdx].x - path[pathIdx - 1].x,path[pathIdx].y - path[pathIdx - 1].y);
 			++pathIdx;
 		}
 		if(pathIdx < path.length)
@@ -54,7 +63,15 @@ public class Bug extends ModelNode
 			dt.mul(dist / path[pathIdx].distance(path[pathIdx - 1]));
 			pos.x = (float)(dt.x + path[pathIdx - 1].x);
 			pos.z = (float)(dt.y + path[pathIdx - 1].y);
+			tilt = -atan2(path[pathIdx].x - path[pathIdx - 1].x,path[pathIdx].y - path[pathIdx - 1].y);
 		}
-		return new Matrix4f(baseTransform).translate(pos);
+		return new Matrix4f(baseTransform).translate(pos).rotateY((float)tilt);
+	}
+
+	public boolean isActivated()
+	{
+		if(activated)
+			return true;
+		return activated = activationPoint.distance(pos) < activationDistance;
 	}
 }
