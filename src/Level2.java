@@ -22,32 +22,7 @@ import java.util.*;
 import java.util.List;
 public class Level2 extends LevelBase {
 	public final static int LEVEL_DURATION = 60;
-	private JFrame dialogFrame;
 	private MeterFrame meterFrame;
-	private JLabel dialog = new JLabel();
-	private void dialog(String text) {
-		dialog.setText(
-			"<html><style>body{font-size:20px;}</style><body>"+
-			text+
-			"</body></html>");
-	}
-	GLWindow.BoundCallback dialogFrameBoundsCallback;
-	public void initDialogFrame() {
-		dialogFrame = new JFrame(){{
-			add(BorderLayout.NORTH,dialog);
-			setUndecorated(true);
-			setVisible(true);
-		}};
-		dialogFrameBoundsCallback = new GLWindow.BoundCallback() {
-			public void invoke(GLWindow w) {
-				dialogFrame.setBounds(w.x,w.y+w.height,
-					w.width+(meterFrame==null?0:meterFrame.getWidth()),
-					w.height/3); }
-			{invoke(window);}};
-		window.resizeCallbacks.add(dialogFrameBoundsCallback);
-		window.positionCallbacks.add(dialogFrameBoundsCallback);
-
-	}
 	public void initMeterFrame() {
 		meterFrame = new MeterFrame(){{
 			meters.put("Sleep",new Meter(.01f));
@@ -69,6 +44,11 @@ public class Level2 extends LevelBase {
 	}
 	private ModelNode maze,bed,guitar,books,arduino;
 	public void inContext() {
+		dialogFrameBoundsCallback = new GLWindow.BoundCallback() {
+			public void invoke(GLWindow w) {
+				dialogFrame.setBounds(w.x,w.y+w.height,
+					w.width+(meterFrame==null?0:meterFrame.getWidth()),
+					w.height/3); } };
 		maze = new Model("maze1","dae",program).rootNode;
 		(bed = new Model("bed","dae",program).rootNode).getLocalTransform()
 			.rotateLocalY((float)Math.toRadians(-90))
@@ -85,12 +65,12 @@ public class Level2 extends LevelBase {
 			.scale(.3f)
 			.rotateLocalY((float)Math.toRadians(90))
 			.rotateLocalX((float)Math.toRadians(-70));
-		for(ModelNode x : new ModelNode[]{maze,bed,books,arduino})
+		for(ModelNode x : new ModelNode[]{maze})
 			player.colliders.add(x);
+		new Thread(()->{exPrint(()->{onReady();});}).start();
 	}
 	List<RefillPoint> refillPoints;
 	public void onReady() { exPrint(()->{
-		initDialogFrame();
 		refillPoints = new ArrayList<RefillPoint>(){{
 			add(new RefillPoint("Sleep",new Vector3f(5,0,-7.5f),bed));
 			add(new RefillPoint("Music",new Vector3f(-6.5f,0,-6.928f),guitar));
@@ -98,8 +78,7 @@ public class Level2 extends LevelBase {
 			add(new RefillPoint("Engineering",new Vector3f(-6.5f,1.5f,7f),arduino));
 		}};
 		// now that they're in the right spots, start rendering the models
-		for(ModelNode x : new ModelNode[]{maze,bed,guitar,books,arduino})
-			renderedModelNodes.add(x);
+		renderedModelNodes.addAll(list(new ModelNode[]{maze,bed,books,guitar,arduino}));
 		String[] dialogStrs = new String[]{
 			"Use  W A S D  to move around. Press T to continue.",
 			"Explore the level! Find the 4 refill points at the corners of the maze.",
@@ -173,7 +152,17 @@ public class Level2 extends LevelBase {
 				"There really is no time for procrastination.",
 				"We get no work done, and it isn't even fun.",
 				"Procrastinating usually makes us feel bad about ourselves.",
-				"So here are some things you can do to stop procrastinating...",
+				"So here are some things you can do to stop procrastinating...<br>(Press G to skip)",
+				"1. Create a list of things you want to get done, then pick a time to do each of those things.",
+				"Planning out your work can be a good way of relieving stress, because you know when you'll be finished.",
+				"2. Change your environment. Many students don't have a good working environment.",
+				"Clear your workspace of distractions and make sure you have everything you need to work.",
+				"3. If you can, find someone who has the same assignment as you, or who can help you stay on track.",
+				"Sometimes just having another person with you is enough to motivate you to do your work.",
+				"4. Finally, start with the hardest tasks.",
+				"It might make more sense to get easy work out of the way, but you're most productive when you start working.",
+				"If you focus on your hard work at the beginning, you'll only have easier work to do when you finish.",
+				"I hope you learned something. Press T to end the game."
 			};
 			keyboard.immediateKeys.put(GLFW_KEY_T,new Runnable() {
 				private int dialogIndex = 0;
@@ -182,13 +171,15 @@ public class Level2 extends LevelBase {
 						dialog(dialogStrs[dialogIndex++]);
 					else {
 						keyboard.immediateKeys.remove(GLFW_KEY_T);
-						new Thread(){public void run(){
-							out.println(score);
-							close();
-						}}.start();
+						out.println(score);
+						close();
 					}
 				}
 				{run();}
+			});
+			keyboard.immediateKeys.put(GLFW_KEY_G,()->{
+				out.println(score);
+				close();
 			});
 		} else {
 			hideMeterFrame();

@@ -27,15 +27,33 @@ public abstract class LevelBase {
 	public Program program;
 	public Player player;
 	public abstract void close();
-	public abstract void onReady();
 	public abstract void inContext();
 	public Set<ModelNode> renderedModelNodes = new HashSet<ModelNode>();
+	public JFrame dialogFrame;
+	public JLabel dialog = new JLabel();
+	public void dialog(String text) {
+		dialog.setText(
+			"<html><style>body{font-size:20px;}</style><body>"+
+			text+
+			"</body></html>");
+	}
+	public GLWindow.BoundCallback dialogFrameBoundsCallback = new GLWindow.BoundCallback() {
+		public void invoke(GLWindow w) {
+			dialogFrame.setBounds(
+				w.x,w.y+w.height,
+				w.width,w.height/3); } };;
+	public void initDialogFrame() {
+		dialogFrame = new JFrame(){{
+			add(BorderLayout.NORTH,dialog);
+			setUndecorated(true);
+			setVisible(true);
+		}};
+	}
 	// inContext needs to have the GL context
 	// ready is put to a new thread
 	public void run() { exPrint(()->{
 		init();
 		inContext();
-		new Thread(()->{exPrint(()->{onReady();});}).start();
 		renderLoop();
 	});}
 	public void init() { exPrint(()->{
@@ -47,6 +65,7 @@ public abstract class LevelBase {
 		window.makeContextCurrent();
 		glfwSwapInterval(1);
 		GL.createCapabilities();
+
 		program = new Program(
 			new Shader("vertex",GL_VERTEX_SHADER),
 			new Shader("fragment",GL_FRAGMENT_SHADER));
@@ -65,6 +84,10 @@ public abstract class LevelBase {
 	});}
 	public void renderLoop() { exPrint(()->{
 		window.show();
+		initDialogFrame();
+		window.positionCallbacks.add(dialogFrameBoundsCallback);
+		window.resizeCallbacks.add(dialogFrameBoundsCallback);
+		dialogFrameBoundsCallback.invoke(window);
 		window.resizeCallbacks.add(new GLWindow.BoundCallback() {
 			public void invoke(GLWindow a) {
 				int
@@ -108,10 +131,5 @@ public abstract class LevelBase {
 			//System.out.println("error:"+glGetError());
 			window.swapBuffers();
 		}
-		// window.setShouldClose(true);
-		// window.destroy();
-		// glfwTerminate();
-		// glfwSetErrorCallback(null).free();
-		// close();
 	});}
 }

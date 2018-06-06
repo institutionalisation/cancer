@@ -27,6 +27,7 @@ public class Player { final Player player = this;
 					keyboard.immediateKeys.put(GLFW_KEY_Q,stopFlying);
 				});
 			}
+			{run();}
 		});
 	}
 	final float moveSpeed = .005f;
@@ -38,9 +39,9 @@ public class Player { final Player player = this;
 		FOOT_OFFSET = 1.5f,
 		HEAD_OFFSET = .4f,
 		INITIAL_DY = 15/1000f,
-		GRAVITY = .00004f;
+		GRAVITY = .00003f;
 	float dy = 0;
-	boolean grounded = true;
+	boolean canJump = false;
 	public void handleInput(int delta) {
 		Vector2f cursorPos = mouse.getCameraCursor();
 		float
@@ -65,31 +66,47 @@ public class Player { final Player player = this;
 		// kind of magic, but it works
 		IDENTITY.lookAt(loc,loc.add(dir,new Vector3f()),right.cross(dir,new Vector3f()),viewMatrix);
 		float distance = moveSpeed*delta;
-		keyRun(GLFW_KEY_W,forward.mul(distance,new Vector3f()));
-		keyRun(GLFW_KEY_S,forward.mul(-distance,new Vector3f()));
-		keyRun(GLFW_KEY_D,right.mul(distance,new Vector3f()));
-		keyRun(GLFW_KEY_A,right.mul(-distance,new Vector3f()));
+		Vector3f deltaLoc = new Vector3f();
+		if(keyboard.getKeysPressed().contains(GLFW_KEY_W))
+			deltaLoc.add(forward.mul(distance,new Vector3f()));
+		if(keyboard.getKeysPressed().contains(GLFW_KEY_S))
+			deltaLoc.add(forward.mul(-distance,new Vector3f()));
+		if(keyboard.getKeysPressed().contains(GLFW_KEY_D))
+			deltaLoc.add(right.mul(distance,new Vector3f()));
+		if(keyboard.getKeysPressed().contains(GLFW_KEY_A))
+			deltaLoc.add(right.mul(-distance,new Vector3f()));
+
 		if(flying) {
-			keyRun(GLFW_KEY_SPACE,UP.mul(distance,new Vector3f()));
-			keyRun(GLFW_KEY_LEFT_SHIFT,UP.mul(-distance,new Vector3f()));
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE))
+				deltaLoc.add(UP.mul(distance,new Vector3f()));
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_LEFT_SHIFT))
+				deltaLoc.add(UP.mul(-distance,new Vector3f()));
 		} else {
-			if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE) && dy==0)
+			if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE) && canJump) {
+				canJump = false;
 				dy = INITIAL_DY;
+			}
+			//out.println("dy:"+dy);
 			loc.y += dy*delta;
 			dy -= GRAVITY*delta;
 		}
+		if(.001f<Math.abs(deltaLoc.length()))
+			deltaLoc.normalize();
+		deltaLoc.mul(delta*moveSpeed);
+		loc.add(deltaLoc);
 		//System.out.println("view:"+viewMatrix);
 		// collide
 		synchronized(colliders) {
 			for(ModelNode modelNode : colliders)
 				if(modelNode.shouldCollide)
-					collide(modelNode);
+					collide(modelNode,delta);
 		}
 	}
-	private boolean collide(ModelNode modelNode) {
+	private boolean collide(ModelNode modelNode,int delta) {
+		Matrix4f modelNodeTransform = new Matrix4f(){{set(modelNode.absoluteTransform);}};
 		boolean collided = false;
 		for(ModelNode child : modelNode.children)
-			collided = collided|collide(child);
+			collided |= collide(child,delta);
 		for(Mesh meshWrapper : modelNode.meshes) {
 			AIMesh mesh = meshWrapper.getAIMesh();
 			AIFace.Buffer faces = mesh.mFaces();
@@ -98,20 +115,27 @@ public class Player { final Player player = this;
 				AIFace face = faces.get();
 				IntBuffer indices = face.mIndices();
 				Vector3f[] vertices3D = new Vector3f[3];
+				Vector3f
+					prev = new Vector3f(),
+					after = new Vector3f();
 				for(int i = 0; indices.hasRemaining(); ++i) {
 					AIVector3D vertex = vertexBuffer.get(indices.get());
 					vertices3D[i] = new Vector3f(vertex.x(),vertex.y(),vertex.z());
-					modelNode.absoluteTransform.transformPosition(vertices3D[i]);
+					prev.set(vertices3D[i]);
+					modelNodeTransform.transformPosition(vertices3D[i]);
+					after.set(vertices3D[i]);
 				}
 				float
 					lowest=Float.MAX_VALUE,
-					highest=Float.MIN_VALUE;
+					highest=-Float.MAX_VALUE;
 				for(Vector3f x : vertices3D) {
 					lowest = Math.min(lowest,x.y);
 					highest = Math.max(highest,x.y);
 				}
-				if(loc.y()+HEAD_OFFSET<lowest || highest<loc.y()-FOOT_OFFSET)
+				if(loc.y+HEAD_OFFSET-delta*dy<lowest || highest<loc.y-FOOT_OFFSET) {
+					//out.println("cut off");
 					continue;
+				}
 				//System.out.println("in level");
 				//else
 				//	System.out.println("ha");
@@ -120,12 +144,12 @@ public class Player { final Player player = this;
 					vertices[i] = new Vector2f(vertices3D[i].x(),vertices3D[i].z());
 				Vector2f locXZ = new Vector2f(loc.x(),loc.z());
 				if(
-					highest-lowest < .01f &&
+					highest-lowest < .1f &&
 					new Triangle2f(vertices[0],vertices[1],vertices[2]).contains(locXZ)
 				) {
-					dy = 0;
+					canJump = collided = true;
+					dy = 0; 
 					loc.y = highest + FOOT_OFFSET;
-					collided = true;
 					continue;
 				}
 				Vector2f a=null, b=null;
@@ -166,7 +190,7 @@ public class Player { final Player player = this;
 				final float h = 2*A/AB;
 				// if in wall, move to just outside wall
 				if(h<RADIUS) {
-					collided = true;
+					canJump = collided = true;
 					//System.out.println("bounce:"+j);
 					// if the wall is small enough, step over it
 					if(highest<loc.y-STEP_MAX_HEIGHT+.1f) {
@@ -193,10 +217,6 @@ public class Player { final Player player = this;
 		if(collided) for(Runnable callback : modelNode.collisionCallbacks)
 			callback.run();
 		return collided;
-	}
-	public void keyRun(int key,Vector3f direction) {
-		if(keyboard.getKeysPressed().contains(key))
-			loc.add(direction);
 	}
 	public FloatBuffer getView() {
 		return viewMatrix.get(viewMatrixBuffer);
