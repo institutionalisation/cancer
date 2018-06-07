@@ -1,0 +1,10 @@
+#!/bin/bash
+#https://stackoverflow.com/questions/5080220/how-to-combine-two-jar-files
+rm App.jar
+mkdir tmp
+cd tmp
+find ../lwjgl -name "*.jar" -exec unzip -uo {} ";"
+find ../joml -name "*.jar" -exec unzip -uo {} ";"
+cp -r ../bin/* .
+cd ..
+jar -cvfm App.jar manifest -C tmp .
