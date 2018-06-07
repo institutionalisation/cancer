@@ -27,7 +27,7 @@ public class Player { final Player player = this;
 					keyboard.immediateKeys.put(GLFW_KEY_Q,stopFlying);
 				});
 			}
-			{run();}
+			//{run();}
 		});
 	}
 	final float moveSpeed = .005f;

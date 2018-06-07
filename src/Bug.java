@@ -15,6 +15,8 @@ public class Bug extends ModelNode
 	private final double activationDistance;
 	private boolean activated = false;
 	private double tilt = 0;
+	private final double tiltSpeed = .5;
+	private double targetTilt = 0;
 
 	public void setPath(Vector2d[] path)
 	{
@@ -27,7 +29,7 @@ public class Bug extends ModelNode
 
 	public Bug(final Matrix4f baseTransform,final ModelNode orig,final Vector3f activationPoint,final double activationDistance,final Vector3f pos)
 	{
-		orig.set(this);
+		set(orig);
 		this.baseTransform = baseTransform;
 		this.activationPoint = activationPoint;
 		this.activationDistance = activationDistance;
@@ -37,33 +39,42 @@ public class Bug extends ModelNode
 	@Override
 	public Matrix4f getLocalTransform()
 	{
-		if(path == null)
-			return new Matrix4f(baseTransform).translate(pos).rotateY(tilt);
-		//System.out.println("at " + pos);
-		long now = System.nanoTime();
-		long delta = now - lastTime;
-		lastTime = now;
-		dist += delta / 1000000.0 * speed;
-		double pdist;
-		while(pathIdx < path.length)
+		if(path != null)
 		{
-			pdist = path[pathIdx - 1].distance(path[pathIdx]);
-			if(pdist > dist)
-				break;
-			dist -= pdist;
-			pos.x = (float)path[pathIdx].x;
-			pos.z = (float)path[pathIdx].y;
-			tilt = -atan2(path[pathIdx].x - path[pathIdx - 1].x,path[pathIdx].y - path[pathIdx - 1].y);
-			++pathIdx;
-		}
-		if(pathIdx < path.length)
-		{
-			Vector2d dt = new Vector2d();
-			path[pathIdx].sub(path[pathIdx - 1],dt);
-			dt.mul(dist / path[pathIdx].distance(path[pathIdx - 1]));
-			pos.x = (float)(dt.x + path[pathIdx - 1].x);
-			pos.z = (float)(dt.y + path[pathIdx - 1].y);
-			tilt = -atan2(path[pathIdx].x - path[pathIdx - 1].x,path[pathIdx].y - path[pathIdx - 1].y);
+			//System.out.println("at " + pos);
+			long now = System.nanoTime();
+			long delta = now - lastTime;
+			lastTime = now;
+			dist += delta / 1000000.0 * speed;
+			double pdist;
+			while(pathIdx < path.length)
+			{
+				pdist = path[pathIdx - 1].distance(path[pathIdx]);
+				if(pdist > dist)
+					break;
+				dist -= pdist;
+				pos.x = (float)path[pathIdx].x;
+				pos.z = (float)path[pathIdx].y;
+				targetTilt = atan2(path[pathIdx].x - path[pathIdx - 1].x,path[pathIdx].y - path[pathIdx - 1].y) - PI / 2;
+				++pathIdx;
+			}
+			if(pathIdx < path.length)
+			{
+				Vector2d dt = new Vector2d();
+				path[pathIdx].sub(path[pathIdx - 1],dt);
+				double percent = dist / path[pathIdx].distance(path[pathIdx - 1]);
+				dt.mul(percent);
+				pos.x = (float)(dt.x + path[pathIdx - 1].x);
+				pos.z = (float)(dt.y + path[pathIdx - 1].y);
+				targetTilt = atan2(path[pathIdx].x - path[pathIdx - 1].x,path[pathIdx].y - path[pathIdx - 1].y) - PI / 2;
+			}
+			double tDiff = targetTilt - tilt;
+			double tsFactor = tDiff % PI / PI;
+			double tDist = tsFactor * tsFactor * tiltSpeed;
+			if(abs(tDist) < tDist)
+				tilt = targetTilt;
+			else
+				tilt += signum(tDiff) * tDist;
 		}
 		return new Matrix4f(baseTransform).translate(pos).rotateY((float)tilt);
 	}
