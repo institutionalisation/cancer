@@ -1,2 +1,2 @@
-Class-Path: *
+Class-Path: ./App.jar *.class
 Main-Class: Main

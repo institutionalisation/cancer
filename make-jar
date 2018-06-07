@@ -2,9 +2,27 @@
 #https://stackoverflow.com/questions/5080220/how-to-combine-two-jar-files
 rm App.jar
 mkdir tmp
+rm -r tmp/*
 cd tmp
 find ../lwjgl -name "*.jar" -exec unzip -uo {} ";"
 find ../joml -name "*.jar" -exec unzip -uo {} ";"
-cp -r ../bin/* .
+rm -r *.git
+rm -r *.zip
+rm -r *.sha1
+rm -r *.html
+cd ..
+zip -r files.zip shaders models scores bin joml lwjgl
+mv files.zip tmp
+cd tmp
+cp ../bin/Main*.class .
+cp -r ../bin/util .
+cp ../bin/Score*.class .
+cp ../bin/Frame*.class .
+cp ../bin/Button*.class .
+cp ../bin/Panel*.class .
+cp -r ../models/* .
+cp -r ../shaders/* .
+cp ../files.zip .
 cd ..
 jar -cvfm App.jar manifest -C tmp .
+cp App.jar /tmp
