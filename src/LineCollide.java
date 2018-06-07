@@ -89,6 +89,14 @@ public class LineCollide
 		lines = listLines.toArray(lines);
 	}
 
+	/**
+	 * Checks for line segment intersections against all lines in this data structure
+	 *
+	 * @param pointA The first point of the given line segment
+	 * @param pointB The second point of the given line segment
+	 *
+	 * @return true iff the given line collides with any of the lines in this data structure
+	 */
 	public boolean check(final Vector2d pointA,final Vector2d pointB)
 	{
 		for(final Line x : lines)
@@ -97,27 +105,48 @@ public class LineCollide
 		return false;
 	}
 
-	public double distLinePoint(final Vector2d pointA,final Vector2d pointB,final Vector2d pointC)
+	/**
+	 * Finds the distance between a point and a line segment
+	 *
+	 * @param pointA The first point of the line segment
+	 * @param pointB The second point of the line segment
+	 * @param pointC The point to calculate the distance to
+	 *
+	 * @return The distance between the given line and point
+	 */
+	private static double distLinePoint(final Vector2d pointA,final Vector2d pointB,final Vector2d pointC)
 	{
 		Vector2d diffAB = pointB.sub(pointA,new Vector2d());
 		double maxV = max(0,min(1,pointC.sub(pointA,new Vector2d()).dot(diffAB) / diffAB.dot(diffAB)));
 		return pointC.distance(diffAB.mul(maxV).add(pointA));
 	}
 
+	/**
+	 * Finds the shortest distance between any line segment in this data structure and the given line segment
+	 *
+	 * @param pointA The first point of the given line segment
+	 * @param pointB The second point of the given line segment
+	 *
+	 * @return The minimum distance between the given line segment and any line segment in this data structure
+	 */
 	public double dist(final Vector2d pointA,final Vector2d pointB)
 	{
 		double finalDist = Double.MAX_VALUE;
 		for(final Line x : lines)
 		{
+			/* Case 1: shortest distance is between AB and C */
 			double dist = distLinePoint(x.pointA,x.pointB,pointA);
 			if(finalDist > dist)
 				finalDist = dist;
+			/* Case 2: shortest distance is between AB and D */
 			dist = distLinePoint(x.pointA,x.pointB,pointB);
 			if(finalDist > dist)
 				finalDist = dist;
+			/* Case 3: shortest distance is between CD and A */
 			dist = distLinePoint(pointA,pointB,x.pointA);
 			if(finalDist > dist)
 				finalDist = dist;
+			/* Case 4: shortest distance is between CD and B */
 			dist = distLinePoint(pointA,pointB,x.pointB);
 			if(finalDist > dist)
 				finalDist = dist;

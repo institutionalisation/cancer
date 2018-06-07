@@ -1,3 +1,10 @@
+/*
+ * Junyi Wang
+ * June 7, 2018
+ * Ms. Krasteva
+ * A bug minion
+ */
+
 import org.joml.*;
 import static java.lang.Math.*;
 
@@ -16,6 +23,11 @@ public class Bug extends ModelNode
 	private boolean active = false;
 	private double tilt = 0;
 
+	/**
+	 * Sets the path the bug minion is currently following
+	 *
+	 * @param path The path to make this bug follow
+	 */
 	public synchronized void setPath(Vector2d[] path)
 	{
 		if((this.path = path) == null)
@@ -26,6 +38,15 @@ public class Bug extends ModelNode
 		dist = 0.0;
 	}
 
+	/**
+	 * Creates a new bug with a position, activation point and distance and base transform matrix
+	 *
+	 * @param baseTransform The transform matrix to use as a base for all animations; this controls the initial animation state of this object
+	 * @param orig The model node to copy
+	 * @param activationPoint The activation point; this bug is activated if the player moves within a certain distance of this point
+	 * @param activationDistance If the player is within this distance of the activation point, the bug is activated
+	 * @param pos The initial position of the bug
+	 */
 	public Bug(final Matrix4f baseTransform,final ModelNode orig,final Vector3f activationPoint,final double activationDistance,final Vector3f pos)
 	{
 		set(orig);
@@ -35,8 +56,14 @@ public class Bug extends ModelNode
 		this.pos = pos;
 	}
 
+	/**
+	 * Computes the distance this bug will travel before reaching the end of its path
+	 *
+	 * @return The distance this bug will travel before reaching the end of its path
+	 */
 	public synchronized double distToDest()
 	{
+		/* If the bug is not going anywhere, it is already at the destination */
 		if(path == null)
 			return 0.0;
 		double dist = 0;
@@ -45,13 +72,19 @@ public class Bug extends ModelNode
 		return dist - this.dist;
 	}
 
+	/**
+	 * Moves the bug as if delta nanoseconds has passed
+	 *
+	 * @param delta The amount of time to simulate the bug for
+	 */
 	public synchronized void runTime(long delta)
 	{
+		/* If the bug is not moving, there is no need to animate it */
 		if(path != null)
 		{
-			//System.out.println("at " + pos);
 			dist += delta / 1000000.0 * speed;
 			double pdist;
+			/* Moves the bug over any complete segments of the path */
 			while(pathIdx < path.length)
 			{
 				pdist = path[pathIdx - 1].distance(path[pathIdx]);
@@ -62,6 +95,7 @@ public class Bug extends ModelNode
 				pos.z = (float)path[pathIdx].y;
 				++pathIdx;
 			}
+			/* Interpolates for incomplete segments of the path */
 			if(pathIdx < path.length)
 			{
 				Vector2d dt = new Vector2d();
@@ -76,6 +110,11 @@ public class Bug extends ModelNode
 		lastTime = System.nanoTime();
 	}
 
+	/**
+	 * Animates the bug by computing the transformation matrix
+	 *
+	 * @return The current transformation matrix to be used for this bug
+	 */
 	@Override
 	public Matrix4f getLocalTransform()
 	{
@@ -88,6 +127,13 @@ public class Bug extends ModelNode
 		return new Matrix4f().translate(pos).rotateY((float)tilt).mul(baseTransform);
 	}
 
+	/**
+	 * Calculates whether the bug is already active, or meets the activation conditions
+	 * 
+	 * @param playerPos The player position
+	 *
+	 * @return true iff the bug should be activated
+	 */
 	public boolean isActive(Vector3f playerPos)
 	{
 		if(active)
