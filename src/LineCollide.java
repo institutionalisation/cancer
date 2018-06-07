@@ -1,3 +1,10 @@
+/*
+ * Junyi Wang
+ * June 7, 2018
+ * Ms. Krasteva
+ * Line collsion data structure; currently implemented as brute force
+ */
+
 import org.joml.*;
 import org.lwjgl.*;
 import static org.lwjgl.assimp.Assimp.*;
@@ -11,6 +18,11 @@ public class LineCollide
 {
 	private Line[] lines;
 
+	/**
+	 * Creates a line collider with the given lines
+	 *
+	 * @param lines The lines to check collisions against
+	 */
 	public LineCollide(final Line[] lines)
 	{
 		this.lines = lines;
@@ -18,17 +30,28 @@ public class LineCollide
 
 	private static class LineIdx extends ComparableIntPair
 	{
+		/**
+		 *
+		 * Creates a vertex index pair;
+		 * used to remove duplicates in the mesh import constructor
+		 *
+		 * @param pointA The index of the first point
+		 * @param pointB the index of the second point
+		 */
 		public LineIdx(final int pointA,final int pointB)
 		{
 			super(min(pointA,pointB),max(pointA,pointB));
 		}
 	}
 
-	/* Creates a LineCollider from the given mesh file */
+	/**
+	 * Creates a LineCollider from the given mesh file
+	 *
+	 * @param filename The file name of the mesh to import
+	 */
 	public LineCollide(String filename)
 	{
 		AIScene scene = aiImportFile(filename,aiProcess_JoinIdenticalVertices);
-		System.out.println(scene.mNumMeshes() + " meshes");
 		PointerBuffer meshBuffer = scene.mMeshes();
 		List<Line> listLines = new ArrayList<>();
 		for(int k = 0;k < scene.mNumMeshes();k++)
@@ -38,7 +61,6 @@ public class LineCollide
 			FloatBuffer vecf = memFloatBuffer(vecBuf.address(),vecBuf.capacity() * AIVector3D.SIZEOF / 4);
 			int vecfSize = vecf.capacity();
 			Vector2d[] points = new Vector2d[vecfSize / 3];
-			System.out.println(points.length + " unique vertices");
 			/* Get all points; ignore z value */
 			for(int i = 0;i < points.length;++i)
 				points[i] = new Vector2d(vecf.get(i * 3),vecf.get(i * 3 + 2));
@@ -51,10 +73,7 @@ public class LineCollide
 				IntBuffer indices = x.mIndices();
 				int nIndices = x.mNumIndices();
 				for(int i = 0;i < nIndices - 1;++i)
-				{
-					System.out.println(indices.get(i) + " " + indices.get(i + 1));
 					lineIdx.add(new LineIdx(indices.get(i),indices.get(i + 1)));
-				}
 				lineIdx.add(new LineIdx(indices.get(0),indices.get(nIndices - 1)));
 			}
 			Iterator<LineIdx> lineIt = lineIdx.iterator();
@@ -68,8 +87,6 @@ public class LineCollide
 		}
 		lines = new Line[listLines.size()];
 		lines = listLines.toArray(lines);
-		for(int i = 0;i < lines.length;i++)
-			System.out.println(lines[i].pointA + " " + lines[i].pointB);
 	}
 
 	public boolean check(final Vector2d pointA,final Vector2d pointB)
@@ -78,5 +95,33 @@ public class LineCollide
 			if(x.collide(pointA,pointB))
 				return true;
 		return false;
+	}
+
+	public double distLinePoint(final Vector2d pointA,final Vector2d pointB,final Vector2d pointC)
+	{
+		Vector2d diffAB = pointB.sub(pointA,new Vector2d());
+		double maxV = max(0,min(1,pointC.sub(pointA,new Vector2d()).dot(diffAB) / diffAB.dot(diffAB)));
+		return pointC.distance(diffAB.mul(maxV).add(pointA));
+	}
+
+	public double dist(final Vector2d pointA,final Vector2d pointB)
+	{
+		double finalDist = Double.MAX_VALUE;
+		for(final Line x : lines)
+		{
+			double dist = distLinePoint(x.pointA,x.pointB,pointA);
+			if(finalDist > dist)
+				finalDist = dist;
+			dist = distLinePoint(x.pointA,x.pointB,pointB);
+			if(finalDist > dist)
+				finalDist = dist;
+			dist = distLinePoint(pointA,pointB,x.pointA);
+			if(finalDist > dist)
+				finalDist = dist;
+			dist = distLinePoint(pointA,pointB,x.pointB);
+			if(finalDist > dist)
+				finalDist = dist;
+		}
+		return finalDist;
 	}
 }

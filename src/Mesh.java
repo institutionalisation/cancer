@@ -113,6 +113,7 @@ public class Mesh {
 		glEnableVertexAttribArray(glGetAttribLocation(program.getId(),"vertexUV"));
 		glUniform1f(program.getUniformLocation("scale"),scale);
 		glUniform1i(glGetUniformLocation(program.getId(),"myTextureSampler"),0);
+		//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
 		// pass the transformation matrix to the shader
 		glUniformMatrix4fv(program.getUniformLocation("transform"),false,transformBuffer);

@@ -13,14 +13,13 @@ public class Bug extends ModelNode
 	private double dist = 0.0;
 	private final Vector3f activationPoint;
 	private final double activationDistance;
-	private boolean activated = false;
+	private boolean active = false;
 	private double tilt = 0;
-	private final double tiltSpeed = .5;
-	private double targetTilt = 0;
 
-	public void setPath(Vector2d[] path)
+	public synchronized void setPath(Vector2d[] path)
 	{
-		this.path = path;
+		if((this.path = path) == null)
+			return;
 		pos.x = (float)path[0].x;
 		pos.z = (float)path[0].y;
 		pathIdx = 1;
@@ -36,15 +35,21 @@ public class Bug extends ModelNode
 		this.pos = pos;
 	}
 
-	@Override
-	public Matrix4f getLocalTransform()
+	public synchronized double distToDest()
+	{
+		if(path == null)
+			return 0.0;
+		double dist = 0;
+		for(int i = pathIdx;i < path.length;i++)
+			dist += path[i].distance(path[i - 1]);
+		return dist - this.dist;
+	}
+
+	public synchronized void runTime(long delta)
 	{
 		if(path != null)
 		{
 			//System.out.println("at " + pos);
-			long now = System.nanoTime();
-			long delta = now - lastTime;
-			lastTime = now;
 			dist += delta / 1000000.0 * speed;
 			double pdist;
 			while(pathIdx < path.length)
@@ -55,7 +60,6 @@ public class Bug extends ModelNode
 				dist -= pdist;
 				pos.x = (float)path[pathIdx].x;
 				pos.z = (float)path[pathIdx].y;
-				targetTilt = atan2(path[pathIdx].x - path[pathIdx - 1].x,path[pathIdx].y - path[pathIdx - 1].y) - PI / 2;
 				++pathIdx;
 			}
 			if(pathIdx < path.length)
@@ -66,23 +70,28 @@ public class Bug extends ModelNode
 				dt.mul(percent);
 				pos.x = (float)(dt.x + path[pathIdx - 1].x);
 				pos.z = (float)(dt.y + path[pathIdx - 1].y);
-				targetTilt = atan2(path[pathIdx].x - path[pathIdx - 1].x,path[pathIdx].y - path[pathIdx - 1].y) - PI / 2;
 			}
-			double tDiff = targetTilt - tilt;
-			double tsFactor = tDiff % PI / PI;
-			double tDist = tsFactor * tsFactor * tiltSpeed;
-			if(abs(tDist) < tDist)
-				tilt = targetTilt;
-			else
-				tilt += signum(tDiff) * tDist;
+			tilt = atan2(path[path.length - 1].x - pos.x,path[path.length - 1].y - pos.z) - PI / 2;
 		}
-		return new Matrix4f(baseTransform).translate(pos).rotateY((float)tilt);
+		lastTime = System.nanoTime();
 	}
 
-	public boolean isActivated()
+	@Override
+	public Matrix4f getLocalTransform()
 	{
-		if(activated)
+		synchronized(this)
+		{
+			long now = System.nanoTime();
+			runTime(now - lastTime);
+			lastTime = now;
+		}
+		return new Matrix4f().translate(pos).rotateY((float)tilt).mul(baseTransform);
+	}
+
+	public boolean isActive(Vector3f playerPos)
+	{
+		if(active)
 			return true;
-		return activated = activationPoint.distance(pos) < activationDistance;
+		return active = activationPoint.distance(playerPos) < activationDistance;
 	}
 }

@@ -12,7 +12,7 @@ public class Line
 		this.pointB = pointB;
 	}
 
-	private static double EPS = 0.001;
+	private static double EPS = 0.01;
 
 	private static boolean inBox(Vector2d pointA,Vector2d pointB,Vector2d sect)
 	{
