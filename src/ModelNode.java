@@ -1,3 +1,10 @@
+/*
+ * David Jacewicz
+ * June 7, 2018
+ * Ms. Krasteva
+ * A node in the model tree
+ */
+
 import org.joml.*;
 import org.lwjgl.assimp.*;
 import org.lwjgl.*;
@@ -12,25 +19,28 @@ public class ModelNode {
 	public List<ModelNode> children = new ArrayList<>();
 	public List<Runnable> collisionCallbacks = new ArrayList<>();
 	public List<Mesh> meshes = new ArrayList<>();
+	/** Creates an empty model node */
 	public ModelNode() {
 		localTransform = new Matrix4f(); }
+	/**
+	 * Creates a model node for the given model from the given Assimp model node
+	 *
+	 * @param model The model to create this node for
+	 * @param node The Assimp model node to extract data from
+	 */
 	public ModelNode(Model model,AINode node) {
 		name = node.mName().dataString();
-		System.out.println("name:"+name);
 		model.nameNodeMap.put(name,this);
 		PointerBuffer children = node.mChildren();
 		if(children != null && 0<children.capacity()) {
-			System.out.println("chidren.capacity:"+children.capacity());
 			for(;children.hasRemaining();)
 				this.children.add(new ModelNode(model,AINode.create(children.get())));
 		}
 
 		IntBuffer meshBuffer = node.mMeshes();
 		if(meshBuffer != null && 0<meshBuffer.capacity()) {
-			System.out.println("modelNode mesh count:"+meshBuffer.capacity());
 			for(;meshBuffer.hasRemaining();)
 				meshes.add(model.meshes[meshBuffer.get()]);
-			out.println("end");
 		}
 
 		AIMatrix4x4 tran = node.mTransformation();
@@ -40,12 +50,15 @@ public class ModelNode {
 			tran.a3(), tran.b3(), tran.c3(), tran.d3(),
 			tran.a4(), tran.b4(), tran.c4(), tran.d4()
 		);
-		System.out.println("localTransform:"+localTransform);
 	}
 	Matrix4f temp = new Matrix4f();
+
+	/**
+	 * Renders a model node
+	 *
+	 * @param parentTransform The transformation matirx of the parent node
+	 */
 	public void render(Matrix4f parentTransform) {
-		// if(model.currentNodeAnimationMap.keySet().contains(this))
-		// 	System.out.println("I should be animating");
 		parentTransform.mul(getLocalTransform(),absoluteTransform);
 		for(ModelNode x : children)
 			x.render(absoluteTransform);
@@ -55,22 +68,25 @@ public class ModelNode {
 	private AIVectorKey.Buffer positionKeys;
 	private AIQuatKey.Buffer rotationKeys;
 	private AIVectorKey.Buffer scalingKeys;
-	public void updateAnimation() {
-		// if(model.currentNodeAnimationMap.keySet().contains(this)) {
-		// 	AINodeAnim thisChannel = model.currentNodeAnimationMap.get(this);
-		// 	positionKeys = thisChannel.mPositionKeys();
-		// 	rotationKeys = thisChannel.mRotationKeys();
-		// 	scalingKeys = thisChannel.mScalingKeys();
-		// }
-		// for(ModelNode x : children)
-		// 	x.updateAnimation();
+
+	/**
+	 * Copies the given model node
+	 *
+	 * @param node The model node to copy
+	 */
+	public void set(ModelNode node) {
+		children = node.children;
+		meshes = node.meshes;
+		localTransform.set(node.localTransform);
 	}
-	// set $this from $a
-	public void set(ModelNode a) {
-		children = a.children;
-		meshes = a.meshes;
-		localTransform.set(a.localTransform);
-	}
+
+	/**
+	 * Finds a child of this node by name recursively
+	 *
+	 * @param name The name of the node to search for
+	 *
+	 * @return The descendant of this node with the given name
+	 */
 	public ModelNode getChild(String name) {
 		for(ModelNode x : children)
 			if(x.name.equals(name))
@@ -82,6 +98,8 @@ public class ModelNode {
 		}
 		return null;
 	}
+
+	/** @return The transform matrix used for this node */
 	public Matrix4f getLocalTransform() {
 		return localTransform; }
 }

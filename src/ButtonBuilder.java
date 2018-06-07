@@ -1,9 +1,15 @@
+/*
+ * David Jacewicz
+ * June 7, 2018
+ * Ms. Krasteva
+ * A builder class for OpenGL-based GUI buttons
+ */
+
 import static util.Util.*;
 import java.util.*;
 public class ButtonBuilder {
 	public static enum Color {
 		RED,BLUE,YELLOW;
-		//public int value;
 	};
 	private static String[] colorNames = new String[]{"red","blue","yellow"};
 	public Map<Color,Runnable> colorCallbacks = new HashMap<>();
@@ -12,6 +18,12 @@ public class ButtonBuilder {
 	private static ModelNode[]
 		pressed = new ModelNode[3],
 		unpressed = new ModelNode[3];
+	
+	/**
+	 * Creates a new button for the given shader
+	 *
+	 * @param program The shader program to create the shader for
+	 */
 	public ButtonBuilder(Program program) {
 		this.program = program;
 		base = new Model("button/base","obj",program).rootNode;
@@ -21,12 +33,18 @@ public class ButtonBuilder {
 		}
 	}
 	private int stickTime;
+	// TODO: explain stickTime
 	public ButtonBuilder setStickTime(int stickTime) {
 		this.stickTime = stickTime;
 		return this;
 	}
 	public class Button extends ModelNode {
 		private boolean[] isPressed = new boolean[]{false};
+		/**
+		 * Creates a OpenGL-based GUI Button with the given color
+		 *
+		 * @param color The color of the button
+		 */
 		public Button(Color color) {
 			children.add(new ModelNode(){{ set(base); }});
 			children.add(new ModelNode(){final ModelNode center = this;{

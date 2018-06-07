@@ -1,3 +1,10 @@
+/*
+ * David Jacewicz
+ * June 7, 2018
+ * Ms. Krasteva
+ * The base class for all the levels
+ */
+
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -31,6 +38,12 @@ public abstract class LevelBase {
 	public Set<ModelNode> renderedModelNodes = new HashSet<ModelNode>();
 	public JFrame dialogFrame;
 	public JLabel dialog = new JLabel();
+
+	/**
+	 * Display dialog in dialog window
+	 *
+	 * @param text The dialog to display
+	 */
 	public void dialog(String text) {
 		dialog.setText(
 			"<html><style>body{font-size:20px;}</style><body>"+
@@ -38,10 +51,13 @@ public abstract class LevelBase {
 			"</body></html>");
 	}
 	public GLWindow.BoundCallback dialogFrameBoundsCallback = new GLWindow.BoundCallback() {
+		/** Method to update this window when main window is moved */
 		public void invoke(GLWindow w) {
 			dialogFrame.setBounds(
 				w.x,w.y+w.height,
 				w.width,w.height/3); } };;
+
+	/** Initialized the dialog window */
 	public void initDialogFrame() {
 		dialogFrame = new JFrame(){{
 			add(BorderLayout.NORTH,dialog);
@@ -49,13 +65,14 @@ public abstract class LevelBase {
 			setVisible(true);
 		}};
 	}
-	// inContext needs to have the GL context
-	// ready is put to a new thread
+	/** Method to initialize and start the level */
 	public void run() { exPrint(()->{
 		init();
 		inContext();
 		renderLoop();
 	});}
+
+	/** Initializes OpenGL and calls inContext() */
 	public void init() { exPrint(()->{
 		GLFWErrorCallback.createPrint(System.err).set();
 		// initialize GLFW. most GLFW functions will not work before doing this.
@@ -82,6 +99,8 @@ public abstract class LevelBase {
 		}.run();
 		player = new Player(keyboard,mouse);
 	});}
+
+	/** Renders object in a loop */
 	public void renderLoop() { exPrint(()->{
 		window.show();
 		initDialogFrame();
@@ -89,16 +108,15 @@ public abstract class LevelBase {
 		window.resizeCallbacks.add(dialogFrameBoundsCallback);
 		dialogFrameBoundsCallback.invoke(window);
 		window.resizeCallbacks.add(new GLWindow.BoundCallback() {
+			/** Updates the main window when resized */
 			public void invoke(GLWindow a) {
 				int
 					height = window.height,
 					width = window.width;
-				System.out.println("resize");
 				final float FOV = (float) Math.toRadians(100f);
 				final float Z_NEAR = .1f;
 				final float Z_FAR = 100;
 				Matrix4f perspectiveMatrix;
-				System.out.println("w:"+width+",h:"+height);
 				float aspectRatio = 1f*width/height;
 				perspectiveMatrix = new Matrix4f().perspective(FOV,aspectRatio,Z_NEAR,Z_FAR);
 				glUniformMatrix4fv(program.getUniformLocation("perspective"),false,
@@ -108,18 +126,19 @@ public abstract class LevelBase {
 			{invoke(window);}});
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
-		//https://github.com/LWJGL/lwjgl3-demos/blob/master/src/org/lwjgl/demo/opengl/assimp/WavefrontObjDemo.java
 		glClearColor(0,.5f,.5f,0);
-		new Thread() { public void run() { exPrint(()->{
-			long prevTime = System.currentTimeMillis();
-			for(;;) {
-				//Thread.sleep(20);
-				long nowTime = System.currentTimeMillis();
-				int delta = (int)(nowTime-prevTime);
-				prevTime = nowTime;
-				player.handleInput(delta);
-			}
-		});}}.start();
+		new Thread() {
+			/** Looped method to handle player movement input */
+			public void run() { exPrint(()->{
+				long prevTime = System.currentTimeMillis();
+				for(;;) {
+					long nowTime = System.currentTimeMillis();
+					int delta = (int)(nowTime-prevTime);
+					prevTime = nowTime;
+					player.handleInput(delta);
+				}
+			});
+		}}.start();
 		for(;;) {
 			glfwPollEvents();
 			glUniformMatrix4fv(program.getUniformLocation("view"),false,player.getView());
@@ -128,7 +147,6 @@ public abstract class LevelBase {
 				for(ModelNode x : renderedModelNodes)
 					x.render(new Matrix4f());
 			}
-			//System.out.println("error:"+glGetError());
 			window.swapBuffers();
 		}
 	});}

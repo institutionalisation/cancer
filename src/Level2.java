@@ -1,3 +1,10 @@
+/*
+ * David Jacewicz
+ * June 7, 2018
+ * Ms. Krasteva
+ * Level 3 driver class
+ */
+
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -23,6 +30,8 @@ import java.util.List;
 public class Level2 extends LevelBase {
 	public final static int LEVEL_DURATION = 60;
 	private MeterFrame meterFrame;
+
+	/** Creates the window with the meters */
 	public void initMeterFrame() {
 		meterFrame = new MeterFrame(){{
 			meters.put("Sleep",new Meter(.01f));
@@ -43,6 +52,8 @@ public class Level2 extends LevelBase {
 		}}.start();
 	}
 	private ModelNode maze,bed,guitar,books,arduino;
+
+	/** Callback method that runs in OpenGL context; used for rendering */
 	public void inContext() {
 		dialogFrameBoundsCallback = new GLWindow.BoundCallback() {
 			public void invoke(GLWindow w) {
@@ -70,6 +81,8 @@ public class Level2 extends LevelBase {
 		new Thread(()->{exPrint(()->{onReady();});}).start();
 	}
 	List<RefillPoint> refillPoints;
+
+	/** Main method of alternate thread to run game logic */
 	public void onReady() { exPrint(()->{
 		refillPoints = new ArrayList<RefillPoint>(){{
 			add(new RefillPoint("Sleep",new Vector3f(5,0,-7.5f),bed));
@@ -87,6 +100,7 @@ public class Level2 extends LevelBase {
 			"Keep these meters full by running to the corresonding station.",
 			"Good luck! Press T to start the game!",
 		};
+		// TODO: 200 inner classes
 		keyboard.immediateKeys.put(GLFW_KEY_T,new Runnable() {
 			private int dialogIndex = 0;
 			public void run() {
@@ -102,12 +116,16 @@ public class Level2 extends LevelBase {
 			{ run(); }
 		});
 	});}
+
+	/** Temporarily hides the window with all the meters */
 	public void hideMeterFrame() {
 		meterFrame.setVisible(false);
 		meterFrame = null;
 		dialogFrameBoundsCallback.invoke(window);
 	}
 	boolean[] win = new boolean[]{true};
+
+	/** Method to run game logic */
 	public void play() { exPrint(()->{
 		initMeterFrame();
 		// resize dialog frame to fill space for newly-created meterFrame
@@ -131,6 +149,8 @@ public class Level2 extends LevelBase {
 			dialog("Survive for "+remaining+" seconds to win the game.");
 		}
 	});}
+
+	/** Method for end game logic */
 	public void end() {
 		if(win[0]) {
 			long now = System.currentTimeMillis();
@@ -187,8 +207,12 @@ public class Level2 extends LevelBase {
 			keyboard.immediateKeys.put(GLFW_KEY_T,()->{close();});
 		}
 	}
+
+	/** Exits this level */
 	public void close() {
 		System.exit(0);
 	}
+
+	/** Main method that creates and runs an instance of this class */
 	public static void main(String[] a) { new Level2().run(); }
 }

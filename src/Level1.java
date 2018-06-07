@@ -1,3 +1,10 @@
+/*
+ * David Jacewicz
+ * June 7, 2018
+ * Ms. Krasteva
+ * Level 2 driver class
+ */
+
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -25,6 +32,8 @@ public class Level1 extends LevelBase { final Level1 level = this;
 	private Platform redPlatform,bluePlatform,yellowPlatform;
 	private enum State { TO_END,TO_START };
 	private long startTime;
+
+	/** Callback method with GL context; used for rendering */
 	public void inContext() {
 		new Thread(()->{for(;;)out.println("loc:"+player.loc);}).start();
 		redPlatform = new Platform(){{ set(new Model("maze2/red","obj",program).rootNode); }};
@@ -139,6 +148,8 @@ public class Level1 extends LevelBase { final Level1 level = this;
 			{run();}
 		});
 	}
+
+	/** The end game logic */
 	private void end() {
 		int delta = (int)(System.currentTimeMillis()-startTime);
 		int score = 30000000/delta;
@@ -168,7 +179,10 @@ public class Level1 extends LevelBase { final Level1 level = this;
 			close();
 		});
 	}
+
+	/** Exits this level */
 	public void close() {
 		System.exit(0); }
+	/** Main method to create and run and instance of this class */
 	public static void main(String[] a) { new Level1().run(); }
 }

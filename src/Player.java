@@ -1,3 +1,10 @@
+/*
+ * David Jacewicz
+ * June 7, 2018
+ * Ms. Krasteva
+ * The player object; handles movement
+ */
+
 import org.joml.*;
 import java.lang.Math;
 import static org.lwjgl.system.MemoryUtil.*;
@@ -14,12 +21,20 @@ public class Player { final Player player = this;
 	private FloatBuffer viewMatrixBuffer = memAllocFloat(16);
 	public Set<ModelNode> colliders = new HashSet<>();
 	boolean flying = true;
+
+	/**
+	 * Creates a player with the given input sources
+	 *
+	 * @param Keyboard The keyboard to take input from
+	 * @param mouse The mouse to take input from
+	 */
 	public Player(Keyboard keyboard,Mouse mouse) {
 		this.keyboard = keyboard;
 		this.mouse = mouse;
 		this.colliders = colliders;
 		keyboard.immediateKeys.put(GLFW_KEY_Q,new Runnable() {
 			final Runnable stopFlying = this;
+			/** Callback method that toggles flying off and adds callback to toggle flying on */
 			public void run() {
 				player.flying = false;
 				keyboard.immediateKeys.put(GLFW_KEY_Q,()->{
@@ -42,6 +57,12 @@ public class Player { final Player player = this;
 		GRAVITY = .00003f;
 	float dy = 0;
 	boolean canJump = false;
+
+	/**
+	 * Handle input with repect to the time passed
+	 *
+	 * @param delta The amount of time that has passed
+	 */
 	public void handleInput(int delta) {
 		Vector2f cursorPos = mouse.getCameraCursor();
 		float
@@ -63,7 +84,6 @@ public class Player { final Player player = this;
 				0,
 				(float)Math.cos(ax - (float)Math.PI/2)
 			);
-		// kind of magic, but it works
 		IDENTITY.lookAt(loc,loc.add(dir,new Vector3f()),right.cross(dir,new Vector3f()),viewMatrix);
 		float distance = moveSpeed*delta;
 		Vector3f deltaLoc = new Vector3f();
@@ -86,7 +106,6 @@ public class Player { final Player player = this;
 				canJump = false;
 				dy = INITIAL_DY;
 			}
-			//out.println("dy:"+dy);
 			loc.y += dy*delta;
 			dy -= GRAVITY*delta;
 		}
@@ -94,7 +113,6 @@ public class Player { final Player player = this;
 			deltaLoc.normalize();
 		deltaLoc.mul(delta*moveSpeed);
 		loc.add(deltaLoc);
-		//System.out.println("view:"+viewMatrix);
 		// collide
 		synchronized(colliders) {
 			for(ModelNode modelNode : colliders)
@@ -102,6 +120,15 @@ public class Player { final Player player = this;
 					collide(modelNode,delta);
 		}
 	}
+
+	/**
+	 * Collides a model node with respect to time passed
+	 *
+	 * @param modelNode The modelnode to check collisions for
+	 * @param delta The amount of time that has passed
+	 *
+	 * @return true iff The given model node collides with any object
+	 */
 	private boolean collide(ModelNode modelNode,int delta) {
 		Matrix4f modelNodeTransform = new Matrix4f(){{set(modelNode.absoluteTransform);}};
 		boolean collided = false;
@@ -133,12 +160,8 @@ public class Player { final Player player = this;
 					highest = Math.max(highest,x.y);
 				}
 				if(loc.y+HEAD_OFFSET-delta*dy<lowest || highest<loc.y-FOOT_OFFSET) {
-					//out.println("cut off");
 					continue;
 				}
-				//System.out.println("in level");
-				//else
-				//	System.out.println("ha");
 				Vector2f[] vertices = new Vector2f[3];
 				for(int i = 0; i < vertices.length; ++i)
 					vertices[i] = new Vector2f(vertices3D[i].x(),vertices3D[i].z());
@@ -191,10 +214,8 @@ public class Player { final Player player = this;
 				// if in wall, move to just outside wall
 				if(h<RADIUS) {
 					canJump = collided = true;
-					//System.out.println("bounce:"+j);
 					// if the wall is small enough, step over it
 					if(highest<loc.y-STEP_MAX_HEIGHT+.1f) {
-						//System.out.println("step");
 						loc.y = highest+FOOT_OFFSET;
 						dy = 0;
 						continue;
@@ -202,8 +223,6 @@ public class Player { final Player player = this;
 					Vector2f wall = a.sub(b,new Vector2f());
 					Vector3f direction = new Vector3f(wall.y(),0,-wall.x()).normalize();
 					// but which way does the normal face?
-					// oh boy
-					// https://en.wikipedia.org/wiki/Curve_orientation
 					// get the winding direction of the triangle via the sign of the following determinant XD
 					loc.add(direction.mul(Math.signum(new Matrix3f(
 						1,a.x,a.y,
@@ -213,11 +232,12 @@ public class Player { final Player player = this;
 				}
 			}
 		}
-		//out.println("collided:"+collided);
 		if(collided) for(Runnable callback : modelNode.collisionCallbacks)
 			callback.run();
 		return collided;
 	}
+
+	/** Updates the view matrix based on the view matrix buffer */
 	public FloatBuffer getView() {
 		return viewMatrix.get(viewMatrixBuffer);
 	}

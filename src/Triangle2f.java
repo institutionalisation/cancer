@@ -1,10 +1,25 @@
-// https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
+/*
+ * David Jacewicz
+ * June 7, 2018
+ * Ms. Krasteva
+ * A triangle
+ */
+
+
 import org.joml.*;
 import java.lang.Math;
 public class Triangle2f {
 	private final double x3, y3;
 	private final double y23, x32, y31, x13;
 	private final double det, minD, maxD;
+
+	/**
+	 * Creates a new triangle from three vertices
+	 *
+	 * @param v1 The first vertex
+	 * @param v2 The second vertex
+	 * @param v3 The third vertex
+	 */
 	public Triangle2f(Vector2f v1,Vector2f v2,Vector2f v3) {
 		this.x3 = v3.x;
 		this.y3 = v3.y;
@@ -17,6 +32,14 @@ public class Triangle2f {
 		maxD = Math.max(det,0);
 	}
 
+	/**
+	 * Checks if a point is contained in this triangle
+	 *
+	 * @param point The point to check
+	 *
+	 * @return true iff the point is contained in this triangle, false otherwise
+	 */
+	// TODO: access level
 	boolean contains(Vector2f v) {
 		double dx = v.x - x3;
 		double dy = v.y - y3;
