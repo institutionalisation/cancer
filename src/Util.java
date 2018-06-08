@@ -25,11 +25,13 @@ public class Util {
 		return Arrays.asList(a); }
 	// https://stackoverflow.com/questions/9464843/how-to-extract-zip-file-from-jar-file
 	public static void extractResources() {exPrint(()->{
-		if(new File("models").exists())
-			return;
-		String destination = ".";
+
+		// if(new File(destination).exists())
+		// 	return;
+		// new File(destination).mkdirs();
 		ZipInputStream in = null;
 		OutputStream out = null;
+		String destination= ".";
 		try {
 			// Open the ZIP file
 			in = new ZipInputStream(Util.class.getResourceAsStream("/files.zip"));
@@ -41,9 +43,14 @@ public class Util {
 				String outFilename = entry.getName();
 				// Open the output file
 				if (entry.isDirectory()) {
+					System.out.println("dir destination:"+destination+",outFilename:"+outFilename);
 					new File(destination, outFilename).mkdirs();
+					System.out.println("success");
 				} else {
+					System.out.println("file destination:"+destination+",outFilename:"+outFilename);
 					out = new FileOutputStream(new File(destination,outFilename));
+					System.out.println("success: "+out);
+					System.out.println(out);
 					// Transfer bytes from the ZIP file to the output file
 					byte[] buf = new byte[1024];
 					int len;
@@ -53,7 +60,10 @@ public class Util {
 					out.close();
 				}
 			}
+		} catch(Exception e) {
+			e.printStackTrace();
 		} finally {
+			System.out.println("couldn't open");
 			// Close the stream
 			if (in != null) {
 				in.close();

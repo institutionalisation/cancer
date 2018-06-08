@@ -7,9 +7,11 @@ import java.io.*;
 import static util.Util.*;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 public class Main {
-	Scores scores = new Scores();
+	Scores scores;
 	private void run() {
+		out.println("test");
 		extractResources();
+		scores = new Scores();
 		//System.out.println("working directory: "+System.getProperty("user.dir"));
 		new Frame("Menu"){final Frame menuFrame = this;{
 			List<String> includes = Arrays.asList(new String[]{

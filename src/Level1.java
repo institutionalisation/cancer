@@ -26,7 +26,7 @@ public class Level1 extends LevelBase { final Level1 level = this;
 	private enum State { TO_END,TO_START };
 	private long startTime;
 	public void inContext() {
-		new Thread(()->{for(;;)out.println("loc:"+player.loc);}).start();
+		//new Thread(()->{for(;;)out.println("loc:"+player.loc);}).start();
 		redPlatform = new Platform(){{ set(new Model("maze2/red","obj",program).rootNode); }};
 		bluePlatform = new Platform(){{ set(new Model("maze2/blue","obj",program).rootNode); }};
 		yellowPlatform = new Platform(){{ set(new Model("maze2/yellow","obj",program).rootNode); }};
@@ -61,9 +61,9 @@ public class Level1 extends LevelBase { final Level1 level = this;
 					getLocalTransform().translate(11.6f,0,5.2f); }},
 				// at the end
 				bb.new Button(RED){{
-					getLocalTransform().translate(8.6f,0,34.8f); }},
+					getLocalTransform().translate(8.6f,0,40.8f); }},
 				bb.new Button(YELLOW){{
-					getLocalTransform().translate(8.7f,0,30.7f); }}
+					getLocalTransform().translate(8.7f,0,37.2f); }}
 			));
 			bluePlatform.children.addAll(list(
 				bb.new Button(RED){{
@@ -104,7 +104,7 @@ public class Level1 extends LevelBase { final Level1 level = this;
 			for(;;) {
 				switch(state[0]) {
 					case TO_END:
-						if(37 < player.loc.z) {
+						if(43 < player.loc.z) {
 							dialog("Good job, now make it back!");
 							state[0] = State.TO_START;
 						}
