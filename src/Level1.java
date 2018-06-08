@@ -72,8 +72,8 @@ public class Level1 extends LevelBase { final Level1 level = this;
 					getLocalTransform().translate(8.6f,0,40.8f); }},
 				bb.new Button(YELLOW){{
 					getLocalTransform().translate(8.7f,0,37.2f); }}
-				));
-				bluePlatform.children.addAll(list(
+			}));
+				bluePlatform.children.addAll(Arrays.asList(new ButtonBuilder.Button[]{
 				bb.new Button(RED){{
 					getLocalTransform().translate(0,0,-3.190f); }},
 				bb.new Button(RED){{

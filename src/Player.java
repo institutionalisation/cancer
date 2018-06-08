@@ -145,6 +145,8 @@ public class Player { final Player player = this;
 				AIFace face = faces.get();
 				IntBuffer indices = face.mIndices();
 				Vector3f[] vertices3D = new Vector3f[3];
+				if(indices.capacity()<3)
+					continue;
 				Vector3f
 					prev = new Vector3f(),
 					after = new Vector3f();
