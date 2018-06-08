@@ -22,7 +22,6 @@ cp ../bin/Button*.class .
 cp ../bin/Panel*.class .
 cp -r ../models/* .
 cp -r ../shaders/* .
-cp ../files.zip .
 cd ..
 jar -cvfm App.jar manifest -C tmp .
 cp App.jar /tmp

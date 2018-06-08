@@ -9,8 +9,8 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import static util.Util.*;
-
-public class Button extends JButton {
+import java.awt.event.*;
+public class Button extends JButton { final Button button = this;
 	String title;
 
 	/**
@@ -28,7 +28,7 @@ public class Button extends JButton {
 	public int getHeight() { return height; }
 	public Dimension getSize() { return new Dimension(getWidth(),getHeight()); }
 	public Dimension getPreferredSize() { return getSize(); }
-	private final static int RADIUS = 80;
+	private final static int RADIUS = 40;
 	private final static Color COLOR = new Color(184,249,199);
 	private final static Font FONT = new Font("arial",Font.PLAIN,20);
 
@@ -40,7 +40,13 @@ public class Button extends JButton {
 	public void paint(Graphics g) {
 		((Graphics2D)g).setBackground(new Color(0,0,0));
 		g.setColor(COLOR);
-		g.fillRoundRect(0,0,getWidth(),getHeight(),RADIUS,RADIUS);
+		//g.fillRoundRect(0,0,getWidth(),getHeight(),RADIUS,RADIUS);
+		g.fillOval(0,0,RADIUS,RADIUS);
+		g.fillOval(getWidth()-RADIUS,0,RADIUS,RADIUS);
+		g.fillOval(0,getHeight()-RADIUS,RADIUS,RADIUS);
+		g.fillOval(getWidth()-RADIUS,getHeight()-RADIUS,RADIUS,RADIUS);
+		g.fillRect(RADIUS/2,0,getWidth()-RADIUS,getHeight());
+		g.fillRect(0,RADIUS/2,getWidth(),getHeight()-RADIUS);
 		g.setColor(Color.BLACK);
 		g.setFont(FONT);
 		FontMetrics fm = g.getFontMetrics();
