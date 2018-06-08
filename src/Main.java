@@ -16,7 +16,6 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 public class Main {
 	Scores scores;
 	private void run() {
-		out.println("test");
 		extractResources();
 		scores = new Scores();
 		new Frame("Menu"){final Frame menuFrame = this;{
@@ -78,11 +77,8 @@ public class Main {
 													int score = Integer.parseInt(line);
 													out.println("menu score was "+score);
 													scores.addScore(x,new Score(textField.getText(),score));
-												} catch(Exception a) {
-													System.out.println("Exception was thrown:"+a);
-													a.printStackTrace();
+												} catch(Exception exception) {
 												}
-												out.println("exited somehow");
 												menuFrame.setVisible(true);
 											});
 										}});

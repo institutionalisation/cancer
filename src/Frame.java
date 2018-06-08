@@ -31,6 +31,8 @@ public class Frame extends JFrame {
 			setAlignmentX(Component.CENTER_ALIGNMENT);
 		}});}});
 	}
+
+	/** Resize after packing frame */
 	public void pack() {
 		super.pack();
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();

@@ -92,9 +92,10 @@ public class Level0 extends LevelBase
 			new Bug(oBug,new Matrix4f().scale(.15f),new Vector3f(8.5f,0,-6.5f),new Vector3f(8.5f,0,0.5f),2),
 			new Bug(oBug,new Matrix4f().scale(.15f),new Vector3f(8.5f,0,8.5f),true),
 		};
-		player.movementAllowed = false;
 		player.loc.x = 2;
+		player.loc.y = 1.5f;
 		player.loc.z = 8.5f;
+		Player.FOOT_OFFSET = 1;
 		SimpleRenderedModel boss = new SimpleRenderedModel(oBug,new Matrix4f().translate(-5,0,0).scale(2).rotateY((float)PI / 2));
 		renderedModelNodes.add(boss);
 		TrapBlock block1 = new TrapBlock(cube,new Matrix4f().scale(1,2,1),new Vector3f(-5f,6f,16f),new Vector3f(-5f,1f,16f),500000000l);
@@ -110,6 +111,7 @@ public class Level0 extends LevelBase
 			logicThread.interrupt();
 		};
 		keyboard.immediateKeys.put(GLFW_KEY_T,notifyLogicThread);
+		player.movementAllowed = false;
 		try
 		{
 			Thread.sleep(100000000);

@@ -48,7 +48,7 @@ public class Player { final Player player = this;
 	final float moveSpeed = .005f;
 	final static Matrix4f IDENTITY = new Matrix4f();
 	final static Vector3f UP = new Vector3f(0,1,0);
-	final static float
+	static float
 		RADIUS = .3f, // bounding cylinder radius
 		STEP_MAX_HEIGHT = .2f, // max height to step over
 		FOOT_OFFSET = 1.5f,
@@ -98,6 +98,9 @@ public class Player { final Player player = this;
 			deltaLoc.add(right.mul(distance,new Vector3f()));
 		if(keyboard.getKeysPressed().contains(GLFW_KEY_A))
 			deltaLoc.add(right.mul(-distance,new Vector3f()));
+
+		loc.y += dy*delta;
+		dy -= GRAVITY*delta;
 
 		if(.001f<Math.abs(deltaLoc.length()))
 			deltaLoc.normalize();
