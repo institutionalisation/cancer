@@ -23,7 +23,7 @@ public class MeterFrame extends JFrame {
 		 * @param window The main window
 		 */
 		public void invoke(GLWindow window) {
-			setBounds(window.x+window.width,window.y,window.height/5 * meters.size(),window.height); } };
+			setBounds(window.x+window.width,window.y,window.height/4 * meters.size(),window.height); } };
 	/**
 	 * Draws this window with the given graphics object
 	 *

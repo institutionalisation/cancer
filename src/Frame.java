@@ -31,6 +31,11 @@ public class Frame extends JFrame {
 			setAlignmentX(Component.CENTER_ALIGNMENT);
 		}});}});
 	}
+	public void pack() {
+		super.pack();
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+	}
 
 	/** Creates a Swing window with an empty title */
 	public Frame() { this(""); }
