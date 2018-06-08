@@ -92,6 +92,7 @@ public class Level0 extends LevelBase
 			new Bug(oBug,new Matrix4f().scale(.15f),new Vector3f(8.5f,0,-6.5f),new Vector3f(8.5f,0,0.5f),2),
 			new Bug(oBug,new Matrix4f().scale(.15f),new Vector3f(8.5f,0,8.5f),true),
 		};
+		player.movementAllowed = false;
 		player.loc.x = 2;
 		player.loc.z = 8.5f;
 		SimpleRenderedModel boss = new SimpleRenderedModel(oBug,new Matrix4f().translate(-5,0,0).scale(2).rotateY((float)PI / 2));
@@ -116,6 +117,7 @@ public class Level0 extends LevelBase
 		catch(InterruptedException e)
 		{
 		}
+		player.movementAllowed = true;
 		Runnable talkToNothing = () ->
 		{
 			dialog("You: Hello...? Hello...?<br>The wall does not repond.");
