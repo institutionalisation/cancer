@@ -56,6 +56,14 @@ public class Bug extends ModelNode
 		this.pos = pos;
 	}
 
+	/**
+	 * Creates a new bug with the given position, and activation state
+	 *
+	 * @param orig The original model node
+	 * @param baseTransform The base transform matrix
+	 * @param pos The initial position 
+	 * @param active The initial activation state
+	 */
 	public Bug(final ModelNode orig,final Matrix4f baseTransform,final Vector3f pos,final boolean active)
 	{
 		set(orig);
@@ -64,6 +72,7 @@ public class Bug extends ModelNode
 		this.active = active;
 	}
 
+	/** Activates this minion */
 	public void activate()
 	{
 		this.active = true;
