@@ -29,7 +29,7 @@ public class Level0 extends LevelBase
 	private ModelNode maze;
 	private ModelNode oBug;
 	private Pathfinder pathfinder = new Pathfinder(new LineCollide("models/maze0/a.obj"),.2,.2);
-	private final double farThreshold = 3.00;
+	private final double farThreshold = 0.00;
 	private final int pathfindMaxSteps = 1 << 20;
 	private ModelNode cube;
 
@@ -95,7 +95,6 @@ public class Level0 extends LevelBase
 		player.loc.x = 2;
 		player.loc.y = 1.5f;
 		player.loc.z = 8.5f;
-		Player.FOOT_OFFSET = 1;
 		SimpleRenderedModel boss = new SimpleRenderedModel(oBug,new Matrix4f().translate(-5,0,0).scale(2).rotateY((float)PI / 2));
 		renderedModelNodes.add(boss);
 		TrapBlock block1 = new TrapBlock(cube,new Matrix4f().scale(1,2,1),new Vector3f(-5f,6f,16f),new Vector3f(-5f,1f,16f),500000000l);
@@ -132,7 +131,7 @@ public class Level0 extends LevelBase
 		{
 			System.out.println(player.loc);
 			/* Enters the boss room */
-			if(player.loc.distance(bossRoomTrigger) < 3)
+			if(player.loc.distance(bossRoomTrigger) < 4)
 				break;
 			/* Finds a path to the player for all bugs */
 			for(Bug x : bugs)
