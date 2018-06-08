@@ -81,7 +81,6 @@ public class Model {
 			if(animations.capacity() == 1) {
 				animationStartTime = System.currentTimeMillis();
 				currentNodeAnimationMap = nodeAnimationMap;
-				rootNode.updateAnimation();
 			}
 		}
 	}
@@ -94,7 +93,6 @@ public class Model {
 	public void animate(String animationName) {
 		animationStartTime = System.currentTimeMillis();
 		currentNodeAnimationMap = animationNameNodeAnimationMap.get(animationName);
-		rootNode.updateAnimation();
 	}
 
 	/** Frees native memory used by this model */

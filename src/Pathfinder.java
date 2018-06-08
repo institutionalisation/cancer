@@ -157,10 +157,10 @@ public class Pathfinder
 				found = true;
 				break;
 			}
-			step(queue,vis,start,end,cur,0,1);
-			step(queue,vis,start,end,cur,0,-1);
-			step(queue,vis,start,end,cur,-1,0);
-			step(queue,vis,start,end,cur,1,0);
+			step(queue,vis,end,cur,0,1);
+			step(queue,vis,end,cur,0,-1);
+			step(queue,vis,end,cur,-1,0);
+			step(queue,vis,end,cur,1,0);
 			/* Enough steps have been taken,
 			 * but no path has been found */
 			if(--maxSteps == 0)

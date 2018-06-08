@@ -20,7 +20,7 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.system.MemoryUtil.*;
 import org.joml.*;
-import java.lang.Math;
+import static java.lang.Math.*;
 import javax.swing.*;
 import static util.Util.*;
 
@@ -31,6 +31,7 @@ public class Level0 extends LevelBase
 	private Pathfinder pathfinder = new Pathfinder(new LineCollide("models/maze0/a.obj"),.2,.2);
 	private final double farThreshold = 2.00;
 	private final int pathfindMaxSteps = 1 << 20;
+	private ModelNode cube;
 
 	/*
 	 * A callback method that in run in the OpenGL thread
@@ -42,6 +43,7 @@ public class Level0 extends LevelBase
 		renderedModelNodes.add(maze);
 		oBug = new Model("bug","obj",program).rootNode;
 		LineCollide c = new LineCollide("models/maze0/a.obj");
+		cube = new Model("cube","obj",program).rootNode;
 		new Thread(() -> {onReady();}).start();
 	}
 
@@ -54,19 +56,62 @@ public class Level0 extends LevelBase
 		/* Creates the minion bugs and positions them appropriately */
 		Bug[] bugs =
 		{
-			new Bug(new Matrix4f().scale(.15f),oBug,new Vector3f(-5,0,5),1,new Vector3f(-5,0,5)),
-			new Bug(new Matrix4f().scale(.15f),oBug,new Vector3f(-5,0,5),1,new Vector3f(-5,0,5)),
+			new Bug(oBug,new Matrix4f().scale(.15f),new Vector3f(6.5f,0,4.5f),new Vector3f(2.5f,0,4.5f),2),
+			new Bug(oBug,new Matrix4f().scale(.15f),new Vector3f(8.5f,0,7),new Vector3f(2,0,7),2),
+			new Bug(oBug,new Matrix4f().scale(.15f),new Vector3f(8.5f,0,-6.5f),new Vector3f(8.5f,0,0.5f),2),
+			new Bug(oBug,new Matrix4f().scale(.15f),new Vector3f(8.5f,0,8.5f),true),
 		};
-		/* Adds the current bugs to the set of rendered bugs */
+		SimpleRenderedModel boss = new SimpleRenderedModel(oBug,new Matrix4f().translate(-5,0,0).scale(2).rotateY((float)PI / 2));
+		renderedModelNodes.add(boss);
+		TrapBlock block1 = new TrapBlock(cube,new Matrix4f().scale(1,2,1),new Vector3f(-5f,6f,16f),new Vector3f(-5f,1f,16f),10000000000l);
+		renderedModelNodes.add(block1);
+		block1.start();
+		/* Adds the current bugs to the set of rendered models */
 		for(Bug x : bugs)
-		{
 			renderedModelNodes.add(x);
+		long levelStart = System.nanoTime();
+		dialog("Use W,A,S,D to move around and F to talk. Press T to start the game");
+		Thread logicThread = Thread.currentThread();
+		Runnable notifyLogicThread = () -> {
+			logicThread.interrupt();
+		};
+		keyboard.immediateKeys.put(GLFW_KEY_T,notifyLogicThread);
+		try
+		{
+			Thread.sleep(100000000);
 		}
+		catch(InterruptedException e)
+		{
+		}
+		Runnable talkToNothing = () ->
+		{
+			dialog("You: Hello...? Hello...?<br>The wall does not repond.");
+		};
+		keyboard.immediateKeys.put(GLFW_KEY_F,talkToNothing);
+		dialog("");
+		keyboard.immediateKeys.remove(GLFW_KEY_T);
+		final Vector3f bossRoomTrigger = new Vector3f(0,0,-8);
 		do
 		{
+			System.out.println(player.loc);
+			/* Enters the boss room */
+			if(player.loc.distance(bossRoomTrigger) < 2)
+				break;
 			/* Finds a path to the player for all bugs */
 			for(Bug x : bugs)
 			{
+				/* You die! */
+				if(x.pos.distance(player.loc) < 1.2)
+				{
+					dialog("You were caught by a bug. Try running in the other direction next time. Press T to return to the menu.");
+					player.movementAllowed = false;
+					System.out.println("0");
+					for(Bug k : bugs)
+						k.setPath(null);
+					keyboard.immediateKeys.put(GLFW_KEY_T,() -> {close();});
+					return;
+
+				}
 				/* Checks if bug is activated by player */
 				if(x.isActive(player.loc))
 				{
@@ -94,8 +139,47 @@ public class Level0 extends LevelBase
 					}
 				}
 			}
+			try
+			{
+				Thread.sleep(1000);
+			}
+			catch(InterruptedException e)
+			{}
 		}
 		while(true);
+		for(Bug x : bugs)
+			x.setPath(null);
+		keyboard.immediateKeys.put(GLFW_KEY_F,() -> {
+			logicThread.interrupt();
+		});
+		keyboard.immediateKeys.put(GLFW_KEY_T,notifyLogicThread);
+		final double bossXL = -8;
+		final double bossXR = -2;
+		final double bossZL = -5;
+		final double bossZR = 4;
+		do
+		{
+			if(logicThread.interrupted())
+				break;
+			if(bossXL <= player.loc.x && player.loc.x <= bossXR && bossZL <= player.loc.z && player.loc.z <= bossZR)
+			{
+				player.movementAllowed = false;
+				dialog("You just walked into a giant bug. You philosophize about your life decisions while the bug's venom slowly drains the life out of you. Return to menu? (Press T)");
+				System.out.println("0");
+				keyboard.immediateKeys.put(GLFW_KEY_T,() -> {
+					close();
+				});
+				try
+				{
+					Thread.sleep(100000000);
+				}
+				catch(InterruptedException e)
+				{}
+				return;
+			}
+		}
+		while(true);
+
 	}
 	
 	/*

@@ -18,8 +18,8 @@ public class Bug extends ModelNode
 	public double speed = 0.002;
 	public final Vector3f pos;
 	private double dist = 0.0;
-	private final Vector3f activationPoint;
-	private final double activationDistance;
+	private Vector3f activationPoint = null;
+	private double activationDistance = 0;
 	private boolean active = false;
 	private double tilt = 0;
 
@@ -41,19 +41,32 @@ public class Bug extends ModelNode
 	/**
 	 * Creates a new bug with a position, activation point and distance and base transform matrix
 	 *
-	 * @param baseTransform The transform matrix to use as a base for all animations; this controls the initial animation state of this object
 	 * @param orig The model node to copy
+	 * @param baseTransform The transform matrix to use as a base for all animations; this controls the initial animation state of this object
+	 * @param pos The initial position of the bug
 	 * @param activationPoint The activation point; this bug is activated if the player moves within a certain distance of this point
 	 * @param activationDistance If the player is within this distance of the activation point, the bug is activated
-	 * @param pos The initial position of the bug
 	 */
-	public Bug(final Matrix4f baseTransform,final ModelNode orig,final Vector3f activationPoint,final double activationDistance,final Vector3f pos)
+	public Bug(final ModelNode orig,final Matrix4f baseTransform,final Vector3f pos,final Vector3f activationPoint,final double activationDistance)
 	{
 		set(orig);
 		this.baseTransform = baseTransform;
 		this.activationPoint = activationPoint;
 		this.activationDistance = activationDistance;
 		this.pos = pos;
+	}
+
+	public Bug(final ModelNode orig,final Matrix4f baseTransform,final Vector3f pos,final boolean active)
+	{
+		set(orig);
+		this.baseTransform = baseTransform;
+		this.pos = pos;
+		this.active = active;
+	}
+
+	public void activate()
+	{
+		this.active = true;
 	}
 
 	/**
@@ -132,12 +145,14 @@ public class Bug extends ModelNode
 	 * 
 	 * @param playerPos The player position
 	 *
-	 * @return true iff the bug should be activated
+	 * @return true iff the bug should be activated, false otherwise
 	 */
 	public boolean isActive(Vector3f playerPos)
 	{
 		if(active)
 			return true;
+		if(activationPoint == null)
+			return false;
 		return active = activationPoint.distance(playerPos) < activationDistance;
 	}
 }

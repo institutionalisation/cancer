@@ -57,6 +57,7 @@ public class Player { final Player player = this;
 		GRAVITY = .00003f;
 	float dy = 0;
 	boolean canJump = false;
+	public boolean movementAllowed = true;
 
 	/**
 	 * Handle input with repect to the time passed
@@ -64,6 +65,8 @@ public class Player { final Player player = this;
 	 * @param delta The amount of time that has passed
 	 */
 	public void handleInput(int delta) {
+		if(!movementAllowed)
+			return;
 		Vector2f cursorPos = mouse.getCameraCursor();
 		float
 			ax = -cursorPos.x,
