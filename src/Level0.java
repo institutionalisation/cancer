@@ -103,7 +103,7 @@ public class Level0 extends LevelBase
 		/* Adds the current bugs to the set of rendered models */
 		for(Bug x : bugs)
 			renderedModelNodes.add(x);
-		long levelStart = System.nanoTime();
+		long levelStart = System.currentTimeMillis();
 		dialog("Use W,A,S,D to move around and F to talk. Press T to start the game");
 		Thread logicThread = Thread.currentThread();
 		Runnable notifyLogicThread = () -> {
@@ -129,9 +129,8 @@ public class Level0 extends LevelBase
 		final Vector3f bossRoomTrigger = new Vector3f(0,0,-8);
 		do
 		{
-			System.out.println(player.loc);
 			/* Enters the boss room */
-			if(player.loc.distance(bossRoomTrigger) < 4)
+			if(player.loc.distance(bossRoomTrigger) < 6)
 				break;
 			/* Finds a path to the player for all bugs */
 			for(Bug x : bugs)
@@ -177,7 +176,7 @@ public class Level0 extends LevelBase
 		final double bossXR = -2;
 		final double bossZL = -5;
 		final double bossZR = 4;
-		final Vector3f escapeTrigger = new Vector3f(-5f,0,-9.5f);
+		final Vector3f escapeTrigger = new Vector3f(-5f,0,-14);
 		boolean attemptEscape = false;
 		do
 		{
@@ -229,12 +228,28 @@ public class Level0 extends LevelBase
 		}
 		while(true);
 		keyboard.immediateKeys.remove(GLFW_KEY_F);
-		dialog("Boss: I don't know where you are going in such a hurry, but let me deactivate the trap first. (Press T to continue)");
-		keyboard.immediateKeys.put(GLFW_KEY_T,() -> {
-			dialog("Boss: Make sure you don't touch my legs while you pass through, they are very venomous. The little bugs don't realize how dangerous they are, try not to catch their attention by taking the small exit! (Press T to continue");
-			keyboard.immediateKeys.put(GLFW_KEY_T,() -> {
-				dialog("Boss: Good luck wherever you're going!");
-			});
+		String[] dialogStrs = new String[]{
+			"Boss: I see you realise, you can't just run away from your problems.",
+			"Boss: They follow you around, they chase you.",
+			"Boss: It might seem like you're stuck in and endless maze.",
+			"Boss: It might feel like there's nobody else, and you're just lost.",
+			"Boss: You need to understand that there are people out there that can help.",
+			"Boss: If you need help, don't be afraid to ask someone, be it a grownup, or any of your friends.",
+			"Boss: Nobody deserves to feel lost.",
+			"Boss: Let me deactivate the trap.",
+			"Boss: Make sure you don't touch my legs while you pass through, they are very venomous.",
+			"Boss: The little bugs don't realize how dangerous they are, try not to catch their attention by taking the small exit!",
+			"Boss: Good luck wherever you're going!",
+		};
+		keyboard.immediateKeys.put(GLFW_KEY_T,new Runnable() {
+			private int dialogIndex = 0;
+			public void run() {
+				if(dialogIndex < dialogStrs.length)
+					dialog(dialogStrs[dialogIndex++]);
+				else
+					keyboard.immediateKeys.remove(GLFW_KEY_T);
+			}
+			{run();}
 		});
 		final Vector3f winTrigger = new Vector3f(-5,0,25);
 		do
@@ -271,16 +286,19 @@ public class Level0 extends LevelBase
 			}
 			if(attemptEscape)
 				chasePlayer(bugs[0]);
-			if(player.loc.distance(winTrigger) < 3)
+			Float.valueOf(player.loc.distance(winTrigger)).toString();
+			//out.println("win dist:"+player.loc.distance(winTrigger));
+			if(player.loc.distance(winTrigger) < 6)
 			{
 				player.movementAllowed = false;
 				bugs[0].setPath(null);
-				long score = abs(System.nanoTime() - levelStart);
+				long score = (long)(4000/(abs(System.currentTimeMillis() - levelStart)/10000d));
 				dialog("You finished the level with a final score of " + score + ". Press T to return to the main menu");
-				System.out.println(score);
 				keyboard.immediateKeys.put(GLFW_KEY_T,() -> {
+					out.println(score);
 					close();
 				});
+				return;
 			}
 		}
 		while(true);
