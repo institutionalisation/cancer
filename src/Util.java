@@ -1,3 +1,10 @@
+/*
+ * David Jacewicz
+ * June 7, 2018
+ * Ms. Krasteva
+ * A collection of utility methods
+ */
+
 package util;
 import java.nio.file.*;
 import java.io.*;
@@ -10,17 +17,28 @@ public class Util {
 	public static interface ThrowingRunnable {
 		public void run() throws Exception;
 	}
-	// https://stackoverflow.com/questions/14169661/read-complete-file-without-using-loop-in-java
+	/**
+	 * Reads the entire file given into a string
+	 *
+	 * @param name The file to read
+	 *
+	 * @return The contents of the file as a string
+	 */
 	public static String readFile(String name) throws IOException {
 		return new String(Files.readAllBytes(Paths.get(name)));
 	}
-	// print any exceptions that occur
-	public static void exPrint(ThrowingRunnable r) {
+	/**
+	 * Catch and print any exceptions that occur during the execution of the given runnable
+	 *
+	 * @param runnable The runnable to be run inside the try-catch
+	 */
+	public static void exPrint(ThrowingRunnable runnable) {
 		try {
-			r.run(); }
-		catch(Exception e) {
-			e.printStackTrace(); }
+			runnable.run(); }
+		catch(Exception exception) {
+			exception.printStackTrace(); }
 	}
+<<<<<<< HEAD
 	public static <E> List<E> list(E... a) {
 		return Arrays.asList(a); }
 	// https://stackoverflow.com/questions/9464843/how-to-extract-zip-file-from-jar-file

@@ -1,3 +1,10 @@
+/*
+ * Junyi Wang
+ * June 7, 2018
+ * Ms. Krasteva
+ * A* grid pathfinder
+ */
+
 import org.joml.*;
 import static java.lang.Math.*;
 import java.util.PriorityQueue;
@@ -8,75 +15,40 @@ public class Pathfinder
 {
 	private final LineCollide collider;
 	private final double stepSize;
+	private final double width;
 
-	public Pathfinder(final double extWidth,final Line[] walls,final double stepSize)
+	/**
+	 * Creates a new pathfinder with the line collision data structure provided 
+	 *
+	 * @param collider The line collision data structure
+	 * @param stepSize The distance the pathfinder can move in one step
+	 * @param width The width of the object the path is being found for
+	 */
+	public Pathfinder(final LineCollide collider,final double stepSize,final double width)
 	{
-/*
-		Line[] lines = new Line[walls.length * 4];
-		for(int i = 0;i < walls.length;i++)
-		{
-			double xsq = walls[i].pointA.x - walls[i].pointB.x;
-			double ysq = walls[i].pointA.y - walls[i].pointB.y;
-			xsq *= xsq;
-			ysq *= ysq;
-			double cosA = ysq / (xsq + ysq);
-			double sinA = sqrt(1 - cosA);
-			cosA = sqrt(cosA);
-			double xExt = cosA * extWidth;
-			double yExt = sinA * extWidth;
-			Line parallelA = new Line(new Vector2d(walls[i].pointA.x + xExt,walls[i].pointA.y + yExt),new Vector2d(walls[i].pointB.x + xExt,walls[i].pointB.y + yExt));
-			Line parallelB = new Line(new Vector2d(walls[i].pointA.x - xExt,walls[i].pointA.y - yExt),new Vector2d(walls[i].pointB.x - xExt,walls[i].pointB.y - yExt));
-			Line perpA = new Line(parallelA.pointA,parallelB.pointA);
-			Line perpB = new Line(parallelA.pointB,parallelB.pointB);
-			lines[i * 4] = parallelA;
-			lines[i * 4 + 1] = parallelB;
-			lines[i * 4 + 2] = perpA;
-			lines[i * 4 + 3] = perpB;
-		}
-*/
-		collider = new LineCollide(walls);
+		this.collider = collider;
 		this.stepSize = stepSize;
+		this.width = width;
 	}
 
-	private static class Position implements Comparable<Position>
-	{
-		public final long x;
-		public final long y;
-
-		public Position(final long x,final long y)
-		{
-			this.x = x;
-			this.y = y;
-		}
-
-		public int compareTo(final Position other)
-		{
-			if(x < other.x)
-				return -1;
-			if(x > other.x)
-				return 1;
-			if(y < other.y)
-				return -1;
-			if(y > other.y)
-				return 1;
-			return 0;
-		}
-
-		public boolean equals(final Position other)
-		{
-			return x == other.x && y == other.y;
-		}
-	}
-
+	/* A pathfinding node class, used in the priority queue */
 	private static class Node implements Comparable<Node>
 	{
 		public final Vector2d pos;
 		public final double heuristic;
 		public final double dist;
-		public final Position key;
+		public final ComparableLongPair key;
 		public Node prev;
 
-		public Node(final Position key,final Vector2d pos,final double heuristic,final double dist)
+		/**
+		 * Creates a new pathfinder node
+		 *
+		 * @param key The position of this node on the pathfinding grid; used as key in set to determine whether this node has been visited
+		 * @param pos The continous 2D space position of this node
+		 * @param heuristic The heuristic used for A*, calculated as the Euclidean distance to the destination 
+		 * @param dist The distance already travelled; used to minimize the lengths of paths found
+		 */
+		public Node(final ComparableLongPair key,final Vector2d pos,final double heuristic,final double dist)
 		{
 			this.key = key;
 			this.pos = pos;
@@ -84,6 +56,13 @@ public class Pathfinder
 			this.dist = dist;
 		}
 
+		/**
+		 * Compares this node with another node based on
+		 * the possible length of paths found by using
+		 * the node; the one that will result in a shorter
+		 * path comes first
+		 *
+		 * @param other The node to compare this node to */
 		public int compareTo(final Node other)
 		{
 			if(heuristic < other.heuristic)
@@ -94,32 +73,56 @@ public class Pathfinder
 		}
 	}
 
-	private void step(final PriorityQueue<Node> queue,final Set<Position> vis,final Vector2d start,final Vector2d dest,final Node cur,final int x,final int y) // abs(x),abs(y) <= 1
+	/**
+	 * Checks whether the specified move is possible;
+	 * 
+	 * @param pointA The point to move from
+	 * @param pointB The point to move to
+	 */
+	private boolean check(Vector2d pointA,Vector2d pointB)
 	{
-		final Position key = new Position(cur.key.x + x,cur.key.y + y);
+		/* Checks if this move would travel through a wall */
+		if(collider.check(pointA,pointB))
+			return false;
+		/* Checks if this move would bring the entity partially
+		 * inside a wall */
+		if(collider.dist(pointA,pointB) < width)
+			return false;
+		return true;
+	}
+
+	/**
+	 * Takes one step in the specified direction if possible;
+	 * also attempts to minimize existing paths to the specified point
+	 *
+	 * @param queue The new pathfinding node is appended to this queue
+	 * @param vis This set is used to detect whether or not a point has already been visited
+	 * @param dest The destination; used to calculate hueristic
+	 * @param cur The current pathfinding node
+	 * @param x The x distance in grid cells to move; must be either 1 or -1
+	 * @param y The y distance in grid cells to move; must be either 1 or -1
+	 */
+	private void step(final PriorityQueue<Node> queue,final Set<ComparableLongPair> vis,final Vector2d dest,final Node cur,final int x,final int y)
+	{
+		final ComparableLongPair key = new ComparableLongPair(cur.key.x + x,cur.key.y + y);
 		if(vis.contains(key))
 			return;
 		final Vector2d pos = new Vector2d(cur.pos.x + x * stepSize,cur.pos.y + y * stepSize);
-		if(start.distance(pos) < stepSize)
-			return;
 		double dist = Double.MAX_VALUE;
 		Node prev = null;
-		if(!collider.check(cur.pos,pos)) // edge from u to v
+		/* Normal edge */
+		if(check(cur.pos,pos))
 		{
 			dist = cur.dist + stepSize;
-			//System.out.println(cur + " edge " + cur.pos + " " + pos + " dist " + dist);
 			prev = cur;
 		}
-		if(!collider.check(cur.prev.pos,pos)) // edge tightening
+		/* Tightened edge */
+		if(check(cur.prev.pos,pos))
 		{
-			double newDist = cur.prev.dist + cur.prev.pos.distance(pos);
-			//System.out.println(cur.prev + " tighten " + cur.prev.pos + " " + pos + " dist " + newDist);
-			if(newDist < dist)
-			{
-				dist = newDist;
-				prev = cur.prev;
-			}
+			dist = cur.prev.dist + cur.prev.pos.distance(pos);
+			prev = cur.prev;
 		}
+		/* Adds a node to the queue if possible */
 		if(prev != null)
 		{
 			Node next = new Node(key,pos,dest.distance(pos),dist);
@@ -129,30 +132,49 @@ public class Pathfinder
 		}
 	}
 
-	public Vector2d[] findPath(Vector2d start,Vector2d end)
+	/**
+	 * Finds a path between the given two points, taking at most maxSteps steps
+	 * 
+	 * @param start The starting point
+	 * @param end The destination
+	 * @param maxSteps The maximum number of pathfinding steps to take before giving up.
+	 */
+	public Vector2d[] findPath(Vector2d start,Vector2d end,int maxSteps)
 	{
-		Set<Position> vis = new TreeSet<>();
+		Set<ComparableLongPair> vis = new TreeSet<>();
 		PriorityQueue<Node> queue = new PriorityQueue<Node>();
-		Node root = new Node(new Position(Long.MAX_VALUE,Long.MAX_VALUE),start,start.distance(end),0);
+		Node root = new Node(new ComparableLongPair(Long.MAX_VALUE,Long.MAX_VALUE),start,start.distance(end),0);
 		root.prev = root;
 		queue.offer(root);
+		boolean found = false;
 		do
 		{
 			Node cur = queue.poll();
-			if(cur.heuristic - cur.dist < stepSize)
+			/* Can this node directly reach the destination? */
+			if(cur.heuristic - cur.dist < stepSize && check(cur.pos,end))
 			{
-				System.out.println("stop at dist: " + (cur.heuristic - cur.dist) + " dist " + cur.dist + " pos " + cur.pos);
 				root = cur;
+				found = true;
 				break;
 			}
-			step(queue,vis,start,end,cur,0,1);
-			step(queue,vis,start,end,cur,0,-1);
-			step(queue,vis,start,end,cur,-1,0);
-			step(queue,vis,start,end,cur,1,0);
+			step(queue,vis,end,cur,0,1);
+			step(queue,vis,end,cur,0,-1);
+			step(queue,vis,end,cur,-1,0);
+			step(queue,vis,end,cur,1,0);
+			/* Enough steps have been taken,
+			 * but no path has been found */
+			if(--maxSteps == 0)
+				return null;
 		}
 		while(queue.size() != 0);
+		/* All possible paths have been explored,
+		 * but no path has been found */
+		if(!found)
+			return null;
 		int count = 0;
 		Node cur = root;
+		/* Count the number of elements in the path
+		 * stored as a linked list */
 		while(cur.prev != cur)
 		{
 			cur = cur.prev;
@@ -160,6 +182,8 @@ public class Pathfinder
 		}
 		Vector2d[] path = new Vector2d[count + 2];
 		int index = count;
+		/* Extract the path stored as a linked list
+		 * into an array */
 		while(root.prev != root)
 		{
 			path[index--] = root.pos;

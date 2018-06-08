@@ -1,9 +1,22 @@
+/*
+ * David Jacewicz
+ * June 7, 2018
+ * Ms. Krasteva
+ * A Swing window
+ */
+
 import java.awt.*;
 import javax.swing.*;
 import static util.Util.*;
 public class Frame extends JFrame {
 	private final static Color BACKGROUND_COLOR = new Color(138,196,234);
 	private boolean firstElement = true;
+
+	/**
+	 * Creates a Swing window with the given title
+	 *
+	 * @param title The title of the window
+	 */
 	public Frame(String title) {
 		super(title);
 		setContentPane(new JPanel(){{
@@ -18,16 +31,29 @@ public class Frame extends JFrame {
 			setAlignmentX(Component.CENTER_ALIGNMENT);
 		}});}});
 	}
+
+	/** Creates a Swing window with an empty title */
 	public Frame() { this(""); }
-	public void add(JComponent a) {
+
+	/**
+	 * Adds a Swing GUI component to the window
+	 *
+	 * @param component The GUI component to be added
+	 */
+	public void add(JComponent component) {
 		if(firstElement)
 			firstElement = false;
 		else {
-			out.println("aa");
 			super.add(Box.createRigidArea(new Dimension(0,5)));
 		}
-		super.add(a);
+		super.add(component);
 	}
-	public void add(Button a) {
-		super.add(new Panel(){{add(a);}}); }
+
+	/**
+	 * Adds a GUI button to this Swing window
+	 *
+	 * @param button The button to be added
+	 */
+	public void add(Button button) {
+		super.add(new Panel(){{add(button);}}); }
 }
