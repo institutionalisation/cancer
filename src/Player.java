@@ -99,19 +99,6 @@ public class Player { final Player player = this;
 		if(keyboard.getKeysPressed().contains(GLFW_KEY_A))
 			deltaLoc.add(right.mul(-distance,new Vector3f()));
 
-		if(flying) {
-			if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE))
-				deltaLoc.add(UP.mul(distance,new Vector3f()));
-			if(keyboard.getKeysPressed().contains(GLFW_KEY_LEFT_SHIFT))
-				deltaLoc.add(UP.mul(-distance,new Vector3f()));
-		} else {
-			if(keyboard.getKeysPressed().contains(GLFW_KEY_SPACE) && canJump) {
-				canJump = false;
-				dy = INITIAL_DY;
-			}
-			loc.y += dy*delta;
-			dy -= GRAVITY*delta;
-		}
 		if(.001f<Math.abs(deltaLoc.length()))
 			deltaLoc.normalize();
 		deltaLoc.mul(delta*moveSpeed);
@@ -144,6 +131,8 @@ public class Player { final Player player = this;
 			for(int j = 0;faces.hasRemaining();++j) {
 				AIFace face = faces.get();
 				IntBuffer indices = face.mIndices();
+				if(indices.capacity() < 3)
+					continue;
 				Vector3f[] vertices3D = new Vector3f[3];
 				Vector3f
 					prev = new Vector3f(),

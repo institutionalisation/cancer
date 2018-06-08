@@ -38,10 +38,6 @@ public class Util {
 		catch(Exception exception) {
 			exception.printStackTrace(); }
 	}
-<<<<<<< HEAD
-	public static <E> List<E> list(E... a) {
-		return Arrays.asList(a); }
-	// https://stackoverflow.com/questions/9464843/how-to-extract-zip-file-from-jar-file
 	public static void extractResources() {exPrint(()->{
 		if(new File("models").exists())
 			return;

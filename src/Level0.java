@@ -29,7 +29,7 @@ public class Level0 extends LevelBase
 	private ModelNode maze;
 	private ModelNode oBug;
 	private Pathfinder pathfinder = new Pathfinder(new LineCollide("models/maze0/a.obj"),.2,.2);
-	private final double farThreshold = 2.00;
+	private final double farThreshold = 3.00;
 	private final int pathfindMaxSteps = 1 << 20;
 	private ModelNode cube;
 
@@ -130,13 +130,13 @@ public class Level0 extends LevelBase
 		{
 			System.out.println(player.loc);
 			/* Enters the boss room */
-			if(player.loc.distance(bossRoomTrigger) < 2)
+			if(player.loc.distance(bossRoomTrigger) < 3)
 				break;
 			/* Finds a path to the player for all bugs */
 			for(Bug x : bugs)
 			{
 				/* You die! */
-				if(x.pos.distance(player.loc) < 1.2)
+				if(x.pos.distance(player.loc) < 2)
 				{
 					dialog("You were caught by a bug. Try running in the other direction next time. Press T to return to the menu.");
 					player.movementAllowed = false;
@@ -203,7 +203,7 @@ public class Level0 extends LevelBase
 				});
 				return;
 			}
-			if(escapeTrigger.distance(player.loc) < 2)
+			if(escapeTrigger.distance(player.loc) < 3)
 			{
 				bugs[0].speed = 0.01;
 				attemptEscape = true;
@@ -211,7 +211,7 @@ public class Level0 extends LevelBase
 			for(Bug x : bugs)
 			{
 				/* You die! */
-				if(x.pos.distance(player.loc) < 1.2)
+				if(x.pos.distance(player.loc) < 2)
 				{
 					dialog("You were caught by a bug. Try running in the other direction next time. Press T to return to the menu.");
 					player.movementAllowed = false;
@@ -248,15 +248,15 @@ public class Level0 extends LevelBase
 				});
 				return;
 			}
-			if(escapeTrigger.distance(player.loc) < 2)
+			if(escapeTrigger.distance(player.loc) < 3)
 			{
-				bugs[0].speed = 0.01;
+				bugs[0].speed = 0.02;
 				attemptEscape = true;
 			}
 			for(Bug x : bugs)
 			{
 				/* You die! */
-				if(x.pos.distance(player.loc) < 1.2)
+				if(x.pos.distance(player.loc) < 2)
 				{
 					dialog("You were caught by a bug. Try running in the other direction next time. Press T to return to the menu.");
 					player.movementAllowed = false;
@@ -270,7 +270,7 @@ public class Level0 extends LevelBase
 			}
 			if(attemptEscape)
 				chasePlayer(bugs[0]);
-			if(player.loc.distance(winTrigger) < 2)
+			if(player.loc.distance(winTrigger) < 3)
 			{
 				player.movementAllowed = false;
 				bugs[0].setPath(null);
