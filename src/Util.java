@@ -37,13 +37,4 @@ public class Util {
 		catch(Exception exception) {
 			exception.printStackTrace(); }
 	}
-	/**
-	 * Return a list of the arguments
-	 *
-	 * @param list The list of objects to be put in the list
-	 *
-	 * @return A list of the arguments
-	 */
-	public static <E> List<E> list(E... list) {
-		return Arrays.asList(list); }
 }
