@@ -5,13 +5,12 @@
  * A triangle
  */
 
-
 import org.joml.*;
 import java.lang.Math;
 public class Triangle2f {
-	private final double x3, y3;
-	private final double y23, x32, y31, x13;
-	private final double det, minD, maxD;
+	private final float x3, y3;
+	private final float y23, x32, y31, x13;
+	private final float det, minD, maxD;
 
 	/**
 	 * Creates a new triangle from three vertices

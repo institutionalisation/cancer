@@ -1,3 +1,10 @@
+/*
+ * Junyi Wang
+ * June 8, 2018
+ * Ms. Krasteva
+ * The block that is dropped on top of the player in the trap
+ */
+
 import org.joml.*;
 import static java.lang.Math.*;
 
@@ -9,6 +16,15 @@ public class TrapBlock extends ModelNode
 	private final Vector3f diff;
 	private final Matrix4f baseTransform;
 
+	/**
+	 * Creates a new trap block with the given animation parameters
+	 *
+	 * @param orig The orignal model
+	 * @param baseTransform The default transform matrix
+	 * @param start The starting point of the animation
+	 * @param end The finishing point of the animation
+	 * @param closeTime The time in nanoseconds it takes for the block to move
+	 */
 	public TrapBlock(final ModelNode orig,final Matrix4f baseTransform,final Vector3f start,final Vector3f end,final long closeTime)
 	{
 		set(orig);
@@ -18,11 +34,13 @@ public class TrapBlock extends ModelNode
 		this.closeTime = closeTime;
 	}
 
+	/** Starts the animation */
 	public void start()
 	{
 		startTime = System.nanoTime();
 	}
 
+	/** @return The current transform matrix */
 	public Matrix4f getLocalTransform()
 	{
 		float delta;

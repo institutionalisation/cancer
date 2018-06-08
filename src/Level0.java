@@ -47,15 +47,20 @@ public class Level0 extends LevelBase
 		new Thread(() -> {onReady();}).start();
 	}
 
-	private void chasePlayer(Bug x)
+	/**
+	 * Makes a bug chase the player
+	 *
+	 * @param bug The bug to chase the player with
+	 */
+	private void chasePlayer(Bug bug)
 	{
 		/* The bug is close enough that the player won't notice the
 		 * slight discrepancy between threads */
-		if(x.distToDest() < farThreshold)
+		if(bug.distToDest() < farThreshold)
 		{
-			x.setPath(null);
-			Vector2d[] path = pathfinder.findPath(new Vector2d(x.pos.x,x.pos.z),new Vector2d(player.loc.x,player.loc.z),pathfindMaxSteps);
-			x.setPath(path);
+			bug.setPath(null);
+			Vector2d[] path = pathfinder.findPath(new Vector2d(bug.pos.x,bug.pos.z),new Vector2d(player.loc.x,player.loc.z),pathfindMaxSteps);
+			bug.setPath(path);
 		}
 		else
 		/* The bug is too far; the time taken by the pathfinder
@@ -63,12 +68,12 @@ public class Level0 extends LevelBase
 		 * pathfinder finishes */
 		{
 			long startTime = System.nanoTime();
-			Vector2d[] path = pathfinder.findPath(new Vector2d(x.pos.x,x.pos.z),new Vector2d(player.loc.x,player.loc.z),pathfindMaxSteps);
+			Vector2d[] path = pathfinder.findPath(new Vector2d(bug.pos.x,bug.pos.z),new Vector2d(player.loc.x,player.loc.z),pathfindMaxSteps);
 			long delta = System.nanoTime() - startTime;
-			synchronized(x)
+			synchronized(bug)
 			{
-				x.setPath(path);
-				x.runTime(delta);
+				bug.setPath(path);
+				bug.runTime(delta);
 			}
 		}
 	}
