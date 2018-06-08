@@ -1,3 +1,10 @@
+/*
+ * David Jacewicz
+ * June 7, 2018
+ * Ms. Krasteva
+ * A rounded GUI button
+ */
+
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -5,7 +12,12 @@ import static util.Util.*;
 import java.awt.event.*;
 public class Button extends JButton { final Button button = this;
 	String title;
-	boolean hover = false;
+
+	/**
+	 * Creates a new button with the given text
+	 *
+	 * @param title The text to be displayed on the button
+	 */
 	public Button(String title) {
 		this.title = title;
 		setHorizontalAlignment(SwingConstants.CENTER);
@@ -27,6 +39,12 @@ public class Button extends JButton { final Button button = this;
 		COLOR = new Color(184,249,199),
 		HOVER_COLOR = new Color(0,0,0);
 	private final static Font FONT = new Font("arial",Font.PLAIN,20);
+
+	/**
+	 * The method to draw the button on the screen
+	 *
+	 * @param g The Graphics object to draw with
+	 */
 	public void paint(Graphics g) {
 		((Graphics2D)g).setBackground(new Color(0,0,0));
 		g.setColor(hover?HOVER_COLOR:COLOR);
@@ -42,16 +60,5 @@ public class Button extends JButton { final Button button = this;
 		FontMetrics fm = g.getFontMetrics();
 		g.drawString(title,getWidth()/2-fm.stringWidth(title)/2,getHeight()/2+fm.getHeight()/4);
 		g.setColor(new Color(0,0,0,0));
-		// g.fillOval(0,0,20,20);
-		// g.fillOval(20,0,20,20);
-		// g.fillOval(40,0,20,20);
-		// g.fillOval(60,0,20,20);
-		// //g.fillOval(80,0,20,20);
-		// //out.println(getWidth());
-		// g.fillOval(90,0,20,20);
-		//out.println("width:"+getWidth());
-		//g.fillOval(0,,20,20);
-		//g.fillRoundRect(0,0,getWidth(),getHeight(),RADIUS,RADIUS);
-		//g.drawString(title,0,0);
 	}
 }

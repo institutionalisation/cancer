@@ -1,3 +1,10 @@
+/*
+ * David Jacewicz
+ * June 7, 2018
+ * Ms. Krasteva
+ * Level 2 driver class
+ */
+
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -19,23 +26,24 @@ import java.awt.*;
 import java.awt.event.*;
 import static util.Util.*;
 import java.util.*;
-import java.util.List;
+
 public class Level1 extends LevelBase { final Level1 level = this;
 	private ModelNode stage;
 	private Platform redPlatform,bluePlatform,yellowPlatform;
 	private enum State { TO_END,TO_START };
 	private long startTime;
+
+	/** Callback method with GL context; used for rendering */
 	public void inContext() {
-		//new Thread(()->{for(;;)out.println("loc:"+player.loc);}).start();
 		redPlatform = new Platform(){{ set(new Model("maze2/red","obj",program).rootNode); }};
 		bluePlatform = new Platform(){{ set(new Model("maze2/blue","obj",program).rootNode); }};
 		yellowPlatform = new Platform(){{ set(new Model("maze2/yellow","obj",program).rootNode); }};
 		stage = new Model("maze2/static","obj",program).rootNode;
-		renderedModelNodes.addAll(list(
+		renderedModelNodes.addAll(Arrays.asList(new ModelNode[]{
 			stage,
-			redPlatform,bluePlatform,yellowPlatform));
-		player.colliders.addAll(list(
-			stage,redPlatform,bluePlatform,yellowPlatform));
+			redPlatform,bluePlatform,yellowPlatform}));
+		player.colliders.addAll(Arrays.asList(new ModelNode[]{
+			stage,redPlatform,bluePlatform,yellowPlatform}));
 		ButtonBuilder bb = new ButtonBuilder(program)
 			.setStickTime(2000);
 		{
@@ -46,7 +54,7 @@ public class Level1 extends LevelBase { final Level1 level = this;
 			bb.colorCallbacks.put(RED,redPlatform.raise());
 			bb.colorCallbacks.put(BLUE,bluePlatform.raise());
 			bb.colorCallbacks.put(YELLOW,yellowPlatform.raise());
-			stage.children.addAll(list(
+			stage.children.addAll(Arrays.asList(new ButtonBuilder.Button[]{
 				// first 3
 				bb.new Button(RED){{
 					getLocalTransform().translate(-10.3f,0,-10.8f); }},
@@ -64,8 +72,8 @@ public class Level1 extends LevelBase { final Level1 level = this;
 					getLocalTransform().translate(8.6f,0,40.8f); }},
 				bb.new Button(YELLOW){{
 					getLocalTransform().translate(8.7f,0,37.2f); }}
-			));
-			bluePlatform.children.addAll(list(
+				));
+				bluePlatform.children.addAll(list(
 				bb.new Button(RED){{
 					getLocalTransform().translate(0,0,-3.190f); }},
 				bb.new Button(RED){{
@@ -74,8 +82,8 @@ public class Level1 extends LevelBase { final Level1 level = this;
 					getLocalTransform().translate(.2f,0,28.5f); }},
 				bb.new Button(RED){{
 					getLocalTransform().translate(4.7f,0,28.26f); }}
-			));
-			redPlatform.children.addAll(list(
+			}));
+			redPlatform.children.addAll(Arrays.asList(new ButtonBuilder.Button[]{
 				bb.new Button(YELLOW){{
 					getLocalTransform().translate(-1.2f,0,8.5f); }},
 				bb.new Button(RED){{
@@ -84,7 +92,7 @@ public class Level1 extends LevelBase { final Level1 level = this;
 					getLocalTransform().translate(-9f,0,16.8f); }},
 				bb.new Button(BLUE){{
 					getLocalTransform().translate(-11f,0,16.8f); }}
-			));
+			}));
 		}
 		// needs to be accessed from anonymous classes
 		State[] state = new State[]{State.TO_END};
@@ -94,7 +102,7 @@ public class Level1 extends LevelBase { final Level1 level = this;
 				state[0] = State.TO_END;
 				player.loc.set(9.2f,1.5f,-10.8f);
 				// move away all the platforms
-				for(Platform x : list(redPlatform,bluePlatform,yellowPlatform))
+				for(Platform x : Arrays.asList(new Platform[]{redPlatform,bluePlatform,yellowPlatform}))
 					x.lastRaise = 0;
 				startTime = System.currentTimeMillis();
 			}
@@ -139,6 +147,8 @@ public class Level1 extends LevelBase { final Level1 level = this;
 			{run();}
 		});
 	}
+
+	/** The end game logic */
 	private void end() {
 		int delta = (int)(System.currentTimeMillis()-startTime);
 		int score = 30000000/delta;
@@ -168,7 +178,10 @@ public class Level1 extends LevelBase { final Level1 level = this;
 			close();
 		});
 	}
+
+	/** Exits this level */
 	public void close() {
 		System.exit(0); }
+	/** Main method to create and run and instance of this class */
 	public static void main(String[] a) { new Level1().run(); }
 }
