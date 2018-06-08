@@ -5,6 +5,14 @@
  * A comparable int pair
  */
 
+/*
+ * Modification: implement equals for Java TreeSet
+ * Junyi Wang
+ * June 8, 2018
+ * 2 minutes
+ * Version: 0.05
+ */
+
 public class ComparableIntPair implements Comparable<ComparableIntPair>
 {
 	public final int x;

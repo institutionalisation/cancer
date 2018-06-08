@@ -5,6 +5,30 @@
  * A* grid pathfinder
  */
 
+/*
+ * Modification: fix bug where path clips through wall
+ * Junyi Wang
+ * June 7, 2018
+ * 20 minutes
+ * Version: 0.05
+ */
+
+/*
+ * Modification: fix bug where pathfinder gets stuck due to floating point inaccuracy
+ * Junyi Wang
+ * June 7, 2018
+ * 40 minutes
+ * Version: 0.05
+ */
+
+/*
+ * Modification: clean up code and add JavaDoc
+ * Junyi Wang
+ * June 8, 2018
+ * 4 minutes
+ * Version: 0.05
+ */
+
 import org.joml.*;
 import static java.lang.Math.*;
 import java.util.PriorityQueue;

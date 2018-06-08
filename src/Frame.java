@@ -5,6 +5,14 @@
  * A Swing window
  */
 
+/*
+ * Modification: fix resize after frame modification
+ * David Jacewicz
+ * June 8, 2018
+ * 10 minutes
+ * Version: 0.05
+ */
+
 import java.awt.*;
 import javax.swing.*;
 import static util.Util.*;

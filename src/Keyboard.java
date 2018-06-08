@@ -1,8 +1,16 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * June 1, 2018
  * Ms. Krasteva
  * Keyboard key state tracker
+ */
+
+/*
+ * Modification: Fix immediateKeys set not being modified
+ * David Jacewicz
+ * June 3, 2018
+ * 1 hour
+ * Version: 0.05
  */
 
 import org.lwjgl.glfw.*;

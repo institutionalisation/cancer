@@ -5,6 +5,14 @@
  * The block that is dropped on top of the player in the trap
  */
 
+/*
+ * Modification: fix using the wrong time to calculate delta
+ * Junyi Wang
+ * June 8, 2018
+ * 10 minutes
+ * Version: 0.05
+ */
+
 import org.joml.*;
 import static java.lang.Math.*;
 

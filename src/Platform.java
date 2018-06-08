@@ -1,8 +1,16 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 26, 2018
  * Ms. Krasteva
  * A moving platform used in Level 2
+ */
+
+/*
+ * Modification: refactor the hardcoded time into constants
+ * David Jacewicz
+ * May 27, 2018
+ * 10 minutes
+ * Version: 0.04
  */
 
 import org.joml.*;

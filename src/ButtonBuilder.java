@@ -1,8 +1,16 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 21, 2018
  * Ms. Krasteva
  * A builder class for OpenGL-based GUI buttons
+ */
+
+/*
+ * Modification: rename model
+ * Junyi Wang
+ * May 25, 2018
+ * 2 minutes
+ * Version: 0.04
  */
 
 import static util.Util.*;

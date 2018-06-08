@@ -5,6 +5,30 @@
  * A line segment
  */
 
+/*
+ * Modification: rename variables to be more clear
+ * Junyi Wang
+ * June 7, 2018
+ * 2 minutes
+ * Version: 0.05
+ */
+
+/*
+ * Modification: add epsilon to box check to fix bug
+ * Junyi Wang
+ * June 8, 2018
+ * 1 minute + 30 minutes to find the bug
+ * Version: 0.05
+ */
+
+/*
+ * Modification: use JOML math functions instead of custom functions
+ * Junyi Wang
+ * June 8, 2018
+ * 20 minutes
+ * Version: 0.05
+ */
+
 import org.joml.*;
 import static java.lang.Math.*;
 

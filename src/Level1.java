@@ -1,8 +1,32 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 21, 2018
  * Ms. Krasteva
  * Level 2 driver class
+ */
+
+/*
+ * Modification: draw buttons for the puzzle
+ * David Jacewicz
+ * May 22, 2018
+ * 2 hours
+ * Version: 0.03
+ */
+
+/*
+ * Modification: draw and animate platform
+ * David Jacewicz
+ * May 25, 2018
+ * 4 hours
+ * Version: 0.03
+ */
+
+/*
+ * Modification: fix collsion bug with buttons
+ * David Jacewicz
+ * May 26, 2018
+ * 6 hours
+ * Version: 0.03
  */
 
 import org.lwjgl.*;

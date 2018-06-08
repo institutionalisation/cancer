@@ -1,8 +1,16 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 31, 2018
  * Ms. Krasteva
  * A triangle
+ */
+
+/*
+ * Modification: use floats instead of doubles
+ * Junyi Wang
+ * June 7, 2018
+ * 2 minutes
+ * Version: 0.05
  */
 
 import org.joml.*;

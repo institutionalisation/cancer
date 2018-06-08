@@ -5,6 +5,30 @@
  * Level 3 driver class
  */
 
+/*
+ * Modification: open meter frame
+ * David Jacewicz
+ * May 17, 2018
+ * 1 hour
+ * Version: 0.03
+ */
+
+/*
+ * Modification: write educational dialogue
+ * David Jacewicz
+ * May 19, 2018
+ * 2 hours
+ * Version: 0.03
+ */
+
+/*
+ * Modification: update class to use new level base class
+ * David Jacewicz
+ * May 24, 2018
+ * 30 minutes
+ * Version: 0.04
+ */
+
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import static org.lwjgl.glfw.GLFW.*;

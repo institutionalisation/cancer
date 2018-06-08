@@ -1,8 +1,16 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 20, 2018
  * Ms. Krasteva
  * A collection of utility methods
+ */
+
+/*
+ * Modification: remove list() method that gives a warning
+ * Junyi Wang
+ * June 7, 2018
+ * 30 minutes
+ * Version: 0.05
  */
 
 package util;

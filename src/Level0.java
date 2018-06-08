@@ -1,8 +1,32 @@
 /*
  * Junyi Wang
- * June 7, 2018
+ * June 4, 2018
  * Ms. Krasteva
  * The driver class for level 1
+ */
+
+/*
+ * Modification: add pathfinder max steps
+ * Junyi Wang
+ * June 5, 2018
+ * 5 minutes
+ * Version: 0.04
+ */
+
+/*
+ * Modification: change pathfinder parameters
+ * Junyi Wang
+ * June 6, 2018
+ * 10 minutes
+ * Version: 0.04
+ */
+
+/*
+ * Modification: fix win game infinite loop
+ * David Jacewicz
+ * June 8, 2018
+ * 20 minutes
+ * Version: 0.05
  */
 
 import org.lwjgl.*;

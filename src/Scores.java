@@ -5,6 +5,14 @@
  * The score tracker class
  */
 
+/*
+ * Modification: render scoreboard to HTML
+ * David Jacewicz
+ * June 8, 2018
+ * 20 minutes
+ * Version: 0.05
+ */
+
 import java.util.*;
 import java.io.*;
 import static util.Util.*;

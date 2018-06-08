@@ -1,8 +1,16 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 17, 2018
  * Ms. Krasteva
  * A window displaying the meters for Level 2
+ */
+
+/*
+ * Modification: fix bug where meter goes over the end
+ * David Jacewicz
+ * May 19, 2018
+ * 2 hours
+ * Version: 0.03
  */
 
 import javax.swing.*;

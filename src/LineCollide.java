@@ -5,6 +5,30 @@
  * Line collsion data structure; currently implemented as brute force
  */
 
+/*
+ * Modification: add method to check line proximity
+ * Junyi Wang
+ * June 8, 2018
+ * 1 hour
+ * Version: 0.05
+ */
+
+/*
+ * Modification: make special constructor that imports mesh
+ * Junyi Wang
+ * June 8, 2018
+ * 20 minutes
+ * Version: 0.05
+ */
+
+/*
+ * Modification: refactor box check to be in its own method
+ * Junyi Wang
+ * June 8, 2018
+ * 5 minutes
+ * Version: 0.05
+ */
+
 import org.joml.*;
 import org.lwjgl.*;
 import static org.lwjgl.assimp.Assimp.*;

@@ -1,8 +1,16 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 14, 2018
  * Ms. Krasteva
  * Shader program
+ */
+
+/*
+ * Modification: add a method to get the ID of the program
+ * David Jacewicz
+ * May 15, 2018
+ * 2 minutes
+ * Version: 0.01
  */
 
 import static org.lwjgl.opengl.GL11.*;

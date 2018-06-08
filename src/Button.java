@@ -1,8 +1,24 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 14, 2018
  * Ms. Krasteva
  * A rounded GUI button
+ */
+
+/*
+ * Modification: round borders
+ * David Jacewicz
+ * May 15, 2018
+ * 4 hours
+ * Version: 0.04
+ */
+
+/*
+ * Modification: fix bug where round corners show black triangle on Windows
+ * David Jacewicz
+ * May 16, 2018
+ * 2 hours
+ * Version: 0.04
  */
 
 import java.awt.*;

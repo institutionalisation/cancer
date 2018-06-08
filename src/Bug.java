@@ -5,6 +5,22 @@
  * A bug minion
  */
 
+/*
+ * Modification: fix pathfinding
+ * Junyi Wang
+ * June 8, 2018
+ * 2 hours
+ * Version: 0.05
+ */
+
+/*
+ * Modification: write main game logic, add collision points
+ * Junyi Wang
+ * June 8, 2018
+ * 3 hours
+ * Version: 0.05
+ */
+
 import org.joml.*;
 import static java.lang.Math.*;
 

@@ -1,6 +1,6 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 25, 2018
  * Ms. Krasteva
  * Panel that is always non-opaque
  */

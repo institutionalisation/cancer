@@ -1,8 +1,16 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 25, 2018
  * Ms. Krasteva
  * Mouse input handler
+ */
+
+/*
+ * Modification: clip mouse to normal human field of view
+ * David Jacewicz
+ * June 1, 2018
+ * 2 hours
+ * Version: 0.05
  */
 
 import org.joml.*;

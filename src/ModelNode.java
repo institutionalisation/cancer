@@ -1,8 +1,16 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 14, 2018
  * Ms. Krasteva
  * A node in the model tree
+ */
+
+/*
+ * Modification: clean up source code and Javadoc
+ * Junyi Wang
+ * June 7, 2018
+ * 2 minutes
+ * Version: 0.05
  */
 
 import org.joml.*;

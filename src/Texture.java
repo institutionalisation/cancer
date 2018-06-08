@@ -1,8 +1,16 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 15, 2018
  * Ms. Krasteva
  * A texture image 
+ */
+
+/*
+ * Modification: remove debug statements, clean up code
+ * Junyi Wang
+ * June 7, 2018
+ * 5 minutes
+ * Version: 0.05
  */
 
 import java.nio.*;

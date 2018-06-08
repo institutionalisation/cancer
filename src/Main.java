@@ -1,8 +1,24 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 14, 2018
  * Ms. Krasteva
  * Driver class for the whole program
+ */
+
+/*
+ * Modification: move command line args to this file
+ * David Jacewicz
+ * June 7, 2018
+ * 5 minutes
+ * Version: 0.05
+ */
+
+/*
+ * Modification: import resources from jar instead of directory
+ * David Jacewicz
+ * June 7, 2018
+ * 10 minutes
+ * Version: 0.05
  */
 
 import javax.swing.*;

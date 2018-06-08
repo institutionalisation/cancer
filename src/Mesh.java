@@ -1,8 +1,24 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 14, 2018
  * Ms. Krasteva
  * Mesh imported from the asset importer
+ */
+
+/*
+ * Modification: use model nodes instead of model
+ * David Jacewicz
+ * May 16, 2018
+ * 2 hours
+ * Version: 0.01
+ */
+
+/*
+ * Modification: fix bug where imported models are empty
+ * David Jacewicz & Junyi Wang
+ * May 19, 2018
+ * 2 hours
+ * Version: 0.02
  */
 
 import org.lwjgl.assimp.*;

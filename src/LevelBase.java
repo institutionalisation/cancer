@@ -1,8 +1,24 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 17, 2018
  * Ms. Krasteva
  * The base class for all the levels
+ */
+
+/*
+ * Modification: refactor keyboard and mouse to be in here
+ * David Jacewicz
+ * May 24, 2018
+ * 1 hour
+ * Version: 0.04
+ */
+
+/*
+ * Modification: move dialogue window to this class
+ * David Jacewicz
+ * May 26, 2018
+ * 2 hours
+ * Version: 0.04
  */
 
 import org.lwjgl.*;

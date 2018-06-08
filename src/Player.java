@@ -1,8 +1,24 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 23, 2018
  * Ms. Krasteva
  * The player object; handles movement
+ */
+
+/*
+ * Modification: implement object collision
+ * David Jacewicz
+ * May 25, 2018
+ * 4 hours
+ * Version: 0.04
+ */
+
+/*
+ * Modification: refactor keyboard and mouse to be in this class
+ * David Jacewicz
+ * May 25, 2018
+ * 2 hours
+ * Version: 0.04
  */
 
 import org.joml.*;

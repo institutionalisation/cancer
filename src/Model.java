@@ -1,8 +1,16 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * May 14, 2018
  * Ms. Krasteva
  * An imported model
+ */
+
+/*
+ * Modification: add model nodes
+ * David Jacewicz
+ * May 15, 2018
+ * 15 minutes
+ * Version: 0.02
  */
 
 import org.lwjgl.*;

@@ -1,8 +1,16 @@
 /*
  * David Jacewicz
- * June 7, 2018
+ * June 3, 2018
  * Ms. Krasteva
  * A window opened with GLFW; can be drawn to with OpenGL
+ */
+
+/*
+ * Modification: add utility methods
+ * David Jacewicz
+ * June 5, 2018
+ * 30 minutes
+ * Version: 0.05
  */
 
 import org.lwjgl.*;
