@@ -38,11 +38,9 @@ public class Util {
 		catch(Exception exception) {
 			exception.printStackTrace(); }
 	}
+	/** Extract .jar resources */
 	public static void extractResources() {exPrint(()->{
 
-		// if(new File(destination).exists())
-		// 	return;
-		// new File(destination).mkdirs();
 		ZipInputStream in = null;
 		OutputStream out = null;
 		String destination= ".";
