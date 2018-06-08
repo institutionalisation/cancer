@@ -38,14 +38,9 @@ public class Util {
 		catch(Exception exception) {
 			exception.printStackTrace(); }
 	}
-	public static <E> List<E> list(E... a) {
-		return Arrays.asList(a); }
-	// https://stackoverflow.com/questions/9464843/how-to-extract-zip-file-from-jar-file
+	/** Extract .jar resources */
 	public static void extractResources() {exPrint(()->{
 
-		// if(new File(destination).exists())
-		// 	return;
-		// new File(destination).mkdirs();
 		ZipInputStream in = null;
 		OutputStream out = null;
 		String destination= ".";
